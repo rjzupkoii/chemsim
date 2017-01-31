@@ -6,6 +6,8 @@ import javax.swing.JFrame;
 
 import edu.mtu.compound.Acetate;
 import edu.mtu.compound.HydrogenPeroxide;
+import edu.mtu.compound.Propylium;
+import edu.mtu.compound.radical.Hydroxyl;
 import sim.display.Controller;
 import sim.display.GUIState;
 import sim.display3d.Display3D;
@@ -114,8 +116,10 @@ public class ChemSimUI extends GUIState {
 		// Set the portrayals of the compounds
 		// TODO Ideally we can do this using reflection to auto-register them
 		compoundPortrayal.setField(((ChemSim)state).getCompounds());
-		compoundPortrayal.setPortrayalForClass(Acetate.class, new SpherePortrayal3D(Color.RED));	
-		compoundPortrayal.setPortrayalForClass(HydrogenPeroxide.class, new SpherePortrayal3D(Color.BLUE));	
+		compoundPortrayal.setPortrayalForClass(Acetate.class, new SpherePortrayal3D(Acetate.getColor()));	
+		compoundPortrayal.setPortrayalForClass(HydrogenPeroxide.class, new SpherePortrayal3D(HydrogenPeroxide.getColor()));
+		compoundPortrayal.setPortrayalForClass(Hydroxyl.class, new SpherePortrayal3D(Hydroxyl.getColor()));
+		compoundPortrayal.setPortrayalForClass(Propylium.class, new SpherePortrayal3D(Propylium.getColor()));
 
 		// Make sure the display is scheduled correctly
 		display.reset();

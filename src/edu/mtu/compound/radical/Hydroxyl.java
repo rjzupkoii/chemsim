@@ -19,4 +19,9 @@ public class Hydroxyl extends Compound {
 	// Do nothing
 	@Override
 	protected void doUVExposure() { }
+
+	@Override
+	protected void interact(Compound compound) {
+		// TODO Implement interaction pathways
+	}
 }

@@ -4,6 +4,8 @@ import java.awt.Color;
 
 import sim.engine.SimState;
 import sim.engine.Steppable;
+import sim.engine.Stoppable;
+import sim.util.Bag;
 import sim.util.Int3D;
 
 /**
@@ -12,12 +14,19 @@ import sim.util.Int3D;
 @SuppressWarnings("serial")
 public abstract class Compound implements Steppable {
 
-	protected int[] movementVector;
+	private Stoppable stoppable; 
+	
+	protected int[] movementVector;	
 		
 	/**
 	 * Perform the chemical reaction that are associated with UV exposure.
 	 */
 	protected abstract void doUVExposure();
+	
+	/**
+	 * Perform any interaction between this compound and the indicated compound.
+	 */
+	protected abstract void interact(Compound compound);
 	
 	public Compound(Int3D movementVector) {
 		this.movementVector = new int[3];
@@ -28,20 +37,30 @@ public abstract class Compound implements Steppable {
 	
 	@Override
 	public void step(SimState state) {
-		// TODO Perform any UV exposure 
-		if (state.random.nextInt(10) == 1) {
+		// Move the compound in space
+		ChemSim simulation = (ChemSim)state;
+		Int3D location = simulation.getCompounds().getObjectLocation(this);
+		location = doMovement(location, simulation.getContainer());
+		simulation.getCompounds().setObjectLocation(this, location);
+
+		// Perform any UV exposure
+		if (state.random.nextDouble() < ChemSim.getInstance().getUvIntensity()) {
 			doUVExposure();
+			return;
 		}
 		
-		// Move the compound in space
-		Int3D location = ((ChemSim)state).getCompounds().getObjectLocation(this);
-		location = doMovement(location, ((ChemSim)state).getContainer());
-		((ChemSim)state).getCompounds().setObjectLocation(this, location);
-		
-		// TODO Check to see if the compound has bumped into another one
-		
-		// TODO Perform any interactions between the compounds
-		
+		// Check to see if the compound has bumped into another one
+		Bag objects = simulation.getCompounds().getObjectsAtLocation(location);
+		for (Object object : objects) {
+			// If the object is this one, continue
+			if (object.equals(this)) {
+				continue;
+			}
+			
+			// Otherwise, interact and break
+			interact((Compound)object);
+			break;
+		}		
 	}
 	
 	/**
@@ -53,10 +72,26 @@ public abstract class Compound implements Steppable {
 	}
 	
 	/**
+	 * Set the simulation engine object needed to remove the compound from the schedule.
+	 */
+	public void setStoppable(Stoppable stoppable) {
+		this.stoppable = stoppable;
+	}
+	
+	/**
 	 * Clear this compound from the simulation.
 	 */
-	protected void decay() {
-		// TODO Flag this object to be removed from the simulation
+	private void decay() {
+		ChemSim state = ChemSim.getInstance();
+		state.getCompounds().remove(this);
+		stoppable.stop();
+	}
+	
+	/**
+	 * Clear the compound from the simulation.
+	 */
+	protected void decay(Compound compound) {
+		compound.decay();
 	}
 	
 	/**
@@ -88,6 +123,15 @@ public abstract class Compound implements Steppable {
 	 */
 	@SuppressWarnings("rawtypes")
 	protected void generate(Class compoundName) {
-		// TODO Generate the new compound and add it to the simulation
+		// Get the location of the compound in space
+		ChemSim state = ChemSim.getInstance();
+		Int3D location = state.getCompounds().getObjectLocation(this);
+		if (location == null) {
+			throw new IllegalStateException("Unable to get compound location. Did you call decay() before generate()?");
+		}
+		
+		// Create the compound and move it
+		Compound compound = state.createCompoundAt(compoundName, location);
+		compound.doMovement(location, state.getContainer());
 	}
 }

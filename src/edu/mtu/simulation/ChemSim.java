@@ -20,14 +20,26 @@ public class ChemSim extends SimState {
 	private int moleculesPerMole = 100; 
 	private int acetateMoles = 1;
 	private int hydrogenPeroxideMoles = 15;
+	private double uvIntensity = 0.025;
 	
 	private SparseGrid3D compounds;
+	
+	// Singleton instance of the simulation
+	private static ChemSim instance;
 	
 	/**
 	 * Constructor.
 	 */
 	public ChemSim(long seed) {
 		super(seed);
+		
+		// This actually breaks the standard pattern for a singleton, but we only 
+		// expect MASON to start one instance of the simulation. This also gives 
+		// us access to the simulation state without having to pass it around.
+		if (instance != null) {
+			throw new IllegalStateException();
+		}
+		instance = this;
 	}
 		
 	/**
@@ -65,8 +77,21 @@ public class ChemSim extends SimState {
 		return hydrogenPeroxideMoles;
 	}
 	
+	public static ChemSim getInstance() {
+		// We expect to be constructed by MASON, so no instance can be created before then
+		if (instance == null) {
+			throw new IllegalStateException();
+		}
+		
+		return instance;
+	}
+	
 	public int getMoleculesPerMole() {
 		return moleculesPerMole;
+	}
+	
+	public double getUvIntensity() {
+		return uvIntensity;
 	}
 
 	public void setAcetateMoles(int value) {
@@ -81,15 +106,47 @@ public class ChemSim extends SimState {
 		moleculesPerMole = value;
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void setUvIntensity(double uvIntensity) {
+		this.uvIntensity = uvIntensity;
+	}
+	
+	/**
+	 * Create the compound and add it to the schedule in the quantity given.
+	 */
+	@SuppressWarnings("rawtypes")
 	private void createCompounds(Class compoundName, int quantity) throws Exception {
-		Constructor<?> ctor = compoundName.getConstructor(Int3D.class);
 		for (int ndx = 0; ndx < quantity; ndx++) {
-			Int3D movementVector = new Int3D(random.nextInt(3) - 1, random.nextInt(3) - 1, random.nextInt(3) - 1);
-			Compound compound = (Compound)ctor.newInstance(new Object[] { movementVector });
-			schedule.scheduleRepeating(compound);
-			compounds.setObjectLocation(compound, new Int3D(random.nextInt(GridWidth), random.nextInt(GridHeight), random.nextInt(GridLength)));
+			createCompoundAt(compoundName, new Int3D(random.nextInt(GridWidth), random.nextInt(GridHeight), random.nextInt(GridLength)));
 		}
+	}
+	
+	/**
+	 * Create the compound at the given location and add it to the schedule.
+	 * In the process, make sure they are given access to the Stoppable object
+	 * needed to remove themselves from the model.
+	 * 
+	 * @param compoundName The class name of the compound to be added.
+	 * @param location The location in space (x, y, c) to create the compound at.
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Compound createCompoundAt(Class compoundName, Int3D location) {
+		Compound compound = null;
+		
+		try {
+			Constructor<?> ctor = compoundName.getConstructor(Int3D.class);
+			Int3D movementVector = new Int3D(random.nextInt(3) - 1, random.nextInt(3) - 1, random.nextInt(3) - 1);
+			compound = (Compound)ctor.newInstance(new Object[] { movementVector });
+			compound.setStoppable(schedule.scheduleRepeating(compound));
+			compounds.setObjectLocation(compound, location);
+		} catch (Exception ex) {
+			// We can't recover from errors here
+			ex.printStackTrace();
+			System.exit(1);
+		} 
+		
+		// Return the compound, keep the compiler happy
+		return compound;
+		
 	}
 
 	/**
@@ -98,5 +155,5 @@ public class ChemSim extends SimState {
 	public static void main(String[] args) {
 		doLoop(ChemSim.class, args);
 		System.exit(0);
-	}
+	}	
 }

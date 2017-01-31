@@ -20,8 +20,13 @@ public class HydrogenPeroxide extends Compound {
 	@Override
 	protected void doUVExposure() {
 		// Upon UV exposure, decay into two Hydroxyl radicals
-		decay();
 		generate(Hydroxyl.class);
 		generate(Hydroxyl.class);
+		decay(this);
+	}
+
+	@Override
+	protected void interact(Compound compound) {
+		// TODO Implement interaction pathways
 	}
 }
