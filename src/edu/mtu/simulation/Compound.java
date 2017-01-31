@@ -14,6 +14,11 @@ public abstract class Compound implements Steppable {
 
 	protected int[] movementVector;
 		
+	/**
+	 * Perform the chemical reaction that are associated with UV exposure.
+	 */
+	protected abstract void doUVExposure();
+	
 	public Compound(Int3D movementVector) {
 		this.movementVector = new int[3];
 		this.movementVector[0] = movementVector.x;
@@ -24,6 +29,9 @@ public abstract class Compound implements Steppable {
 	@Override
 	public void step(SimState state) {
 		// TODO Perform any UV exposure 
+		if (state.random.nextInt(10) == 1) {
+			doUVExposure();
+		}
 		
 		// Move the compound in space
 		Int3D location = ((ChemSim)state).getCompounds().getObjectLocation(this);
@@ -42,6 +50,13 @@ public abstract class Compound implements Steppable {
 	public static Color getColor() 
 	{
 		throw new IllegalStateException();
+	}
+	
+	/**
+	 * Clear this compound from the simulation.
+	 */
+	protected void decay() {
+		// TODO Flag this object to be removed from the simulation
 	}
 	
 	/**
@@ -65,5 +80,14 @@ public abstract class Compound implements Steppable {
 		else if (z >= container.z) { x--; movementVector[2] = -movementVector[2]; }
 		
 		return new Int3D(x, y, z);
+	}
+	
+	/**
+	 * Generate a new compound of the given type, using the location of this compound
+	 * as its initial vector.
+	 */
+	@SuppressWarnings("rawtypes")
+	protected void generate(Class compoundName) {
+		// TODO Generate the new compound and add it to the simulation
 	}
 }

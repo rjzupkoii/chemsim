@@ -15,4 +15,8 @@ public class Acetate extends Compound {
 	public static Color getColor() {
 		return Color.RED;
 	}
+
+	// Do nothing
+	@Override
+	protected void doUVExposure() { }
 }
