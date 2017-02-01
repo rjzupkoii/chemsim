@@ -8,6 +8,11 @@ public class ChemSimProperties {
 	private int hydrogenPeroxideMoles = 15;
 	private double uvIntensity = 0.025;
 		
+	// TODO Figure out a way to expose this as an actual MASON inspector
+	public CompoundInspector getCompoundInspector() {
+		return new CompoundInspector();
+	}
+	
 	public int getAcetateMoles() {
 		return acetateMoles;
 	}

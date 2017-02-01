@@ -21,7 +21,7 @@ public class ChemSim extends SimState {
 	
 	// The properties for the simulation, managed by MASON
 	private ChemSimProperties properties;
-	
+			
 	// Singleton instance of the simulation
 	private static ChemSim instance;
 	
@@ -90,7 +90,7 @@ public class ChemSim extends SimState {
 		
 		return instance.properties;
 	}
-	
+		
 	/**
 	 * Create the compound and add it to the schedule in the quantity given.
 	 */

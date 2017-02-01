@@ -23,7 +23,7 @@ public class ChemSimUI extends GUIState {
 	
 	private SparseGridPortrayal3D compoundPortrayal = new SparseGridPortrayal3D();
 	private WireFrameBoxPortrayal3D wireFramePortrayal;
-	
+		
 	/**
 	 * Constructor.
 	 */
