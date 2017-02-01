@@ -44,7 +44,7 @@ public abstract class Compound implements Steppable {
 		simulation.getCompounds().setObjectLocation(this, location);
 
 		// Perform any UV exposure
-		if (state.random.nextDouble() < ChemSim.getInstance().getUvIntensity()) {
+		if (state.random.nextDouble() < ChemSim.getProperties().getUvIntensity()) {
 			doUVExposure();
 			return;
 		}

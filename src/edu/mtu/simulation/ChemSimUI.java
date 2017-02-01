@@ -4,10 +4,9 @@ import java.awt.Color;
 
 import javax.swing.JFrame;
 
-import edu.mtu.compound.Acetate;
-import edu.mtu.compound.HydrogenPeroxide;
-import edu.mtu.compound.Propylium;
-import edu.mtu.compound.radical.Hydroxyl;
+import com.google.common.reflect.ClassPath;
+import com.google.common.reflect.ClassPath.ClassInfo;
+
 import sim.display.Controller;
 import sim.display.GUIState;
 import sim.display3d.Display3D;
@@ -52,8 +51,11 @@ public class ChemSimUI extends GUIState {
 	/**
 	 * Get a state object for the UI.
 	 */
-	public Object getSimulationInspectedObject() { return state; }
-	
+	@Override
+	public Object getSimulationInspectedObject() { 
+		return ChemSim.getProperties();
+	}
+		
 	/**
 	 * Initialize the display for rendering.
 	 */
@@ -112,15 +114,23 @@ public class ChemSimUI extends GUIState {
 	/**
 	 * Setup the presentation of the simulation.
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void setupPortrayals() {
 		// Set the portrayals of the compounds
-		// TODO Ideally we can do this using reflection to auto-register them
 		compoundPortrayal.setField(((ChemSim)state).getCompounds());
-		compoundPortrayal.setPortrayalForClass(Acetate.class, new SpherePortrayal3D(Acetate.getColor()));	
-		compoundPortrayal.setPortrayalForClass(HydrogenPeroxide.class, new SpherePortrayal3D(HydrogenPeroxide.getColor()));
-		compoundPortrayal.setPortrayalForClass(Hydroxyl.class, new SpherePortrayal3D(Hydroxyl.getColor()));
-		compoundPortrayal.setPortrayalForClass(Propylium.class, new SpherePortrayal3D(Propylium.getColor()));
-
+		try {
+			ClassPath classPath = ClassPath.from(ClassLoader.getSystemClassLoader());
+			for (ClassInfo classInfo : classPath.getTopLevelClassesRecursive("edu.mtu.compound")) {
+				Class compound = Class.forName(classInfo.getName());
+				Color color = (Color)compound.getMethod("getColor", (Class[])null).invoke(null, (Object[])null);
+				compoundPortrayal.setPortrayalForClass(compound, new SpherePortrayal3D(color));
+			}
+		} catch (Exception ex) {
+			// We can't recover from errors here
+			ex.printStackTrace();
+			System.exit(1);
+		}
+		
 		// Make sure the display is scheduled correctly
 		display.reset();
 		display.createSceneGraph();

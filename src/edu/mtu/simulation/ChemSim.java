@@ -16,13 +16,11 @@ public class ChemSim extends SimState {
 	public final static int GridHeight = 30;
 	public final static int GridLength = 30;
 	
-	// Initial settings for the model
-	private int moleculesPerMole = 100; 
-	private int acetateMoles = 1;
-	private int hydrogenPeroxideMoles = 15;
-	private double uvIntensity = 0.025;
-	
+	// The compounds that are registered in the simulation
 	private SparseGrid3D compounds;
+	
+	// The properties for the simulation, managed by MASON
+	private ChemSimProperties properties;
 	
 	// Singleton instance of the simulation
 	private static ChemSim instance;
@@ -39,6 +37,9 @@ public class ChemSim extends SimState {
 		if (instance != null) {
 			throw new IllegalStateException();
 		}
+		
+		// Note the this object and the properties
+		properties = new ChemSimProperties();
 		instance = this;
 	}
 		
@@ -52,17 +53,13 @@ public class ChemSim extends SimState {
 		try {
 			// Add all of the compounds to the grid in a random fashion
 			compounds = new SparseGrid3D(GridWidth, GridHeight, GridLength);
-			createCompounds(Acetate.class, acetateMoles * moleculesPerMole);
-			createCompounds(HydrogenPeroxide.class, hydrogenPeroxideMoles * moleculesPerMole);
+			createCompounds(Acetate.class, properties.getAcetateMoles() * properties.getMoleculesPerMole());
+			createCompounds(HydrogenPeroxide.class, properties.getHydrogenPeroxideMoles() * properties.getMoleculesPerMole());
 		} catch (Exception ex) {
 			// We can't recover from errors here
 			ex.printStackTrace();
 			System.exit(1);
 		}
-	}
-	
-	public int getAcetateMoles() {
-		return acetateMoles;
 	}
 	
 	public SparseGrid3D getCompounds() {
@@ -71,10 +68,6 @@ public class ChemSim extends SimState {
 
 	public Int3D getContainer() {
 		return new Int3D(GridWidth, GridHeight, GridLength);
-	}
-	
-	public int getHydrogenPeroxideMoles() {
-		return hydrogenPeroxideMoles;
 	}
 	
 	public static ChemSim getInstance() {
@@ -86,28 +79,16 @@ public class ChemSim extends SimState {
 		return instance;
 	}
 	
-	public int getMoleculesPerMole() {
-		return moleculesPerMole;
-	}
-	
-	public double getUvIntensity() {
-		return uvIntensity;
-	}
-
-	public void setAcetateMoles(int value) {
-		acetateMoles = value;
-	}
+	/**
+	 * Get the properties that are associated with this simulation.
+	 */
+	public static ChemSimProperties getProperties() {
+		// We expect the class to already be instantiated
+		if (instance == null) {
+			throw new IllegalStateException();
+		}
 		
-	public void setHydrogenPeroxideMoles(int value) {
-		hydrogenPeroxideMoles = value;
-	}
-	
-	public void setMoleculesPerMole(int value) {
-		moleculesPerMole = value;
-	}
-	
-	public void setUvIntensity(double uvIntensity) {
-		this.uvIntensity = uvIntensity;
+		return instance.properties;
 	}
 	
 	/**
