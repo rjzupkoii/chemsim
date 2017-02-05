@@ -2,6 +2,7 @@ package edu.mtu.compound;
 
 import java.awt.Color;
 
+import edu.mtu.compound.radical.CarbonCenteredRadical;
 import edu.mtu.compound.radical.Hydroxyl;
 import edu.mtu.simulation.Compound;
 import sim.util.Int3D;
@@ -25,7 +26,7 @@ public class Acetate extends Compound {
 	protected void interact(Compound compound) {
 		// Acetate + Hydroxyl -> Propylium, 2-oxo-
 		if (compound.getClass() == Hydroxyl.class) {
-			generate(Propylium.class);
+			generate(CarbonCenteredRadical.class);
 			decay(compound);
 			decay(this);
 		}

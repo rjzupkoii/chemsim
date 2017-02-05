@@ -2,7 +2,7 @@ package edu.mtu.simulation;
 
 import edu.mtu.compound.Acetate;
 import edu.mtu.compound.HydrogenPeroxide;
-import edu.mtu.compound.Propylium;
+import edu.mtu.compound.radical.CarbonCenteredRadical;
 import edu.mtu.compound.radical.Hydroxyl;
 
 // TODO Generate the following block of properties using reflection
@@ -21,7 +21,7 @@ public class CompoundInspector {
 	}
 	
 	public int getPropyliumCount() {
-		return countClass(Propylium.class);
+		return countClass(CarbonCenteredRadical.class);
 	}
 	
 	@SuppressWarnings("rawtypes")
