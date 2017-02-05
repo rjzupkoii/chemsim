@@ -17,7 +17,7 @@ public class CarbonCenteredRadical extends Compound {
 	}
 
 	public static Color getColor() {
-		return Color.BLACK;
+		return Color.DARK_GRAY;
 	}
 	
 	// Do nothing

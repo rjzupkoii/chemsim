@@ -13,7 +13,6 @@ import sim.display3d.Display3D;
 import sim.engine.SimState;
 import sim.portrayal.Inspector;
 import sim.portrayal3d.grid.SparseGridPortrayal3D;
-import sim.portrayal3d.simple.SpherePortrayal3D;
 import sim.portrayal3d.simple.WireFrameBoxPortrayal3D;
 
 public class ChemSimUI extends GUIState {
@@ -114,7 +113,7 @@ public class ChemSimUI extends GUIState {
 	/**
 	 * Setup the presentation of the simulation.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings("rawtypes")
 	private void setupPortrayals() {
 		// Set the portrayals of the compounds
 		compoundPortrayal.setField(((ChemSim)state).getCompounds());
@@ -122,8 +121,7 @@ public class ChemSimUI extends GUIState {
 			ClassPath classPath = ClassPath.from(ClassLoader.getSystemClassLoader());
 			for (ClassInfo classInfo : classPath.getTopLevelClassesRecursive("edu.mtu.compound")) {
 				Class compound = Class.forName(classInfo.getName());
-				Color color = (Color)compound.getMethod("getColor", (Class[])null).invoke(null, (Object[])null);
-				compoundPortrayal.setPortrayalForClass(compound, new SpherePortrayal3D(color));
+				compoundPortrayal.setPortrayalForClass(compound, new CompoundPortrayal(compound));
 			}
 		} catch (Exception ex) {
 			// We can't recover from errors here
