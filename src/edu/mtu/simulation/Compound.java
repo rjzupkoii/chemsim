@@ -2,6 +2,7 @@ package edu.mtu.simulation;
 
 import java.awt.Color;
 
+import ec.util.MersenneTwisterFast;
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.engine.Stoppable;
@@ -20,8 +21,9 @@ public abstract class Compound implements Steppable {
 		
 	/**
 	 * Perform the chemical reaction that are associated with UV exposure.
+	 * @param random 
 	 */
-	protected abstract void doUVExposure();
+	protected abstract void doUVExposure(MersenneTwisterFast random);
 	
 	/**
 	 * Perform any interaction between this compound and the indicated compound.
@@ -45,7 +47,7 @@ public abstract class Compound implements Steppable {
 
 		// Perform any UV exposure
 		if (state.random.nextDouble() < ChemSim.getProperties().getUvIntensity()) {
-			doUVExposure();
+			doUVExposure(state.random);
 			return;
 		}
 		

@@ -2,6 +2,7 @@ package edu.mtu.compound.radical;
 
 import java.awt.Color;
 
+import ec.util.MersenneTwisterFast;
 import edu.mtu.simulation.Compound;
 import sim.util.Int3D;
 
@@ -21,7 +22,7 @@ public class CarbonCenteredRadical extends Compound {
 	
 	// Do nothing
 	@Override
-	protected void doUVExposure() { }
+	protected void doUVExposure(MersenneTwisterFast random) { }
 
 	@Override
 	protected void interact(Compound compound) {

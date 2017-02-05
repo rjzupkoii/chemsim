@@ -2,7 +2,9 @@ package edu.mtu.compound;
 
 import java.awt.Color;
 
+import ec.util.MersenneTwisterFast;
 import edu.mtu.compound.radical.Hydroxyl;
+import edu.mtu.simulation.ChemSim;
 import edu.mtu.simulation.Compound;
 import sim.util.Int3D;
 
@@ -18,10 +20,11 @@ public class HydrogenPeroxide extends Compound {
 	}
 
 	@Override
-	protected void doUVExposure() {
-		// Upon UV exposure, decay into two Hydroxyl radicals
-		generate(Hydroxyl.class);
-		generate(Hydroxyl.class);
+	protected void doUVExposure(MersenneTwisterFast random) {
+		// Upon UV exposure, probabilistically decay into the Hydroxyl radical
+		if (random.nextDouble() < ChemSim.getProperties().getHydroxylAppearanceProbability()) {
+			generate(Hydroxyl.class);
+		}
 		decay(this);
 	}
 

@@ -6,6 +6,7 @@ public class ChemSimProperties {
 	private int moleculesPerMole = 100; 
 	private int acetateMoles = 1;
 	private int hydrogenPeroxideMoles = 15;
+	private double hydroxylAppearanceProbability = 0.05;
 	private double uvIntensity = 0.025;
 		
 	// TODO Figure out a way to expose this as an actual MASON inspector
@@ -19,6 +20,10 @@ public class ChemSimProperties {
 
 	public int getHydrogenPeroxideMoles() {
 		return hydrogenPeroxideMoles;
+	}
+	
+	public double getHydroxylAppearanceProbability() {
+		return hydroxylAppearanceProbability;
 	}
 
 	public int getMoleculesPerMole() {
@@ -37,11 +42,15 @@ public class ChemSimProperties {
 		hydrogenPeroxideMoles = value;
 	}
 	
+	public void setHydroxylAppearanceProbability(double value) {
+		this.hydroxylAppearanceProbability = value;
+	}
+	
 	public void setMoleculesPerMole(int value) {
 		moleculesPerMole = value;
 	}
 
-	public void setUvIntensity(double uvIntensity) {
-		this.uvIntensity = uvIntensity;
-	}
+	public void setUvIntensity(double value) {
+		this.uvIntensity = value;
+	}	
 }

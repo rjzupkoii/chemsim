@@ -2,6 +2,7 @@ package edu.mtu.compound;
 
 import java.awt.Color;
 
+import ec.util.MersenneTwisterFast;
 import edu.mtu.compound.radical.CarbonCenteredRadical;
 import edu.mtu.compound.radical.Hydroxyl;
 import edu.mtu.simulation.Compound;
@@ -20,7 +21,7 @@ public class Acetate extends Compound {
 
 	// Do nothing
 	@Override
-	protected void doUVExposure() { }
+	protected void doUVExposure(MersenneTwisterFast random) { }
 
 	@Override
 	protected void interact(Compound compound) {

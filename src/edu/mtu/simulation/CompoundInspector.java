@@ -20,7 +20,7 @@ public class CompoundInspector {
 		return countClass(Hydroxyl.class);
 	}
 	
-	public int getPropyliumCount() {
+	public int getCarbonCenteredRadicalCount() {
 		return countClass(CarbonCenteredRadical.class);
 	}
 	
