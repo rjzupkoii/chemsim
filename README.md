@@ -1,6 +1,6 @@
 # ChemSim
 
-ChemSim is an agent-based modeling (ABM) approach to computational chemistry. ChemSim is primarily a Java application that makes use of the [MASON Multiagent Simulation Toolkit](http://cs.gmu.edu/~eclab/projects/mason/) to manage to simulation. It uses an experimental build  version of [Java 3D](https://gouessej.wordpress.com/2012/08/01/java-3d-est-de-retour-java-3d-is-back/) ([GitHub Project](https://github.com/hharrison/java3d-core/releases/tag/1.6.0)) for visualization due to MASON dependencies.
+ChemSim is an agent-based modeling (ABM) approach to computational chemistry. ChemSim is primarily a Java application that makes use of the [MASON Multiagent Simulation Toolkit](http://cs.gmu.edu/~eclab/projects/mason/) to manage to simulation. It uses the 1.6.0 release of [Java 3D](https://gouessej.wordpress.com/2012/08/01/java-3d-est-de-retour-java-3d-is-back/) ([GitHub Project](https://github.com/hharrison/java3d-core/releases/tag/1.6.0)) for visualization due to MASON dependencies.
 
 ## Development Environment
 
