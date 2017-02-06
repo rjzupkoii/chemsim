@@ -99,23 +99,38 @@ public abstract class Compound implements Steppable {
 	/**
 	 * Do the movement for this compound. This should only be called by the step function.
 	 */
-	// TODO Upgrade this to be Brownian Motion
+	// TODO Upgrade this to be proper Brownian Motion that takes into account any momentum
+	// TODO that is imparted by collisions with other molecules. For now we are using a 
+	// TODO three-dimensional random walk with the (x, y, z) movements being randomly 
+	// TODO distributed in a Gaussian space.	
 	protected Int3D doMovement(Int3D location, Int3D container) {
-		// Move the particle
-		int x = location.x + movementVector[0];
-		int y = location.y + movementVector[1];
-		int z = location.z + movementVector[2];
-		 
-		// Check for a collision with the container
-		if (x < 0) { x++; movementVector[0] = -movementVector[0]; }
-		else if (x >= container.x) { x--; movementVector[0] = -movementVector[0]; }
+		// Generate the random values for the walk 
+		MersenneTwisterFast random = ChemSim.getInstance().random;
+		double walkX = random.nextGaussian();
+		double walkY = random.nextGaussian();
+		double walkZ = random.nextGaussian();
 		
-		if (y < 0) { x++; movementVector[1] = -movementVector[1]; }
-		else if (y >= container.y) { x--; movementVector[1] = -movementVector[1]; }
-
-		if (z < 0) { x++; movementVector[2] = -movementVector[2]; }
-		else if (z >= container.z) { x--; movementVector[2] = -movementVector[2]; }
+		// Apply the values, note that we are discarding everything outside of one standard deviation
+		int x = location.x + ((walkX > 0 && walkX <= 1) ? 1 : 0);
+		x += (walkX <= 0 && walkX >= -1) ? -1 : 0;
 		
+		int y = location.y + ((walkY > 0 && walkY <= 1) ? 1 : 0);
+		y += (walkY <= 0 && walkY >= -1) ? -1 : 0;
+		
+		int z = location.z + ((walkZ > 0 && walkZ <= 1) ? 1 : 0);
+		z += (walkZ <= 0 && walkZ >= -1) ? -1 : 0;
+		
+		// Adjust the location as needed so we stay in the bounds of the container
+		x = (x > container.x) ? container.x : x;
+		x = (x < 0) ? 0 : x;
+		
+		y = (y > container.y) ? container.y : y;
+		y = (y < 0) ? 0 : y;
+		
+		z = (z > container.z) ? container.z : z;
+		z = (z < 0) ? 0 : z;
+		
+		// Return the new location
 		return new Int3D(x, y, z);
 	}
 	

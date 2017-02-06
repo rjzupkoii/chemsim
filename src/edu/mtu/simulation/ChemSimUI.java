@@ -64,6 +64,7 @@ public class ChemSimUI extends GUIState {
 		
 		// Prepare the display and the wire-frame
 		display = new Display3D(600, 600, this);
+		display.setBackdrop(Color.WHITE);
 		wireFramePortrayal = new WireFrameBoxPortrayal3D(-0.5, -0.5, -0.5, ChemSim.GridWidth, ChemSim.GridHeight, ChemSim.GridLength, Color.BLUE);
 		
 		// Attach the portrayals
@@ -75,7 +76,6 @@ public class ChemSimUI extends GUIState {
 		display.scale(1.0 / ChemSim.GridWidth);
 		
 		// Register and display the frame
-		display.setBackdrop(Color.WHITE);
 		displayFrame = display.createFrame();
 		controller.registerFrame(displayFrame);
 		displayFrame.setVisible(true);
@@ -130,8 +130,8 @@ public class ChemSimUI extends GUIState {
 		}
 		
 		// Make sure the display is scheduled correctly
-		display.reset();
 		display.createSceneGraph();
+		display.reset();
 	}
 
 	/**
