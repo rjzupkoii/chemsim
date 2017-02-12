@@ -1,8 +1,11 @@
 package edu.mtu.simulation;
 
 import java.awt.Color;
+import java.util.Set;
 
 import javax.swing.JFrame;
+
+import org.reflections.Reflections;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
@@ -118,11 +121,10 @@ public class ChemSimUI extends GUIState {
 		// Set the portrayals of the compounds
 		compoundPortrayal.setField(((ChemSim)state).getCompounds());
 		try {
-			ClassPath classPath = ClassPath.from(ClassLoader.getSystemClassLoader());
-			for (ClassInfo classInfo : classPath.getTopLevelClassesRecursive("edu.mtu.compound")) {
-				Class compound = Class.forName(classInfo.getName());
+			Reflections reflections = new Reflections("edu.mtu.compound");
+			for (Class compound : reflections.getSubTypesOf(Compound.class)) {
 				compoundPortrayal.setPortrayalForClass(compound, new CompoundPortrayal(compound));
-			}
+			}			
 		} catch (Exception ex) {
 			// We can't recover from errors here
 			ex.printStackTrace();
