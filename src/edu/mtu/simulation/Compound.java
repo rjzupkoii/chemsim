@@ -15,20 +15,30 @@ import sim.util.Int3D;
 @SuppressWarnings("serial")
 public abstract class Compound implements Steppable {
 
+	private boolean decayed = false;
 	private Stoppable stoppable; 
-	
+		
 	protected int[] movementVector;	
 		
 	/**
+	 * Perform any delayed disproportionation reactions.
+	 */
+	protected abstract void doDisproportionation(MersenneTwisterFast random);
+
+	/**
+	 * Perform any chemical reactions that are associated with oxidation.
+	 */
+	protected abstract void doOxidation(MersenneTwisterFast random);
+	
+	/**
 	 * Perform the chemical reaction that are associated with UV exposure.
-	 * @param random 
 	 */
 	protected abstract void doUVExposure(MersenneTwisterFast random);
 	
 	/**
 	 * Perform any interaction between this compound and the indicated compound.
 	 */
-	protected abstract void interact(Compound compound);
+	protected abstract boolean interact(Compound compound);
 	
 	public Compound(Int3D movementVector) {
 		this.movementVector = new int[3];
@@ -48,9 +58,25 @@ public abstract class Compound implements Steppable {
 		// Perform any UV exposure
 		if (state.random.nextDouble() < ChemSim.getProperties().getUvIntensity()) {
 			doUVExposure(state.random);
-			return;
+			if (decayed) {
+				return;
+			}
 		}
 		
+		// Perform any oxidation based upon current saturation
+		if (state.random.nextDouble() < ChemSim.getProperties().getOxygenSaturation()) {
+			doOxidation(state.random);
+			if (decayed) {
+				return;
+			}
+		}
+		
+		// Perform any delayed disproportionation reactions
+		doDisproportionation(state.random);
+		if (decayed) {
+			return;
+		}		
+				
 		// Check to see if the compound has bumped into another one
 		Bag objects = simulation.getCompounds().getObjectsAtLocation(location);
 		for (Object object : objects) {
@@ -59,10 +85,11 @@ public abstract class Compound implements Steppable {
 				continue;
 			}
 			
-			// Otherwise, interact and break
-			interact((Compound)object);
-			break;
-		}		
+			// Otherwise, interact and break if an interaction occurred
+			if (interact((Compound)object)) {
+				break;
+			}
+		}
 	}
 	
 	/**
@@ -84,9 +111,13 @@ public abstract class Compound implements Steppable {
 	 * Clear this compound from the simulation.
 	 */
 	private void decay() {
+		// Remove the compound from the simulation
 		ChemSim state = ChemSim.getInstance();
 		state.getCompounds().remove(this);
 		stoppable.stop();
+		
+		// Flag the object as decayed
+		decayed = true;
 	}
 	
 	/**

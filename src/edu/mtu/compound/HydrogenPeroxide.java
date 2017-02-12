@@ -19,6 +19,10 @@ public class HydrogenPeroxide extends Compound {
 		return Color.BLUE;
 	}
 
+	// Do nothing
+	@Override
+	protected void doDisproportionation(MersenneTwisterFast random) { }
+	
 	@Override
 	protected void doUVExposure(MersenneTwisterFast random) {
 		// Upon UV exposure, probabilistically decay into the Hydroxyl radical
@@ -29,7 +33,14 @@ public class HydrogenPeroxide extends Compound {
 	}
 
 	@Override
-	protected void interact(Compound compound) {
+	protected boolean interact(Compound compound) {
+		// TODO Implement interaction pathways
+		return false;
+	}
+
+	
+	@Override
+	protected void doOxidation(MersenneTwisterFast random) { 
 		// TODO Implement interaction pathways
 	}
 }

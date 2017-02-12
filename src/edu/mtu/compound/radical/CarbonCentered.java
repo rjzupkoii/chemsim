@@ -10,9 +10,9 @@ import sim.util.Int3D;
  * Carbon Centered Radical 
  */
 @SuppressWarnings("serial")
-public class CarbonCenteredRadical extends Compound {
+public class CarbonCentered extends Compound {
 
-	public CarbonCenteredRadical(Int3D movementVector) {
+	public CarbonCentered(Int3D movementVector) {
 		super(movementVector);
 	}
 
@@ -22,10 +22,21 @@ public class CarbonCenteredRadical extends Compound {
 	
 	// Do nothing
 	@Override
+	protected void doDisproportionation(MersenneTwisterFast random) { }
+	
+	// Do nothing
+	@Override
 	protected void doUVExposure(MersenneTwisterFast random) { }
 
+	// Do nothing
 	@Override
-	protected void interact(Compound compound) {
-		// TODO Update this with the relevent reactions
+	protected boolean interact(Compound compound) { 
+		return false;
+	}
+
+	@Override
+	protected void doOxidation(MersenneTwisterFast random) {
+		generate(Peroxy.class);
+		decay(this);		
 	}
 }

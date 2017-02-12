@@ -1,14 +1,10 @@
 package edu.mtu.simulation;
 
 import java.awt.Color;
-import java.util.Set;
 
 import javax.swing.JFrame;
 
 import org.reflections.Reflections;
-
-import com.google.common.reflect.ClassPath;
-import com.google.common.reflect.ClassPath.ClassInfo;
 
 import sim.display.Controller;
 import sim.display.GUIState;

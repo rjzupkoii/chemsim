@@ -14,15 +14,24 @@ public class Hydroxyl extends Compound {
 	}
 
 	public static Color getColor() {
-		return Color.CYAN;
+		return Color.RED;
 	}
+	
+	// Do nothing
+	@Override
+	protected void doDisproportionation(MersenneTwisterFast random) { }
 
+	// Do nothing
+	@Override
+	protected void doOxidation(MersenneTwisterFast random) { }
+	
 	// Do nothing
 	@Override
 	protected void doUVExposure(MersenneTwisterFast random) { }
 
 	@Override
-	protected void interact(Compound compound) {
+	protected boolean interact(Compound compound) {
 		// TODO Implement interaction pathways
+		return false;
 	}
 }
