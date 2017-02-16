@@ -3,6 +3,7 @@ package edu.mtu.compound.radical;
 import java.awt.Color;
 
 import ec.util.MersenneTwisterFast;
+import edu.mtu.compound.Acetate;
 import edu.mtu.simulation.agent.Compound;
 import sim.util.Int3D;
 
@@ -35,7 +36,7 @@ public class Hydroxyl extends Compound {
 		// that we need to refactor how interactions are done
 	
 		// Acetate + Hydroxyl -> Propylium, 2-oxo-
-		if (compound.getClass() == Hydroxyl.class) {
+		if (compound.getClass() == Acetate.class) {
 			generate(CarbonCentered.class);
 			decay(compound);
 			decay(this);
