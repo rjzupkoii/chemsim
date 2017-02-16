@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 
 import org.reflections.Reflections;
 
+import edu.mtu.simulation.agent.Compound;
 import sim.display.Controller;
 import sim.display.GUIState;
 import sim.display3d.Display3D;

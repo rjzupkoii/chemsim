@@ -8,7 +8,7 @@ import edu.mtu.compound.Aldehyde;
 import edu.mtu.compound.HydrogenPeroxide;
 import edu.mtu.simulation.ChemSim;
 import edu.mtu.simulation.ChemSimProperties;
-import edu.mtu.simulation.Compound;
+import edu.mtu.simulation.agent.Compound;
 import sim.util.Int3D;
 
 /**

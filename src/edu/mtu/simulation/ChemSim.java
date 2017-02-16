@@ -4,6 +4,8 @@ import java.lang.reflect.Constructor;
 
 import edu.mtu.compound.Acetate;
 import edu.mtu.compound.HydrogenPeroxide;
+import edu.mtu.simulation.agent.Compound;
+import edu.mtu.simulation.agent.Monitor;
 import sim.engine.SimState;
 import sim.field.grid.SparseGrid3D;
 import sim.util.Int3D;
@@ -55,6 +57,9 @@ public class ChemSim extends SimState {
 			compounds = new SparseGrid3D(GridWidth, GridHeight, GridLength);
 			createCompounds(Acetate.class, properties.getAcetateMoles() * properties.getMoleculesPerMole());
 			createCompounds(HydrogenPeroxide.class, properties.getHydrogenPeroxideMoles() * properties.getMoleculesPerMole());
+			
+			// Add the monitor agent to the simulation
+			schedule.scheduleRepeating(new Monitor(), compounds.size(), 1);
 		} catch (Exception ex) {
 			// We can't recover from errors here
 			ex.printStackTrace();

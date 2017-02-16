@@ -1,8 +1,9 @@
-package edu.mtu.simulation;
+package edu.mtu.simulation.agent;
 
 import java.awt.Color;
 
 import ec.util.MersenneTwisterFast;
+import edu.mtu.simulation.ChemSim;
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import sim.engine.Stoppable;

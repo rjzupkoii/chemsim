@@ -3,7 +3,7 @@ package edu.mtu.compound;
 import java.awt.Color;
 
 import ec.util.MersenneTwisterFast;
-import edu.mtu.simulation.Compound;
+import edu.mtu.simulation.agent.Compound;
 import sim.util.Int3D;
 
 /**

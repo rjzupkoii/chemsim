@@ -5,7 +5,7 @@ import java.awt.Color;
 import ec.util.MersenneTwisterFast;
 import edu.mtu.compound.radical.Hydroxyl;
 import edu.mtu.simulation.ChemSim;
-import edu.mtu.simulation.Compound;
+import edu.mtu.simulation.agent.Compound;
 import sim.util.Int3D;
 
 @SuppressWarnings("serial")

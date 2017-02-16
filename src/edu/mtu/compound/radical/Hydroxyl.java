@@ -3,7 +3,7 @@ package edu.mtu.compound.radical;
 import java.awt.Color;
 
 import ec.util.MersenneTwisterFast;
-import edu.mtu.simulation.Compound;
+import edu.mtu.simulation.agent.Compound;
 import sim.util.Int3D;
 
 @SuppressWarnings("serial")
@@ -31,7 +31,17 @@ public class Hydroxyl extends Compound {
 
 	@Override
 	protected boolean interact(Compound compound) {
-		// TODO Implement interaction pathways
+		// TODO This is just a duplication of Acetate.interact which is a good sign
+		// that we need to refactor how interactions are done
+	
+		// Acetate + Hydroxyl -> Propylium, 2-oxo-
+		if (compound.getClass() == Hydroxyl.class) {
+			generate(CarbonCentered.class);
+			decay(compound);
+			decay(this);
+			return true;
+		}
+		
 		return false;
 	}
 }
