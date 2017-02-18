@@ -56,7 +56,14 @@ public class ChemSim extends SimState {
 			// Add all of the compounds to the grid in a random fashion
 			compounds = new SparseGrid3D(GridWidth, GridHeight, GridLength);
 			createCompounds(Acetate.class, properties.getAcetateMoles() * properties.getMoleculesPerMole());
-			createCompounds(HydrogenPeroxide.class, properties.getHydrogenPeroxideMoles() * properties.getMoleculesPerMole());
+			int hydrogenPeroxideCount = properties.getHydrogenPeroxideMoles() * properties.getMoleculesPerMole();
+			createCompounds(HydrogenPeroxide.class, hydrogenPeroxideCount);
+			
+			// Hydrogen peroxide is a linear decay, or f(x) = C - r * t 
+			// this means we need to determine the odds that any individual 
+			// hydrogen peroxide agent will be removed each time step based upon
+			// the new population which requires us knowing the initial decay
+			getProperties().setHydrogenPeroxideDecayQuantity(Math.round(hydrogenPeroxideCount * getProperties().getUvIntensity()));
 			
 			// Add the monitor agent to the simulation
 			schedule.scheduleRepeating(new Monitor(), compounds.size(), 1);

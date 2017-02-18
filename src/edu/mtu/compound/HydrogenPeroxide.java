@@ -24,12 +24,11 @@ public class HydrogenPeroxide extends Compound {
 	protected void doDisproportionation(MersenneTwisterFast random) { }
 	
 	@Override
-	protected void doUVExposure(MersenneTwisterFast random) {
-		// Upon UV exposure, probabilistically decay into the Hydroxyl radical
-		if (random.nextDouble() < ChemSim.getProperties().getHydroxylAppearanceProbability()) {
+	protected void doUVExposure(MersenneTwisterFast random) {		
+		if (random.nextDouble() < ChemSim.getProperties().getHydrogenPeroxideDecay()) {
 			generate(Hydroxyl.class);
+			decay(this);
 		}
-		decay(this);
 	}
 
 	@Override

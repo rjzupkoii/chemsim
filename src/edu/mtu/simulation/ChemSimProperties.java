@@ -11,9 +11,11 @@ public class ChemSimProperties {
 	private int hydrogenPeroxideMoles = 15;
 	private int moleculesPerMole = 100;
 	
-	private double hydroxylAppearanceProbability = 0.05;
 	private double oxygenSaturation = 1.0;
 	private double uvIntensity = 0.025;
+		
+	private long hydrogenPeroxideDecayQuantity = 0;
+	private double hydrogenPeroxideDecay = 0;
 		
 	// TODO Figure out a way to expose this as an actual MASON inspector
 	public CompoundInspector getCompoundInspector() {
@@ -27,13 +29,17 @@ public class ChemSimProperties {
 	public int getFastPathway() {
 		return fastPathway;
 	}
+
+	public double getHydrogenPeroxideDecay() {
+		return hydrogenPeroxideDecay;
+	}
+	
+	public long getHydrogenPeroxideDecayQuantity() {
+		return hydrogenPeroxideDecayQuantity;
+	}
 	
 	public int getHydrogenPeroxideMoles() {
 		return hydrogenPeroxideMoles;
-	}
-	
-	public double getHydroxylAppearanceProbability() {
-		return hydroxylAppearanceProbability;
 	}
 
 	public int getMediumPathway() {
@@ -64,12 +70,16 @@ public class ChemSimProperties {
 		this.fastPathway = fastPathway;
 	}
 		
-	public void setHydrogenPeroxideMoles(int value) {
-		hydrogenPeroxideMoles = value;
+	public void setHydrogenPeroxideDecay(double value) {
+		hydrogenPeroxideDecay = value;
 	}
 	
-	public void setHydroxylAppearanceProbability(double value) {
-		this.hydroxylAppearanceProbability = value;
+	public void setHydrogenPeroxideDecayQuantity(long value) {
+		hydrogenPeroxideDecayQuantity = value;
+	}
+	
+	public void setHydrogenPeroxideMoles(int value) {
+		hydrogenPeroxideMoles = value;
 	}
 	
 	public void setMediumPathway(int mediumPathway) {

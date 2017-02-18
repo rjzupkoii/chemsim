@@ -3,6 +3,7 @@ package edu.mtu.simulation.agent;
 import java.awt.Color;
 
 import ec.util.MersenneTwisterFast;
+import edu.mtu.compound.HydrogenPeroxide;
 import edu.mtu.simulation.ChemSim;
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -57,11 +58,15 @@ public abstract class Compound implements Steppable {
 		simulation.getCompounds().setObjectLocation(this, location);
 
 		// Perform any UV exposure
-		if (state.random.nextDouble() < ChemSim.getProperties().getUvIntensity()) {
+		if (this.getClass() == HydrogenPeroxide.class) 
+		{
+			doUVExposure(state.random);	
+		}
+		else if (state.random.nextDouble() < ChemSim.getProperties().getUvIntensity()) {
 			doUVExposure(state.random);
-			if (decayed) {
-				return;
-			}
+		}
+		if (decayed) {
+			return;
 		}
 		
 		// Perform any oxidation based upon current saturation
