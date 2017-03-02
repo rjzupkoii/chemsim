@@ -2,6 +2,7 @@ package edu.mtu.simulation.agent;
 
 import edu.mtu.simulation.ChemSim;
 import edu.mtu.simulation.ChemSimProperties;
+import edu.mtu.simulation.CompoundBehavior;
 import edu.mtu.simulation.CompoundInspector;
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -20,11 +21,11 @@ public class Monitor implements Steppable {
 		CompoundInspector inspector = new CompoundInspector();
 		
 		// Determine how much hydrogen peroxide should decay on the next time step
-		ChemSimProperties properties = ChemSim.getProperties();
+		CompoundBehavior behavior = ChemSim.getBehavior();
 		if (inspector.getHydrogenPeroxideCount() != 0) {
-			properties.setHydrogenPeroxideDecay(properties.getHydrogenPeroxideDecayQuantity() / (double)inspector.getHydrogenPeroxideCount());
+			behavior.setHydrogenPeroxideDecay(behavior.getHydrogenPeroxideDecayQuantity() / (double)inspector.getHydrogenPeroxideCount());
 		} else {
-			properties.setHydrogenPeroxideDecay(0);
+			behavior.setHydrogenPeroxideDecay(0);
 		}
 				
 		// Check to see if acetone is exhausted

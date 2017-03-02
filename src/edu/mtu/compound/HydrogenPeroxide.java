@@ -25,7 +25,7 @@ public class HydrogenPeroxide extends Compound {
 	
 	@Override
 	protected void doUVExposure(MersenneTwisterFast random) {		
-		if (random.nextDouble() < ChemSim.getProperties().getHydrogenPeroxideDecay()) {
+		if (random.nextDouble() < ChemSim.getBehavior().getHydrogenPeroxideDecay()) {
 			generate(Hydroxyl.class);
 			decay(this);
 		}

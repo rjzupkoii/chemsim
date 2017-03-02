@@ -23,6 +23,9 @@ public class ChemSim extends SimState {
 	
 	// The properties for the simulation, managed by MASON
 	private ChemSimProperties properties;
+	
+	// The behavior of the compounds in this run of the simulation
+	private CompoundBehavior behavior;
 			
 	// Singleton instance of the simulation
 	private static ChemSim instance;
@@ -63,7 +66,8 @@ public class ChemSim extends SimState {
 			// this means we need to determine the odds that any individual 
 			// hydrogen peroxide agent will be removed each time step based upon
 			// the new population which requires us knowing the initial decay
-			getProperties().setHydrogenPeroxideDecayQuantity(Math.round(hydrogenPeroxideCount * getProperties().getUvIntensity()));
+			behavior = new CompoundBehavior();
+			behavior.setHydrogenPeroxideDecayQuantity(Math.round(hydrogenPeroxideCount * getProperties().getUvIntensity()));
 			
 			// Add the monitor agent to the simulation
 			schedule.scheduleRepeating(new Monitor(), compounds.size(), 1);
@@ -73,13 +77,22 @@ public class ChemSim extends SimState {
 			System.exit(1);
 		}
 	}
-	
+		
 	public SparseGrid3D getCompounds() {
 		return compounds;
 	}
 
 	public Int3D getContainer() {
 		return new Int3D(GridWidth, GridHeight, GridLength);
+	}
+	
+	public static CompoundBehavior getBehavior() {
+		// We expect the class to already be instantiated
+		if (instance == null) {
+			throw new IllegalStateException();
+		}
+		
+		return instance.behavior;
 	}
 	
 	public static ChemSim getInstance() {
@@ -102,7 +115,7 @@ public class ChemSim extends SimState {
 		
 		return instance.properties;
 	}
-		
+			
 	/**
 	 * Create the compound and add it to the schedule in the quantity given.
 	 */
