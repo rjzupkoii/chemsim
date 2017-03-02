@@ -1,6 +1,6 @@
 package edu.mtu.simulation;
 
-import edu.mtu.compound.Acetate;
+import edu.mtu.compound.Acetone;
 import edu.mtu.compound.Alcohol;
 import edu.mtu.compound.Aldehyde;
 import edu.mtu.compound.HydrogenPeroxide;
@@ -12,8 +12,8 @@ import edu.mtu.compound.radical.Peroxy;
 // TODO Generate the following block of properties using reflection
 public class CompoundInspector {
 	
-	public int getAcetateCount() {
-		return countClass(Acetate.class);
+	public int getAcetoneCount() {
+		return countClass(Acetone.class);
 	}
 	
 	public int getAlcoholCount() {

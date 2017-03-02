@@ -2,7 +2,7 @@ package edu.mtu.simulation;
 
 import java.lang.reflect.Constructor;
 
-import edu.mtu.compound.Acetate;
+import edu.mtu.compound.Acetone;
 import edu.mtu.compound.HydrogenPeroxide;
 import edu.mtu.simulation.agent.Compound;
 import edu.mtu.simulation.agent.Monitor;
@@ -55,7 +55,7 @@ public class ChemSim extends SimState {
 		try {
 			// Add all of the compounds to the grid in a random fashion
 			compounds = new SparseGrid3D(GridWidth, GridHeight, GridLength);
-			createCompounds(Acetate.class, properties.getAcetateMoles() * properties.getMoleculesPerMole());
+			createCompounds(Acetone.class, properties.getAcetateMoles() * properties.getMoleculesPerMole());
 			int hydrogenPeroxideCount = properties.getHydrogenPeroxideMoles() * properties.getMoleculesPerMole();
 			createCompounds(HydrogenPeroxide.class, hydrogenPeroxideCount);
 			

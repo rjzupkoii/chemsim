@@ -9,9 +9,9 @@ import edu.mtu.simulation.agent.Compound;
 import sim.util.Int3D;
 
 @SuppressWarnings("serial")
-public class Acetate extends Compound {
+public class Acetone extends Compound {
 
-	public Acetate(Int3D movementVector) {
+	public Acetone(Int3D movementVector) {
 		super(movementVector);
 	}
 

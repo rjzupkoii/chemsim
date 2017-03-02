@@ -27,8 +27,8 @@ public class Monitor implements Steppable {
 			properties.setHydrogenPeroxideDecay(0);
 		}
 				
-		// Check to see if acetate is exhausted
-		if (inspector.getAcetateCount() == 0) {
+		// Check to see if acetone is exhausted
+		if (inspector.getAcetoneCount() == 0) {
 			state.finish();
 		}
 		
