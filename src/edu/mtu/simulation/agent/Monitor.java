@@ -1,7 +1,6 @@
 package edu.mtu.simulation.agent;
 
 import edu.mtu.simulation.ChemSim;
-import edu.mtu.simulation.ChemSimProperties;
 import edu.mtu.simulation.CompoundBehavior;
 import edu.mtu.simulation.CompoundInspector;
 import sim.engine.SimState;
