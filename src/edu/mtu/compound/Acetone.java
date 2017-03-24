@@ -3,8 +3,6 @@ package edu.mtu.compound;
 import java.awt.Color;
 
 import ec.util.MersenneTwisterFast;
-import edu.mtu.compound.radical.CarbonCentered;
-import edu.mtu.compound.radical.Hydroxyl;
 import edu.mtu.simulation.agent.Compound;
 import sim.util.Int3D;
 
@@ -16,7 +14,7 @@ public class Acetone extends Compound {
 	}
 
 	public static Color getColor() {
-		return Color.CYAN;
+		return Color.BLUE;
 	}
 
 	// Do nothing
@@ -33,9 +31,11 @@ public class Acetone extends Compound {
 
 	@Override
 	protected boolean interact(Compound compound) {
-		// Acetate + Hydroxyl -> Propylium, 2-oxo-
+		// CH3COCH3 (acetone) + HO* (hydroxyl radical) → CH3COCHO (pyruvic aldehyde) + CH3COCH2OH (hydroxyacetone) + HCHO (formaldehyde)
 		if (compound.getClass() == Hydroxyl.class) {
-			generate(CarbonCentered.class);
+			generate(PyruvicAldehyde.class);
+			generate(Hydroxyacetone.class);
+			generate(Formaldehyde.class);
 			decay(compound);
 			decay(this);
 			return true;

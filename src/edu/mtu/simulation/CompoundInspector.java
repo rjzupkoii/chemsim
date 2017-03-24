@@ -1,47 +1,62 @@
 package edu.mtu.simulation;
 
+import edu.mtu.compound.AceticAcid;
 import edu.mtu.compound.Acetone;
-import edu.mtu.compound.Alcohol;
-import edu.mtu.compound.Aldehyde;
+import edu.mtu.compound.Formaldehyde;
+import edu.mtu.compound.FormicAcid;
+import edu.mtu.compound.GlyoxyalicAcid;
 import edu.mtu.compound.HydrogenPeroxide;
-import edu.mtu.compound.radical.CarbonCentered;
-import edu.mtu.compound.radical.Hydroxyl;
-import edu.mtu.compound.radical.Oxyl;
-import edu.mtu.compound.radical.Peroxy;
+import edu.mtu.compound.Hydroxyacetone;
+import edu.mtu.compound.Hydroxyl;
+import edu.mtu.compound.OxalicAcid;
+import edu.mtu.compound.PyruvicAcid;
+import edu.mtu.compound.PyruvicAldehyde;
 
 // TODO Generate the following block of properties using reflection
 public class CompoundInspector {
+	
+	public int getAceticAcidCount() {
+		return countClass(AceticAcid.class);
+	}
 	
 	public int getAcetoneCount() {
 		return countClass(Acetone.class);
 	}
 	
-	public int getAlcoholCount() {
-		return countClass(Alcohol.class);
+	public int getFormaldehydeCount() {
+		return countClass(Formaldehyde.class);
 	}
 	
-	public int getAldehydeCount() {
-		return countClass(Aldehyde.class);
+	public int getFormicAcidCount() {
+		return countClass(FormicAcid.class);
 	}
 	
+	public int getGlyoxyalicAcidCount() {
+		return countClass(GlyoxyalicAcid.class);
+	}
+
 	public int getHydrogenPeroxideCount() {
 		return countClass(HydrogenPeroxide.class);
 	}
-	
-	public int getCarbonCenteredRadicalCount() {
-		return countClass(CarbonCentered.class);
+
+	public int getHydroxyacetoneCount() {
+		return countClass(Hydroxyacetone.class);
 	}
-	
+
 	public int getHydroxylRadicalCount() {
 		return countClass(Hydroxyl.class);
 	}
-	
-	public int getOxylRadicalCount() {
-		return countClass(Oxyl.class);
+
+	public int getOxalicAcidCount() {
+		return countClass(OxalicAcid.class);
 	}
 	
-	public int getPeroxyRadicalCount() {
-		return countClass(Peroxy.class);
+	public int getPyruvicAcidCount() {
+		return countClass(PyruvicAcid.class);
+	}
+	
+	public int getPyruvicAldehydeCount() {
+		return countClass(PyruvicAldehyde.class);
 	}
 	
 	@SuppressWarnings("rawtypes")

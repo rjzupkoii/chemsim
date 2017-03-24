@@ -8,7 +8,7 @@ import org.jfree.data.xy.XYSeries;
 
 import edu.mtu.compound.Acetone;
 import edu.mtu.compound.HydrogenPeroxide;
-import edu.mtu.compound.radical.Hydroxyl;
+import edu.mtu.compound.Hydroxyl;
 import edu.mtu.simulation.CompoundInspector;
 import sim.engine.SimState;
 import sim.engine.Steppable;

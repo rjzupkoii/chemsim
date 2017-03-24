@@ -33,9 +33,7 @@ public class Monitor implements Steppable {
 		}
 		
 		// Check to see if Hydroxyl pathways have been exhausted
-		if (inspector.getHydrogenPeroxideCount() == 0 && inspector.getHydroxylRadicalCount() == 0 &&
-			inspector.getPeroxyRadicalCount() == 0 &&
-			inspector.getCarbonCenteredRadicalCount() == 0) {
+		if (inspector.getHydrogenPeroxideCount() == 0 && inspector.getHydroxylRadicalCount() == 0) {
 			state.finish();
 		}
 	}
