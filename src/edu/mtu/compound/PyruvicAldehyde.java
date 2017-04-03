@@ -38,14 +38,14 @@ public class PyruvicAldehyde extends Compound {
 	@Override
 	protected boolean interact(Compound compound) {
 		// CH3COCHO (pyruvic aldehyde) + HO* (hydroxyl radical) → CH3COCOOH (pyruvic acid)
+		// CH3COCHO (pyruvic aldehyde) + HO* (hydroxyl radical) → CH3COOH (acetic acid)
 		if (compound.getClass() == Hydroxyl.class) {
 			generate(PyruvicAcid.class);
+			generate(AceticAcid.class);
 			decay(compound);
 			decay(this);
 			return true;
-		}
-		
-		// TODO Add support for CH3COCHO (pyruvic aldehyde) + HO* (hydroxyl radical) → CH3COOH (acetic acid)
+		}		
 		
 		return false;
 	}
