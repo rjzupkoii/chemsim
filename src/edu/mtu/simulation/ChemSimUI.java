@@ -7,7 +7,6 @@ import javax.swing.JFrame;
 import org.reflections.Reflections;
 
 import edu.mtu.simulation.agent.Compound;
-import edu.mtu.simulation.chart.HydroxylRadicalChart;
 import sim.display.Controller;
 import sim.display.GUIState;
 import sim.display3d.Display3D;
@@ -24,9 +23,7 @@ public class ChemSimUI extends GUIState {
 	
 	private SparseGridPortrayal3D compoundPortrayal = new SparseGridPortrayal3D();
 	private WireFrameBoxPortrayal3D wireFramePortrayal;
-	
-	private HydroxylRadicalChart hydroxylRadicalChart = new HydroxylRadicalChart();
-			
+				
 	/**
 	 * Constructor.
 	 */
@@ -83,11 +80,6 @@ public class ChemSimUI extends GUIState {
 		displayFrame = display.createFrame();
 		controller.registerFrame(displayFrame);
 		displayFrame.setVisible(true);
-		
-		// Register and display the hydroxyl radical chart
-		hydroxylRadicalChartFrame = hydroxylRadicalChart.createFrame();
-		controller.registerFrame(hydroxylRadicalChartFrame);
-		hydroxylRadicalChartFrame.setVisible(true);		
 	}
 
 	/**
@@ -141,9 +133,6 @@ public class ChemSimUI extends GUIState {
 		// Make sure the display is scheduled correctly
 		display.createSceneGraph();
 		display.reset();
-		
-		// Add the hydroxyl radical chart
-		this.scheduleRepeatingImmediatelyAfter(hydroxylRadicalChart);
 	}
 
 	/**
