@@ -1,4 +1,4 @@
-package edu.mtu.compound;
+package edu.mtu.parser;
 
 /**
  * This class is used to parse the equation(s) that are present in an import file for their reaction.

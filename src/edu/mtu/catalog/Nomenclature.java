@@ -1,4 +1,4 @@
-package edu.mtu.compound;
+package edu.mtu.catalog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,13 +11,13 @@ public class Nomenclature {
 
 	private String commonName;
 	
-	private List<String> chemicalEntities = new ArrayList<String>();
+	private List<String> formulas = new ArrayList<String>();
 	
 	/**
 	 * Return true if the entity is aliased to this name, false otherwise.
 	 */
 	public boolean contains(String entity) {
-		return chemicalEntities.contains(entity);
+		return formulas.contains(entity);
 	}
 	
 	/**
