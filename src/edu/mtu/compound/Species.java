@@ -7,7 +7,7 @@ import sim.engine.Steppable;
  * This class represents a chemical entity.
  */
 @SuppressWarnings("serial")
-public class Entity implements Steppable {
+public class Species implements Steppable {
 
 	private String formula;
 

@@ -6,7 +6,7 @@ import sim.engine.SimState;
  * This class represents a disproportionating chemical entity.
  */
 @SuppressWarnings("serial")
-public class DisproportionatingEntity extends Entity {
+public class DisproportionatingSpecies extends Species {
 
 	@Override
 	public void step(SimState state) {
