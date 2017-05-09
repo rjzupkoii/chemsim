@@ -1,118 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <class-diagram version="1.1.14" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
   associations="true" dependencies="true" nesting-relationships="true" router="FAN">  
-  <class id="1" language="java" name="edu.mtu.catalog.EntityNomenclature" project="ChemSim" 
-    file="/ChemSim/src/edu/mtu/catalog/EntityNomenclature.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="174" y="106"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
-      sort-features="false" accessors="false" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
-    </display>  
-  </class>  
-  <class id="2" language="java" name="edu.mtu.catalog.Nomenclature" project="ChemSim" 
+  <class id="1" language="java" name="edu.mtu.catalog.Nomenclature" project="ChemSim" 
     file="/ChemSim/src/edu/mtu/catalog/Nomenclature.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="171" y="288"/>    
+    <position height="155" width="201" x="243" y="37"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="3" language="java" name="edu.mtu.catalog.Reactions" project="ChemSim" 
-    file="/ChemSim/src/edu/mtu/catalog/Reactions.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="159" y="492"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
-      sort-features="false" accessors="false" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
-    </display>  
-  </class>  
-  <class id="4" language="java" name="edu.mtu.compound.DisproportionatingSpecies" project="ChemSim" 
-    file="/ChemSim/src/edu/mtu/compound/DisproportionatingSpecies.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="712" y="324"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
-      sort-features="false" accessors="false" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
-    </display>  
-  </class>  
-  <class id="5" language="java" name="edu.mtu.compound.Species" project="ChemSim" 
-    file="/ChemSim/src/edu/mtu/compound/Species.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="710" y="115"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
-      sort-features="false" accessors="false" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
-    </display>  
-  </class>  
-  <enumeration id="6" language="java" name="edu.mtu.compound.Operation" project="ChemSim" 
-    file="/ChemSim/src/edu/mtu/compound/Operation.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="456" y="313"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
-      sort-features="false" accessors="false" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
-    </display>  
-  </enumeration>  
-  <class id="7" language="java" name="edu.mtu.parser.Parser" project="ChemSim" 
-    file="/ChemSim/src/edu/mtu/parser/Parser.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="952" y="104"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
-      sort-features="false" accessors="false" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
-    </display>  
-  </class>  
-  <class id="8" language="java" name="edu.mtu.compound.Reaction" project="ChemSim" 
+  <class id="2" language="java" name="edu.mtu.compound.Reaction" project="ChemSim" 
     file="/ChemSim/src/edu/mtu/compound/Reaction.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="459" y="107"/>    
+    <position height="-1" width="-1" x="536" y="548"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <generalization id="9">    
-    <end type="SOURCE" refId="4"/>    
-    <end type="TARGET" refId="5"/>  
+  <class id="3" language="java" name="edu.mtu.compound.Species" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/compound/Species.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="586" y="134"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="4" language="java" name="edu.mtu.parser.Parser" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/parser/Parser.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="137" width="161" x="42" y="37"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="5" language="java" name="edu.mtu.catalog.ReactionRegistry" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/catalog/ReactionRegistry.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="937" y="248"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="6" language="java" name="edu.mtu.compound.DisproportionatingSpecies" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/compound/DisproportionatingSpecies.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="137" width="208" x="234" y="232"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="7" language="java" name="edu.mtu.catalog.ReactionDescription" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/catalog/ReactionDescription.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="947" y="532"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <dependency id="8">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <association id="9">    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="10" name="instance">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="11" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="12">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <dependency id="13">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="7"/>  
+  </dependency>  
+  <association id="14">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="15" name="instance">        
+        <position height="0" width="0" x="2" y="41"/>      
+      </attribute>      
+      <multiplicity id="16" minimum="0" maximum="1">        
+        <position height="0" width="0" x="2" y="41"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="17">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="3"/>  
+  </dependency>  
+  <generalization id="18">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="3"/>  
   </generalization>  
-  <association id="10">    
-    <end type="SOURCE" refId="1" navigable="false">      
-      <attribute id="11" name="instance">        
-        <position height="0" width="0" x="0" y="0"/>      
-      </attribute>      
-      <multiplicity id="12" minimum="0" maximum="1">        
-        <position height="0" width="0" x="0" y="0"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="1" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="13">    
-    <end type="SOURCE" refId="8" navigable="false">      
-      <attribute id="14" name="operation">        
-        <position height="0" width="0" x="0" y="0"/>      
-      </attribute>      
-      <multiplicity id="15" minimum="0" maximum="1">        
-        <position height="0" width="0" x="0" y="0"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="6" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="16">    
-    <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="17" name="instance">        
-        <position height="0" width="0" x="0" y="0"/>      
-      </attribute>      
-      <multiplicity id="18" minimum="0" maximum="1">        
-        <position height="0" width="0" x="0" y="0"/>      
-      </multiplicity>    
-    </end>    
-    <end type="TARGET" refId="3" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
+  <dependency id="19">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <dependency id="20">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
     sort-features="false" accessors="false" visibility="true">    
     <attributes public="true" package="true" protected="true" private="true" static="true"/>    

@@ -1,7 +1,12 @@
 package edu.mtu.simulation;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Arrays;
 
+import edu.mtu.catalog.ReactionDescription;
+import edu.mtu.catalog.ReactionRegistry;
+import edu.mtu.compound.Species;
 import edu.mtu.simulation.agent.Compound;
 import sim.engine.SimState;
 import sim.field.grid.SparseGrid3D;
@@ -53,21 +58,23 @@ public class ChemSim extends SimState {
 		super.start();
 		
 		try {
+			// Add all of the compounds to the grid in a random fashion
+			compounds = new SparseGrid3D(GridWidth, GridHeight, GridLength);
+
 			// TODO Import the reactions listed in the spreadsheet
 			
 			// TODO Prime the simulation with Acetone and Hydrogen Peroxide
-			// Add all of the compounds to the grid in a random fashion
-			compounds = new SparseGrid3D(GridWidth, GridHeight, GridLength);
-//			createCompounds(Acetone.class, properties.getAcetateMoles() * properties.getMoleculesPerMole());
-//			int hydrogenPeroxideCount = properties.getHydrogenPeroxideMoles() * properties.getMoleculesPerMole();
-//			createCompounds(HydrogenPeroxide.class, hydrogenPeroxideCount);
+									
+			ReactionRegistry registry = ReactionRegistry.getInstance();
+			registry.addPhotolysisReaction("H2O2", Arrays.asList("HO*"));
 			
 			// Hydrogen peroxide is a linear decay, or f(x) = C - r * t 
 			// this means we need to determine the odds that any individual 
 			// hydrogen peroxide agent will be removed each time step based upon
 			// the new population which requires us knowing the initial decay
 			behavior = new CompoundBehavior();
-//			behavior.setHydrogenPeroxideDecayQuantity(Math.round(hydrogenPeroxideCount * getProperties().getUvIntensity()));			
+//			behavior.setHydrogenPeroxideDecayQuantity(Math.round(hydrogenPeroxideCount * getProperties().getUvIntensity()));		
+			
 		} catch (Exception ex) {
 			// We can't recover from errors here
 			ex.printStackTrace();
