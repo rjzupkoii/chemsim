@@ -1,5 +1,8 @@
 package edu.mtu.compound;
 
+import java.util.List;
+
+import edu.mtu.catalog.ReactionDescription;
 import sim.engine.SimState;
 
 /**
@@ -8,6 +11,8 @@ import sim.engine.SimState;
 @SuppressWarnings("serial")
 public class DisproportionatingSpecies extends Species {
 
+	private int age = 0;
+	
 	/**
 	 * Constructor.
 	 */
@@ -15,7 +20,25 @@ public class DisproportionatingSpecies extends Species {
 		super(formula);
 	}
 
-	private int age = 0;
+	/**
+	 * Create a new disproportionating species from the species and reactions provided. 
+	 */
+	public static DisproportionatingSpecies create(Species species, List<ReactionDescription> reactions) {
+		
+		// TODO Implement this method
+		return null;
+		
+	}
+	
+	/**
+	 * Create a new disproportionating species from the species and reactions provided.
+	 */
+	public static DisproportionatingSpecies create(Species one, Species two, List<ReactionDescription> reactions) { 
+		
+		// TODO Implement this method
+		return null;
+		
+	}
 	
 	@Override
 	public void step(SimState state) {

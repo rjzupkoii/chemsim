@@ -1,10 +1,13 @@
 package edu.mtu.compound;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ec.util.MersenneTwisterFast;
+import edu.mtu.catalog.ReactionDescription;
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.simulation.ChemSim;
+import sim.util.Bag;
 import sim.util.Int3D;
 
 /**
@@ -60,18 +63,79 @@ public class Reaction {
 		}
 	}
 	
+	/**
+	 * Perform a bimolecular reaction on the given species.
+	 */
 	private boolean bimolecularReaction(Species species) {
+		// Get the possible reactions for this species
+		List<ReactionDescription> reactions = ReactionRegistry.getInstance().getBiomolecularReaction(species);
+		if (reactions == null) {
+			return false;
+		}
 		
-		// TODO Write this method
+		// Get other species at this location
+		ChemSim state = ChemSim.getInstance();
+		Int3D location = state.getCompounds().getObjectLocation(species);
+		Bag bag = state.getCompounds().getObjectsAtLocation(location);
+		if (bag.numObjs == 1) {
+			return false;
+		}
+		
+		// TODO This block is O(n^2) and will get hit a lot, it might need to be refactored for speed
+		for (int ndx = 0; ndx < bag.numObjs; ndx++) {
+			// Press on if this reactant is the same as the species we were provided
+			Species reactant = (Species)bag.get(ndx);
+			if (reactant.equals(species)) {
+				continue;
+			}
+			
+			// Can this reaction occur?
+			List<ReactionDescription> matched = new ArrayList<ReactionDescription>();
+			for (ReactionDescription rd : reactions) {
+				if (rd.checkReactants(species, reactant)) {
+					matched.add(rd);
+				}
+			}
+			if (matched.isEmpty()) {
+				return false;
+			}
+			
+			// Should a disproportionation occur?
+			if (matched.size() > 1) {
+				Species product = DisproportionatingSpecies.create(species, reactant, reactions);
+				createAt(product, location);
+				species.dispose();
+				reactant.dispose();
+				return true;
+			}
+			
+			// A standard reaction is occurring
+			for (String formula : matched.get(0).getProducts()) {
+				createAt(formula, location);
+			}
+			species.dispose();
+			reactant.dispose();
+			return true;			
+		}
 		
 		return false;
 	}
-	
-	private void createAt(String formula, Int3D location) {
+
+	/**
+	 * Insert the species into the schedule at the given location.
+	 */
+	private void createAt(Species species, Int3D location) {
 		ChemSim state = ChemSim.getInstance();
-		Species species = new Species(formula);
 		species.setStoppable(state.schedule.scheduleRepeating(species));
-		state.getCompounds().setObjectLocation(species, location);
+		state.getCompounds().setObjectLocation(species, location);		
+	}
+	
+	/**
+	 * Create a species with the given formula at the indicated location.
+	 */
+	private void createAt(String formula, Int3D location) {
+		Species species = new Species(formula);
+		createAt(species, location);
 	}
 	
 	/**
@@ -92,7 +156,7 @@ public class Reaction {
 			return false;
 		}
 		
-		// TODO Otherwise, first check to see if it should occur
+		// TODO Otherwise, first check to see if it should occur (dice roll)
 		
 		// Decay the species based upon it's reaction with UV
 		Int3D location = ChemSim.getInstance().getCompounds().getObjectLocation(species);

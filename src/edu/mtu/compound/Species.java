@@ -26,7 +26,7 @@ public class Species implements Steppable {
 	}
 	
 	/**
-	 * Remove this chemical speceis from the simulation.
+	 * Remove this chemical species from the simulation.
 	 */
 	public void dispose() {
 		ChemSim state = ChemSim.getInstance();
