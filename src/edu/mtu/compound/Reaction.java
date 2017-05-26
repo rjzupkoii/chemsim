@@ -81,7 +81,6 @@ public class Reaction {
 			return false;
 		}
 		
-		// TODO This block is O(n^2) and will get hit a lot, it might need to be refactored for speed
 		for (int ndx = 0; ndx < bag.numObjs; ndx++) {
 			// Press on if this reactant is the same as the species we were provided
 			Species reactant = (Species)bag.get(ndx);
@@ -89,33 +88,10 @@ public class Reaction {
 				continue;
 			}
 			
-			// Can this reaction occur?
-			List<ReactionDescription> matched = new ArrayList<ReactionDescription>();
-			for (ReactionDescription rd : reactions) {
-				if (rd.checkReactants(species, reactant)) {
-					matched.add(rd);
-				}
-			}
-			if (matched.isEmpty()) {
-				return false;
-			}
-			
-			// Should a disproportionation occur?
-			if (matched.size() > 1) {
-				Species product = DisproportionatingSpecies.create(species, reactant, reactions);
-				createAt(product, location);
-				species.dispose();
-				reactant.dispose();
+			// Process the reactants and press on if a match is not found
+			if (process(species, reactant, reactions, location)) {
 				return true;
 			}
-			
-			// A standard reaction is occurring
-			for (String formula : matched.get(0).getProducts()) {
-				createAt(formula, location);
-			}
-			species.dispose();
-			reactant.dispose();
-			return true;			
 		}
 		
 		return false;
@@ -167,10 +143,58 @@ public class Reaction {
 		return true;
 	}	
 	
+	/**
+	 * 
+	 * @param species
+	 * @param reactant
+	 * @param reactions
+	 * @param location
+	 * @return
+	 */
+	private boolean process(Species species, Species reactant, List<ReactionDescription> reactions, Int3D location) {
+		// Can this reaction occur?
+		List<ReactionDescription> matched = new ArrayList<ReactionDescription>();
+		for (ReactionDescription rd : reactions) {
+			if (rd.checkReactants(species, reactant)) {
+				matched.add(rd);
+			}
+		}
+		if (matched.isEmpty()) {
+			return false;
+		}
+		
+		// Should a disproportionation occur?
+		if (matched.size() > 1) {
+			Species product = DisproportionatingSpecies.create(species, reactant, reactions);
+			createAt(product, location);
+			species.dispose();
+			reactant.dispose();
+			return true;
+		}
+		
+		// A standard reaction is occurring
+		for (String formula : matched.get(0).getProducts()) {
+			createAt(formula, location);
+		}
+		species.dispose();
+		if(reactant != null) {
+			reactant.dispose();
+		}
+		return true;
+	}
+	
+	/**
+	 * Perform a unicolecular reaction on the given species.
+	 */
 	private boolean unimolecularDecay(Species species) {
-		
-		// TOOD Write this method
-		
-		return false;
+		// Get the possible reactions for this species
+		List<ReactionDescription> reactions = ReactionRegistry.getInstance().getBiomolecularReaction(species);
+		if (reactions == null) {
+			return false;
+		}
+
+		// Return the results of processing the reactions
+		Int3D location = ChemSim.getInstance().getCompounds().getObjectLocation(species);
+		return process(species, null, reactions, location);
 	}
 }
