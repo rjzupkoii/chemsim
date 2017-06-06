@@ -20,7 +20,7 @@ public class ReactionDescription {
 	 * Constructor.
 	 */
 	public ReactionDescription(List<String> reactants, List<String> products) {
-		this.reactants = reactants;
+		setReactants(reactants);
 		this.products = products;
 	}
 	
@@ -28,7 +28,7 @@ public class ReactionDescription {
 	 * Constructor.
 	 */
 	public ReactionDescription(List<String> reactants, List<String> products, double reactionRate) {
-		this.reactants = reactants;
+		setReactants(reactants);
 		this.products = products;
 		this.reactionRate = reactionRate;
 	}
@@ -37,7 +37,7 @@ public class ReactionDescription {
 	 * Constructor.
 	 */
 	public ReactionDescription(String[] reactants, String[] products, double reactionRate) {
-		this.reactants = Arrays.asList(reactants);
+		setReactants(Arrays.asList(reactants));
 		this.products = Arrays.asList(products);
 		this.reactionRate = reactionRate;
 	}
@@ -68,6 +68,16 @@ public class ReactionDescription {
 	 */
 	public double getReactionRate() {
 		return reactionRate;
+	}
+	
+	/**
+	 * Set the reactants for this reaction.
+	 */
+	private void setReactants(List<String> value) {
+		if (value.size() > 2) {
+			throw new IllegalArgumentException("The number of reactants should not exceed two.");
+		}
+		reactants = value;
 	}
 	
 	/**

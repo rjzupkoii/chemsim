@@ -3,10 +3,12 @@ package edu.mtu.simulation;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import edu.mtu.catalog.ReactionDescription;
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.compound.Species;
+import edu.mtu.parser.Parser;
 import edu.mtu.simulation.agent.Compound;
 import sim.engine.SimState;
 import sim.field.grid.SparseGrid3D;
@@ -61,13 +63,13 @@ public class ChemSim extends SimState {
 			// Add all of the compounds to the grid in a random fashion
 			compounds = new SparseGrid3D(GridWidth, GridHeight, GridLength);
 
-			// TODO Import the reactions listed in the spreadsheet
+			// TODO make this a model parameter
+			// Import the reactions into the model
+			ReactionRegistry.getInstance().load("tests/import.csv");
 			
-			// TODO Prime the simulation with Acetone and Hydrogen Peroxide
-									
-			ReactionRegistry registry = ReactionRegistry.getInstance();
-			registry.addPhotolysisReaction("H2O2", Arrays.asList("HO*"));
+			// TODO Prime the model with the initial compounds
 			
+			// TODO Figure out how to do this
 			// Hydrogen peroxide is a linear decay, or f(x) = C - r * t 
 			// this means we need to determine the odds that any individual 
 			// hydrogen peroxide agent will be removed each time step based upon

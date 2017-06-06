@@ -1,5 +1,6 @@
 package edu.mtu.catalog;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Map;
 import javax.activity.InvalidActivityException;
 
 import edu.mtu.compound.Species;
+import edu.mtu.parser.Parser;
 
 /**
  * This singleton contains a look up of the reactions in the simulation. In order to account for 
@@ -41,12 +43,9 @@ public class ReactionRegistry {
 	/**
 	 * Add the given bimolecular reaction to the registry.
 	 */
-	public void addBimolecularReaction(List<String> reactants, List<String> products) {
-		// Create the reaction description
-		ReactionDescription reaction = new ReactionDescription(reactants, products);
-		
+	public void addBimolecularReaction(ReactionDescription reaction) {
 		// Add the reactions to the registry
-		for (String reactant : reactants) {
+		for (String reactant : reaction.getReactants()) {
 			if (!bimolecular.containsKey(reactant)) {
 				bimolecular.put(reactant, new ArrayList<ReactionDescription>());
 			}
@@ -57,19 +56,25 @@ public class ReactionRegistry {
 	/**
 	 * Add the given photolysis reaction to the registry.
 	 */
-	public void addPhotolysisReaction(String reactant, List<String> products) throws InvalidActivityException {
+	public void addPhotolysisReaction(ReactionDescription reaction) throws InvalidActivityException {
+		String reactant = reaction.getReactants().get(0);
 		if (photolysis.containsKey(reactant)) {
 			throw new InvalidActivityException("Reaction registry already contains photolysis products for " + reactant);
 		}
 		
-		photolysis.put(reactant, products);
+		photolysis.put(reactant, reaction.getProducts());
 	}
 	
 	/**
 	 * Add the given unimolecular reaction to the registry.
 	 */
 	public void addUnimolecularReaction(ReactionDescription reaction) throws InvalidActivityException {
+		// Make sure the key is valid
 		String key = reaction.getReactants().get(0);
+		if (key.toUpperCase() == "UV") {
+			throw new IllegalArgumentException("A photolysis reaction cannot be unimolecular");
+		}
+				
 		if (!unimolecular.containsKey(key)) {
 			unimolecular.put(key, new ArrayList<ReactionDescription>());
 		}
@@ -98,5 +103,29 @@ public class ReactionRegistry {
 	 */
 	public List<ReactionDescription> getUnimolecularReaction(Species species) {
 		return unimolecular.get(species.getFormula());
+	}
+	
+	/**
+	 * Load the contents of the indicated file into the registry.
+	 * 
+	 * @param fileName The name and path of the file to be loaded.
+	 */
+	public void load(String fileName) throws IOException {
+		List<ReactionDescription> reactions = Parser.parse(fileName);
+		for (ReactionDescription reaction : reactions) {
+			// Check for a unimolecular reaction
+			if (reaction.getReactants().size() == 1) {
+				addUnimolecularReaction(reaction);
+				continue;
+			}
+			
+			// Is this a photolysis reaction?
+			if (reaction.getReactants().get(1).toUpperCase() == "UV") {
+				addPhotolysisReaction(reaction);
+			}
+			
+			// Must be a bimolecular reaction
+			addBimolecularReaction(reaction);
+		}
 	}
 }
