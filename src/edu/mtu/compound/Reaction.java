@@ -144,12 +144,7 @@ public class Reaction {
 	}	
 	
 	/**
-	 * 
-	 * @param species
-	 * @param reactant
-	 * @param reactions
-	 * @param location
-	 * @return
+	 * Process the reactions that are possible for this entity.
 	 */
 	private boolean process(Species species, Species reactant, List<ReactionDescription> reactions, Int3D location) {
 		// Can this reaction occur?

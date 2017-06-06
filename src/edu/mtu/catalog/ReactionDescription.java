@@ -1,6 +1,7 @@
 package edu.mtu.catalog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import edu.mtu.compound.Species;
@@ -21,6 +22,24 @@ public class ReactionDescription {
 	public ReactionDescription(List<String> reactants, List<String> products) {
 		this.reactants = reactants;
 		this.products = products;
+	}
+	
+	/**
+	 * Constructor.
+	 */
+	public ReactionDescription(List<String> reactants, List<String> products, double reactionRate) {
+		this.reactants = reactants;
+		this.products = products;
+		this.reactionRate = reactionRate;
+	}
+
+	/**
+	 * Constructor.
+	 */
+	public ReactionDescription(String[] reactants, String[] products, double reactionRate) {
+		this.reactants = Arrays.asList(reactants);
+		this.products = Arrays.asList(products);
+		this.reactionRate = reactionRate;
 	}
 
 	/**
