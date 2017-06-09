@@ -4,9 +4,8 @@ import java.awt.Color;
 
 import javax.swing.JFrame;
 
-import org.reflections.Reflections;
-
-import edu.mtu.simulation.agent.Compound;
+import edu.mtu.compound.DisproportionatingSpecies;
+import edu.mtu.compound.Species;
 import sim.display.Controller;
 import sim.display.GUIState;
 import sim.display3d.Display3D;
@@ -115,15 +114,13 @@ public class ChemSimUI extends GUIState {
 	/**
 	 * Setup the presentation of the simulation.
 	 */
-	@SuppressWarnings("rawtypes")
 	private void setupPortrayals() {
 		// Set the portrayals of the compounds
 		compoundPortrayal.setField(((ChemSim)state).getCompounds());
 		try {
-			Reflections reflections = new Reflections("edu.mtu.compound");
-			for (Class compound : reflections.getSubTypesOf(Compound.class)) {
-				compoundPortrayal.setPortrayalForClass(compound, new CompoundPortrayal(compound));
-			}			
+			Species reference = new Species("H2O2");
+			compoundPortrayal.setPortrayalForClass(Species.class, new CompoundPortrayal(reference));
+			compoundPortrayal.setPortrayalForClass(DisproportionatingSpecies.class, new CompoundPortrayal(DisproportionatingSpecies.create(reference, null)));
 		} catch (Exception ex) {
 			// We can't recover from errors here
 			ex.printStackTrace();

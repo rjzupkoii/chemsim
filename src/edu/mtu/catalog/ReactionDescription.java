@@ -46,7 +46,9 @@ public class ReactionDescription {
 	 * Check to see if the reactants are part of this reaction description.
 	 */
 	public boolean checkReactants(Species one, Species two) {
-		return reactants.contains(one.getFormula()) && reactants.contains(two.getFormula());
+		boolean partOne = Species.areEqual(reactants.get(0), one);
+		boolean partTwo = Species.areEqual(reactants.get(1), two);
+		return partOne && partTwo;
 	}
 	
 	/**

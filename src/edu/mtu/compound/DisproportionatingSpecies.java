@@ -1,5 +1,6 @@
 package edu.mtu.compound;
 
+import java.awt.Color;
 import java.util.List;
 
 import edu.mtu.catalog.ReactionDescription;
@@ -12,6 +13,7 @@ import sim.engine.SimState;
 public class DisproportionatingSpecies extends Species {
 
 	private int age = 0;
+	private List<ReactionDescription> reactions;
 	
 	/**
 	 * Constructor.
@@ -24,20 +26,22 @@ public class DisproportionatingSpecies extends Species {
 	 * Create a new disproportionating species from the species and reactions provided. 
 	 */
 	public static DisproportionatingSpecies create(Species species, List<ReactionDescription> reactions) {
-		
-		// TODO Implement this method
-		return null;
-		
+		DisproportionatingSpecies enttiy = new DisproportionatingSpecies(species.getFormula());
+		enttiy.reactions = reactions;
+		return enttiy;
 	}
 	
 	/**
 	 * Create a new disproportionating species from the species and reactions provided.
 	 */
 	public static DisproportionatingSpecies create(Species one, Species two, List<ReactionDescription> reactions) { 
+		if (two == null) {
+			return create(one,reactions);
+		}
 		
-		// TODO Implement this method
-		return null;
-		
+		DisproportionatingSpecies entity = new DisproportionatingSpecies(one.getFormula() + " + " + two.getFormula());
+		entity.reactions = reactions;
+		return entity;		
 	}
 	
 	@Override
@@ -54,5 +58,19 @@ public class DisproportionatingSpecies extends Species {
 	 */
 	public int getAge() {
 		return age;
+	}
+	
+	/**
+	 * Get the color for this entity.
+	 */
+	public Color getColor() {
+		return Color.RED;
+	}
+	
+	/**
+	 * Get the reactions for this entity.
+	 */
+	public List<ReactionDescription> getReactions() {
+		return reactions;
 	}
 }

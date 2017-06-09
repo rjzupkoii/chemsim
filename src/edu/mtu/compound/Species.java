@@ -1,5 +1,7 @@
 package edu.mtu.compound;
 
+import java.awt.Color;
+
 import ec.util.MersenneTwisterFast;
 import edu.mtu.simulation.ChemSim;
 import sim.engine.SimState;
@@ -25,6 +27,26 @@ public class Species implements Steppable {
 		this.formula = formula;
 	}
 	
+	public static boolean areEqual(Species one, Species two) {
+		// Not equal if one is null
+		if (one == null || two == null) {
+			return false;
+		}
+		
+		// The given formulas should be the same
+		return one.getFormula().equals(two.getFormula());
+	}
+	
+	public static boolean areEqual(String formula, Species species) {
+		// Not equal if the species is null
+		if (species == null) {
+			return false;
+		}
+		
+		// The given formulas should be the same
+		return formula.equals(species.getFormula());
+	}
+	
 	/**
 	 * Remove this chemical species from the simulation.
 	 */
@@ -32,6 +54,16 @@ public class Species implements Steppable {
 		ChemSim state = ChemSim.getInstance();
 		state.getCompounds().remove(this);
 		stoppable.stop();
+	}
+	
+	/**
+	 * Get the color of this species.
+	 * 
+	 * @return The color to be used in visualizations.
+	 */
+	public Color getColor() {
+		// TODO Figure out how we want to do this.
+		return Color.BLUE;
 	}
 	
 	/**

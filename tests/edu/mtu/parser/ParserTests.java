@@ -32,6 +32,7 @@ public class ParserTests {
 		expected.add(new ReactionDescription(new String[]{"HCOOH", "HO*"}, new String[]{"*COOH", "H2O"}, 1.00E+08));
 		expected.add(new ReactionDescription(new String[]{"HOCCOOH", "HO*"}, new String[]{"*COCOOH", "H2O"}, 6.38E+07));
 		expected.add(new ReactionDescription(new String[]{"HOCH2COOH", "HO*"}, new String[]{"*CH(OH)COOH"}, 7.12E+07));
+		expected.add(new ReactionDescription(new String[]{"H2O2", "UV"}, new String[]{"HO*"}, 0));
 	}
 	
 	/**

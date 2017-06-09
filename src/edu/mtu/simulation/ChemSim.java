@@ -1,15 +1,7 @@
 package edu.mtu.simulation;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import edu.mtu.catalog.ReactionDescription;
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.compound.Species;
-import edu.mtu.parser.Parser;
-import edu.mtu.simulation.agent.Compound;
 import sim.engine.SimState;
 import sim.field.grid.SparseGrid3D;
 import sim.util.Int3D;
@@ -67,15 +59,22 @@ public class ChemSim extends SimState {
 			// Import the reactions into the model
 			ReactionRegistry.getInstance().load("tests/import.csv");
 			
-			// TODO Prime the model with the initial compounds
+			// TODO load this data from the import
+			// Create the initial compounds in the model
+			int hydrogenPeroxideCount = properties.getHydrogenPeroxideMoles() * properties.getMoleculesPerMole(); 
+			createEntities("H2O2", hydrogenPeroxideCount, true);
+			createEntities("C3H30", properties.getAcetateMoles() * properties.getMoleculesPerMole(), false);			
 			
-			// TODO Figure out how to do this
+			// TODO Figure out how to do this in a generalized fashion
 			// Hydrogen peroxide is a linear decay, or f(x) = C - r * t 
 			// this means we need to determine the odds that any individual 
 			// hydrogen peroxide agent will be removed each time step based upon
 			// the new population which requires us knowing the initial decay
 			behavior = new CompoundBehavior();
-//			behavior.setHydrogenPeroxideDecayQuantity(Math.round(hydrogenPeroxideCount * getProperties().getUvIntensity()));		
+			behavior.setHydrogenPeroxideDecayQuantity(Math.round(hydrogenPeroxideCount * getProperties().getUvIntensity()));
+			
+			// HACK
+			behavior.setHydrogenPeroxideDecay(behavior.getHydrogenPeroxideDecayQuantity() / (double)hydrogenPeroxideCount);
 			
 		} catch (Exception ex) {
 			// We can't recover from errors here
@@ -121,46 +120,20 @@ public class ChemSim extends SimState {
 		
 		return instance.properties;
 	}
-			
+		
 	/**
-	 * Create the compound and add it to the schedule in the quantity given.
+	 * Create the chemical entities and add them to the model.
 	 */
-	@SuppressWarnings("rawtypes")
-	private void createCompounds(Class compoundName, int quantity) throws Exception {
+	private void createEntities(String formula, int quantity, boolean photosensitive) {
 		for (int ndx = 0; ndx < quantity; ndx++) {
-			createCompoundAt(compoundName, new Int3D(random.nextInt(GridWidth), random.nextInt(GridHeight), random.nextInt(GridLength)));
+			Int3D location = new Int3D(random.nextInt(GridWidth), random.nextInt(GridHeight), random.nextInt(GridLength));
+			Species species = new Species(formula);
+			species.setPhotosensitive(photosensitive);
+			species.setStoppable(schedule.scheduleRepeating(species));
+			compounds.setObjectLocation(species, location);
 		}
 	}
-	
-	/**
-	 * Create the compound at the given location and add it to the schedule.
-	 * In the process, make sure they are given access to the Stoppable object
-	 * needed to remove themselves from the model.
-	 * 
-	 * @param compoundName The class name of the compound to be added.
-	 * @param location The location in space (x, y, c) to create the compound at.
-	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Compound createCompoundAt(Class compoundName, Int3D location) {
-		Compound compound = null;
 		
-		try {
-			Constructor<?> ctor = compoundName.getConstructor(Int3D.class);
-			Int3D movementVector = new Int3D(random.nextInt(3) - 1, random.nextInt(3) - 1, random.nextInt(3) - 1);
-			compound = (Compound)ctor.newInstance(new Object[] { movementVector });
-			compound.setStoppable(schedule.scheduleRepeating(compound));
-			compounds.setObjectLocation(compound, location);
-		} catch (Exception ex) {
-			// We can't recover from errors here
-			ex.printStackTrace();
-			System.exit(1);
-		} 
-		
-		// Return the compound, keep the compiler happy
-		return compound;
-		
-	}
-
 	/**
 	 * Main entry point for non-UI model.
 	 */

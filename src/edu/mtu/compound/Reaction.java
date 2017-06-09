@@ -132,7 +132,11 @@ public class Reaction {
 			return false;
 		}
 		
-		// TODO Otherwise, first check to see if it should occur (dice roll)
+		// Otherwise, first check to see if it should occur (dice roll)
+		double odds = ChemSim.getBehavior().getHydrogenPeroxideDecay();
+		if (random.nextDouble() > odds) {
+			return false;
+		}
 		
 		// Decay the species based upon it's reaction with UV
 		Int3D location = ChemSim.getInstance().getCompounds().getObjectLocation(species);
@@ -163,7 +167,9 @@ public class Reaction {
 			Species product = DisproportionatingSpecies.create(species, reactant, reactions);
 			createAt(product, location);
 			species.dispose();
-			reactant.dispose();
+			if (reactant != null) {
+				reactant.dispose();
+			}
 			return true;
 		}
 		

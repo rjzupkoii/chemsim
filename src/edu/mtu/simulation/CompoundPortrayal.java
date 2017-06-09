@@ -4,22 +4,20 @@ import java.awt.Color;
 
 import javax.media.j3d.TransformGroup;
 
+import edu.mtu.compound.Species;
 import sim.portrayal3d.simple.SpherePortrayal3D;
 
 public class CompoundPortrayal extends SpherePortrayal3D {
 	
 	private Color color;
-	
+
 	/**
 	 * Constructor.
 	 * 
-	 * @param compound The class of the compound that is being rendered.
-	 * @throws Exception One of various exception types that will be 
-	 * generated if the compound cannot be loaded. 
+	 * @param species The species to portray.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public CompoundPortrayal(Class compound) throws Exception {
-		color = (Color)compound.getMethod("getColor", (Class[])null).invoke(null, (Object[])null);
+	public CompoundPortrayal(Species species) {
+		color = species.getColor();
 	}
 	
 	/**

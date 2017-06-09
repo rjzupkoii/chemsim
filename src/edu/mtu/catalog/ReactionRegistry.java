@@ -120,7 +120,7 @@ public class ReactionRegistry {
 			}
 			
 			// Is this a photolysis reaction?
-			if (reaction.getReactants().get(1).toUpperCase() == "UV") {
+			if (reaction.getReactants().get(1).toUpperCase().equals("UV")) {
 				addPhotolysisReaction(reaction);
 			}
 			
