@@ -57,13 +57,15 @@ public class ChemSim extends SimState {
 
 			// TODO make this a model parameter
 			// Import the reactions into the model
-			ReactionRegistry.getInstance().load("tests/import.csv");
-			
+			ReactionRegistry instance = ReactionRegistry.getInstance();
+			instance.clear();
+			instance.load("tests/import.csv");
+						
 			// TODO load this data from the import
 			// Create the initial compounds in the model
 			int hydrogenPeroxideCount = properties.getHydrogenPeroxideMoles() * properties.getMoleculesPerMole(); 
 			createEntities("H2O2", hydrogenPeroxideCount, true);
-			createEntities("C3H30", properties.getAcetateMoles() * properties.getMoleculesPerMole(), false);			
+			createEntities("CH3COCH3", properties.getAcetoneMoles() * properties.getMoleculesPerMole(), false);			
 			
 			// TODO Figure out how to do this in a generalized fashion
 			// Hydrogen peroxide is a linear decay, or f(x) = C - r * t 

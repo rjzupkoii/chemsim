@@ -83,6 +83,15 @@ public class ReactionRegistry {
 	}
 	
 	/**
+	 * Clear the current contents of the registry.
+	 */
+	public void clear() {
+		bimolecular.clear();
+		photolysis.clear();
+		unimolecular.clear();
+	}
+	
+	/**
 	 * Returns the list of bimolecular reactions for the chemical species or null.
 	 */
 	public List<ReactionDescription> getBiomolecularReaction(Species species) {

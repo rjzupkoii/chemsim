@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 
 import edu.mtu.compound.DisproportionatingSpecies;
 import edu.mtu.compound.Species;
+import edu.mtu.simulation.chart.HydroxylRadicalChart;
 import sim.display.Controller;
 import sim.display.GUIState;
 import sim.display3d.Display3D;
@@ -22,7 +23,9 @@ public class ChemSimUI extends GUIState {
 	
 	private SparseGridPortrayal3D compoundPortrayal = new SparseGridPortrayal3D();
 	private WireFrameBoxPortrayal3D wireFramePortrayal;
-				
+		
+	private HydroxylRadicalChart hydroxylRadicalChart = new HydroxylRadicalChart();
+	
 	/**
 	 * Constructor.
 	 */
@@ -79,6 +82,11 @@ public class ChemSimUI extends GUIState {
 		displayFrame = display.createFrame();
 		controller.registerFrame(displayFrame);
 		displayFrame.setVisible(true);
+		
+		// Register and display the hydroxyl radical chart
+		hydroxylRadicalChartFrame = hydroxylRadicalChart.createFrame();
+		controller.registerFrame(hydroxylRadicalChartFrame);
+		hydroxylRadicalChartFrame.setVisible(true); 
 	}
 
 	/**
@@ -115,21 +123,24 @@ public class ChemSimUI extends GUIState {
 	 * Setup the presentation of the simulation.
 	 */
 	private void setupPortrayals() {
-		// Set the portrayals of the compounds
-		compoundPortrayal.setField(((ChemSim)state).getCompounds());
 		try {
+			// Set the portrayals of the compounds
 			Species reference = new Species("H2O2");
+			compoundPortrayal.setField(((ChemSim)state).getCompounds());
 			compoundPortrayal.setPortrayalForClass(Species.class, new CompoundPortrayal(reference));
 			compoundPortrayal.setPortrayalForClass(DisproportionatingSpecies.class, new CompoundPortrayal(DisproportionatingSpecies.create(reference, null)));
+			
+			// Make sure the display is scheduled correctly
+			display.createSceneGraph();
+			display.reset();
+			
+			// Add the hydroxyl radical chart
+			this.scheduleRepeatingImmediatelyAfter(hydroxylRadicalChart);
 		} catch (Exception ex) {
 			// We can't recover from errors here
 			ex.printStackTrace();
 			System.exit(1);
 		}
-		
-		// Make sure the display is scheduled correctly
-		display.createSceneGraph();
-		display.reset();
 	}
 
 	/**

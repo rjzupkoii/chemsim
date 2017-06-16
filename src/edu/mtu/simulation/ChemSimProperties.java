@@ -7,7 +7,7 @@ public class ChemSimProperties {
 	private int mediumPathway = 2;
 	private int slowPathway = 3;	
 	
-	private int acetateMoles = 11;
+	private int acetoneMoles = 11;
 	private int hydrogenPeroxideMoles = 150;
 	private int moleculesPerMole = 10;
 	
@@ -19,8 +19,8 @@ public class ChemSimProperties {
 		return new CompoundInspector();
 	}
 	
-	public int getAcetateMoles() {
-		return acetateMoles;
+	public int getAcetoneMoles() {
+		return acetoneMoles;
 	}
 
 	public int getFastPathway() {
@@ -51,8 +51,8 @@ public class ChemSimProperties {
 		return uvIntensity;
 	}
 
-	public void setAcetateMoles(int value) {
-		acetateMoles = value;
+	public void setAcetoneMoles(int value) {
+		acetoneMoles = value;
 	}
 	
 	public void setFastPathway(int fastPathway) {
