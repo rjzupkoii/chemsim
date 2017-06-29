@@ -7,28 +7,25 @@ public class ChemSimProperties {
 	private int mediumPathway = 2;
 	private int slowPathway = 3;	
 	
-	private int acetoneMoles = 11;
-	private int hydrogenPeroxideMoles = 150;
 	private int moleculesPerMole = 10;
 	
 	private double oxygenSaturation = 1.0;
 	private double uvIntensity = 0.025;
+	
+	private String chemicalsFileName = "tests/chemicals.csv";
+	private String reactionsFileName = "tests/reactions.csv";
 				
 	// TODO Figure out a way to expose this as an actual MASON inspector
 	public CompoundInspector getCompoundInspector() {
 		return new CompoundInspector();
 	}
 	
-	public int getAcetoneMoles() {
-		return acetoneMoles;
+	public String getChemicalsFileName() {
+		return chemicalsFileName;
 	}
 
 	public int getFastPathway() {
 		return fastPathway;
-	}
-	
-	public int getHydrogenPeroxideMoles() {
-		return hydrogenPeroxideMoles;
 	}
 
 	public int getMediumPathway() {
@@ -43,6 +40,10 @@ public class ChemSimProperties {
 		return oxygenSaturation;
 	}
 	
+	public String getReactionsFileName() {
+		return reactionsFileName;
+	}
+	
 	public int getSlowPathway() {
 		return slowPathway;
 	}
@@ -50,21 +51,17 @@ public class ChemSimProperties {
 	public double getUvIntensity() {
 		return uvIntensity;
 	}
-
-	public void setAcetoneMoles(int value) {
-		acetoneMoles = value;
+	
+	public void setChemicalsFileName(String value) {
+		chemicalsFileName = value;
 	}
 	
-	public void setFastPathway(int fastPathway) {
-		this.fastPathway = fastPathway;
+	public void setFastPathway(int value) {
+		fastPathway = value;
 	}
-		
-	public void setHydrogenPeroxideMoles(int value) {
-		hydrogenPeroxideMoles = value;
-	}
-	
-	public void setMediumPathway(int mediumPathway) {
-		this.mediumPathway = mediumPathway;
+			
+	public void setMediumPathway(int value) {
+		mediumPathway = value;
 	}
 	
 	public void setMoleculesPerMole(int value) {
@@ -75,11 +72,15 @@ public class ChemSimProperties {
 		oxygenSaturation  = value;
 	}
 	
-	public void setSlowPathway(int slowPathway) {
-		this.slowPathway = slowPathway;
+	public void setReactionsFileName(String value) {
+		reactionsFileName = value;
+	}
+	
+	public void setSlowPathway(int value) {
+		slowPathway = value;
 	}	
 	
 	public void setUvIntensity(double value) {
-		this.uvIntensity = value;
+		uvIntensity = value;
 	}
 }

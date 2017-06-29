@@ -52,7 +52,7 @@ public class Species implements Steppable {
 	 */
 	public void dispose() {
 		ChemSim state = ChemSim.getInstance();
-		state.getCompounds().remove(this);
+		state.getMolecules().remove(this);
 		stoppable.stop();
 	}
 	
@@ -108,7 +108,7 @@ public class Species implements Steppable {
 	 */
 	private void move(ChemSim state) {
 		// Get the location of the compound
-		Int3D location = state.getCompounds().getObjectLocation(this);
+		Int3D location = state.getMolecules().getObjectLocation(this);
 		Int3D container = state.getContainer();
 		
 		// Generate the random values for the walk 
@@ -138,6 +138,6 @@ public class Species implements Steppable {
 		z = (z < 0) ? 0 : z;
 		
 		// Set the new location
-		state.getCompounds().setObjectLocation(this, new Int3D(x, y, z));
+		state.getMolecules().setObjectLocation(this, new Int3D(x, y, z));
 	}
 }

@@ -12,18 +12,37 @@ import edu.mtu.catalog.ReactionDescription;
  * This class is used to parse the equation(s) that are present in an import file for their reaction.
  */
 public class Parser {
-	// TODO Determine if these are still needed
-	private final static String compoundPattern = "(\\*?[CHO\\d\\(\\)]*\\*?)";
-	private final static String quantityPattern = "(\\d*x)";
-	private final static String seperator = "→";
 	
 	/**
+	 * Read the chemicals from the file indicated.
 	 * 
-	 * @param fileName
-	 * @return
-	 * @throws IOException 
+	 * @param fileName The full path to the file.
+	 * @return A list of reactions.
 	 */
-	public static List<ReactionDescription> parse(String fileName) throws IOException {
+	public static List<ChemicalDto> parseChemicals(String fileName) throws IOException {
+		// Open the file and discard the header
+		CSVReader reader = new CSVReader(new FileReader(fileName));
+		reader.readNext();
+		
+		// Load the entries
+		String[] entries;
+		List<ChemicalDto> results = new ArrayList<ChemicalDto>();
+		while ((entries = reader.readNext()) != null) {
+			results.add(new ChemicalDto(entries[0], entries[1], Double.parseDouble(entries[2])));
+		}
+		
+		// Close and return
+		reader.close();
+		return results;
+	}
+	
+	/**
+	 * Read the reactions from the file indicated.
+	 * 
+	 * @param fileName The full path to the file.
+	 * @return A list of reactions.
+	 */
+	public static List<ReactionDescription> parseReactions(String fileName) throws IOException {
 		// Open the file and discard the header
 		CSVReader reader = new CSVReader(new FileReader(fileName));
 		reader.readNext();

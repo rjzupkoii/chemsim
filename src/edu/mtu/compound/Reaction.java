@@ -1,6 +1,7 @@
 package edu.mtu.compound;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ec.util.MersenneTwisterFast;
@@ -38,7 +39,33 @@ public class Reaction {
 	 * @param species of the chemical for the disproportionation.
 	 */
 	public void disproportionate(DisproportionatingSpecies species) {
+		// Note the age and location
+		int age = species.getAge();
+		Int3D location = ChemSim.getInstance().getMolecules().getObjectLocation(species);
 		
+		// Process potential products
+		ArrayList<Integer> indicies = new ArrayList<Integer>();
+		for (int ndx = 0; ndx < species.getReactions().size(); ndx++) {
+			// Check to see if this reaction shouldn't occur yet
+			ReactionDescription reaction = species.getReactions().get(ndx);
+			if (reaction.getReactionRate() > age) {
+				continue;
+			}
+			
+			// Note the index for removal
+			indicies.add(ndx);
+			
+			// Create the products for the reaction
+			for (String product : reaction.getProducts()) {
+				createAt(product, location);
+			}
+		}
+		
+		// Remove the reactions that occurred
+		Collections.sort(indicies, Collections.reverseOrder());
+		for (int ndx : indicies) {
+			species.getReactions().remove(ndx);
+		}
 	}
 	
 	/**
@@ -75,8 +102,8 @@ public class Reaction {
 		
 		// Get other species at this location
 		ChemSim state = ChemSim.getInstance();
-		Int3D location = state.getCompounds().getObjectLocation(species);
-		Bag bag = state.getCompounds().getObjectsAtLocation(location);
+		Int3D location = state.getMolecules().getObjectLocation(species);
+		Bag bag = state.getMolecules().getObjectsAtLocation(location);
 		if (bag.numObjs == 1) {
 			return false;
 		}
@@ -103,7 +130,7 @@ public class Reaction {
 	private void createAt(Species species, Int3D location) {
 		ChemSim state = ChemSim.getInstance();
 		species.setStoppable(state.schedule.scheduleRepeating(species));
-		state.getCompounds().setObjectLocation(species, location);		
+		state.getMolecules().setObjectLocation(species, location);		
 	}
 	
 	/**
@@ -133,13 +160,13 @@ public class Reaction {
 		}
 		
 		// Otherwise, first check to see if it should occur (dice roll)
-		double odds = ChemSim.getBehavior().getHydrogenPeroxideDecay();
+		double odds = ChemSim.getBehavior().getDecayOdds(species.getFormula());
 		if (random.nextDouble() > odds) {
 			return false;
 		}
 		
 		// Decay the species based upon it's reaction with UV
-		Int3D location = ChemSim.getInstance().getCompounds().getObjectLocation(species);
+		Int3D location = ChemSim.getInstance().getMolecules().getObjectLocation(species);
 		for (String product : products) {
 			createAt(product, location);
 		}
@@ -195,7 +222,7 @@ public class Reaction {
 		}
 
 		// Return the results of processing the reactions
-		Int3D location = ChemSim.getInstance().getCompounds().getObjectLocation(species);
+		Int3D location = ChemSim.getInstance().getMolecules().getObjectLocation(species);
 		return process(species, null, reactions, location);
 	}
 }

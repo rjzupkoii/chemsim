@@ -1,5 +1,7 @@
 package edu.mtu.simulation.steppable;
 
+import java.util.Iterator;
+
 import edu.mtu.simulation.ChemSim;
 import edu.mtu.simulation.CompoundBehavior;
 import edu.mtu.simulation.CompoundInspector;
@@ -19,13 +21,8 @@ public class Monitor implements Steppable {
 	public void step(SimState state) {
 		CompoundInspector inspector = new CompoundInspector();
 		
-		// Determine how much hydrogen peroxide should decay on the next time step
-		CompoundBehavior behavior = ChemSim.getBehavior();
-		if (inspector.getHydrogenPeroxideCount() != 0) {
-			behavior.setHydrogenPeroxideDecay(behavior.getHydrogenPeroxideDecayQuantity() / (double)inspector.getHydrogenPeroxideCount());
-		} else {
-			behavior.setHydrogenPeroxideDecay(0);
-		}
+		// Update the decay odds for the appropriate compounds
+		updateBehavior();
 				
 		// Check to see if acetone is exhausted
 		if (inspector.getAcetoneCount() == 0) {
@@ -37,6 +34,28 @@ public class Monitor implements Steppable {
 			inspector.getHydroxylRadicalCount() == 0 && 
 			inspector.getPeroxyRadicalCount() == 0) {
 			state.finish();
+		}
+	}
+	
+	/**
+	 * Update the compound behavior based upon how many compounds were removed this timestep.
+	 */
+	private void updateBehavior() {
+		CompoundBehavior behavior = ChemSim.getBehavior();
+		
+		// Get the iterator and return if there is nothing to do
+		Iterator<String> iterator = behavior.getDecayingCompounds();
+		if (iterator == null) {
+			return;
+		}
+		
+		// Update the odds for the next time step for each of the species
+		while (iterator.hasNext()) {
+			String formula = iterator.next();
+			long decay = behavior.getDecayQuantity(formula);
+			long quantity = CompoundInspector.countSpecies(formula); 
+			double odds = (quantity != 0) ? decay / (double)quantity : 0;
+			behavior.setDecayOdds(formula, odds);
 		}
 	}
 }

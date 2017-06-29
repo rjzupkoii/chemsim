@@ -101,6 +101,13 @@ public class ReactionRegistry {
 	/**
 	 * Returns the photolysis products for the chemical species or null.
 	 */
+	public List<String> getPhotolysisReaction(String formula) {
+		return photolysis.get(formula);
+	}
+	
+	/**
+	 * Returns the photolysis products for the chemical species or null.
+	 */
 	public List<String> getPhotolysisReaction(Species species) {
 		return photolysis.get(species.getFormula());
 	}
@@ -120,7 +127,7 @@ public class ReactionRegistry {
 	 * @param fileName The name and path of the file to be loaded.
 	 */
 	public void load(String fileName) throws IOException {
-		List<ReactionDescription> reactions = Parser.parse(fileName);
+		List<ReactionDescription> reactions = Parser.parseReactions(fileName);
 		for (ReactionDescription reaction : reactions) {
 			// Check for a unimolecular reaction
 			if (reaction.getReactants().size() == 1) {

@@ -1,7 +1,13 @@
 package edu.mtu.simulation;
 
+import java.io.IOException;
+import java.util.List;
+
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.compound.Species;
+import edu.mtu.parser.ChemicalDto;
+import edu.mtu.parser.Parser;
+import edu.mtu.simulation.steppable.Monitor;
 import sim.engine.SimState;
 import sim.field.grid.SparseGrid3D;
 import sim.util.Int3D;
@@ -14,8 +20,8 @@ public class ChemSim extends SimState {
 	public final static int GridHeight = 30;
 	public final static int GridLength = 30;
 	
-	// The compounds that are registered in the simulation
-	private SparseGrid3D compounds;
+	// The molecules that are registered in the simulation
+	private SparseGrid3D molecules;
 	
 	// The properties for the simulation, managed by MASON
 	private ChemSimProperties properties;
@@ -52,31 +58,20 @@ public class ChemSim extends SimState {
 		super.start();
 		
 		try {
-			// Add all of the compounds to the grid in a random fashion
-			compounds = new SparseGrid3D(GridWidth, GridHeight, GridLength);
+			// Clear the container of molecules
+			molecules = new SparseGrid3D(GridWidth, GridHeight, GridLength);
+			
+			// Clear any behavior model that currently exists
+			behavior = new CompoundBehavior();
 
-			// TODO make this a model parameter
 			// Import the reactions into the model
 			ReactionRegistry instance = ReactionRegistry.getInstance();
 			instance.clear();
-			instance.load("tests/import.csv");
+			instance.load(properties.getReactionsFileName());
 						
-			// TODO load this data from the import
-			// Create the initial compounds in the model
-			int hydrogenPeroxideCount = properties.getHydrogenPeroxideMoles() * properties.getMoleculesPerMole(); 
-			createEntities("H2O2", hydrogenPeroxideCount, true);
-			createEntities("CH3COCH3", properties.getAcetoneMoles() * properties.getMoleculesPerMole(), false);			
-			
-			// TODO Figure out how to do this in a generalized fashion
-			// Hydrogen peroxide is a linear decay, or f(x) = C - r * t 
-			// this means we need to determine the odds that any individual 
-			// hydrogen peroxide agent will be removed each time step based upon
-			// the new population which requires us knowing the initial decay
-			behavior = new CompoundBehavior();
-			behavior.setHydrogenPeroxideDecayQuantity(Math.round(hydrogenPeroxideCount * getProperties().getUvIntensity()));
-			
-			// HACK
-			behavior.setHydrogenPeroxideDecay(behavior.getHydrogenPeroxideDecayQuantity() / (double)hydrogenPeroxideCount);
+			// Initialize the model
+			initializeModel();
+			this.schedule.scheduleRepeating(new Monitor());			
 			
 		} catch (Exception ex) {
 			// We can't recover from errors here
@@ -85,14 +80,24 @@ public class ChemSim extends SimState {
 		}
 	}
 		
-	public SparseGrid3D getCompounds() {
-		return compounds;
+	/**
+	 * Get the compounds that are present in the model.
+	 */
+	public SparseGrid3D getMolecules() {
+		return molecules;
 	}
 
+	/**
+	 * Get the container that holds the model's compounds.
+	 * @return
+	 */
 	public Int3D getContainer() {
 		return new Int3D(GridWidth, GridHeight, GridLength);
 	}
 	
+	/**
+	 * Get a reference to the CompoundBehavior singleton that manages decay rates.
+	 */
 	public static CompoundBehavior getBehavior() {
 		// We expect the class to already be instantiated
 		if (instance == null) {
@@ -102,6 +107,9 @@ public class ChemSim extends SimState {
 		return instance.behavior;
 	}
 	
+	/**
+	 * Get a reference to the ChemSim singleton.
+	 */
 	public static ChemSim getInstance() {
 		// We expect to be constructed by MASON, so no instance can be created before then
 		if (instance == null) {
@@ -124,6 +132,35 @@ public class ChemSim extends SimState {
 	}
 		
 	/**
+	 * Initialize the model by loading the initial chemicals in the correct ratio.
+	 */
+	private void initializeModel() throws IOException {
+		// Create the initial compounds in the model
+		List<ChemicalDto> chemicals = Parser.parseChemicals(properties.getChemicalsFileName());
+		
+		// Hold on to a reference to the registry
+		ReactionRegistry instance = ReactionRegistry.getInstance();
+				
+		// Add each of the chemicals to the model, assume they are well mixed
+		for (ChemicalDto chemical : chemicals) {
+			// Add the molecules to the model
+			boolean photosensitive = instance.getPhotolysisReaction(chemical.formula) != null;
+			int quantity = (int)(chemical.mols * properties.getMoleculesPerMole());
+			createEntities(chemical.formula, quantity, photosensitive);
+			
+			// Calculate it's linear decay rate, f(x) = C - r * t
+			// 
+			// Note that this means we need to determine the odds that any individual agent will be 
+			// removed each time step based upon the new population which requires us knowing the 
+			// initial decay
+			long decay = Math.round(quantity * getProperties().getUvIntensity());
+			double odds = quantity / (double)decay;
+			behavior.setDecayQuantity(chemical.formula, decay);
+			behavior.setDecayOdds(chemical.formula, odds);
+		}		
+	}
+	
+	/**
 	 * Create the chemical entities and add them to the model.
 	 */
 	private void createEntities(String formula, int quantity, boolean photosensitive) {
@@ -132,7 +169,7 @@ public class ChemSim extends SimState {
 			Species species = new Species(formula);
 			species.setPhotosensitive(photosensitive);
 			species.setStoppable(schedule.scheduleRepeating(species));
-			compounds.setObjectLocation(species, location);
+			molecules.setObjectLocation(species, location);
 		}
 	}
 		

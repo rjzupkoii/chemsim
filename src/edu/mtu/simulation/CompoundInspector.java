@@ -31,7 +31,7 @@ public class CompoundInspector {
 		int count = 0;
 
 		try {
-			for (Object object : ChemSim.getInstance().getCompounds().getAllObjects()) {
+			for (Object object : ChemSim.getInstance().getMolecules().getAllObjects()) {
 				count += (((Species)object).getFormula().equals(formula)) ? 1 : 0;
 			}
 		} catch (NullPointerException ex) {

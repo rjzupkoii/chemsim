@@ -126,7 +126,7 @@ public class ChemSimUI extends GUIState {
 		try {
 			// Set the portrayals of the compounds
 			Species reference = new Species("H2O2");
-			compoundPortrayal.setField(((ChemSim)state).getCompounds());
+			compoundPortrayal.setField(((ChemSim)state).getMolecules());
 			compoundPortrayal.setPortrayalForClass(Species.class, new CompoundPortrayal(reference));
 			compoundPortrayal.setPortrayalForClass(DisproportionatingSpecies.class, new CompoundPortrayal(DisproportionatingSpecies.create(reference, null)));
 			
