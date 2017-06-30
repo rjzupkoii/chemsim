@@ -43,28 +43,43 @@ public class Parser {
 	 * @return A list of reactions.
 	 */
 	public static List<ReactionDescription> parseReactions(String fileName) throws IOException {
-		// Open the file and discard the header
+		// Open the file
 		CSVReader reader = new CSVReader(new FileReader(fileName));
-		reader.readNext();
 		
-		String[] enteries;
+		// Read the header to note the number of items
+		String[] enteries = reader.readNext();
+		int reactants = 0;
+		while (enteries[reactants].toUpperCase().equals("REACTANT")) {
+			reactants++;
+		}
+		int products = 0;
+		while (enteries[reactants + products].toUpperCase().equals("PRODUCT")) {
+			products++;
+		}
+		
 		List<ReactionDescription> results = new ArrayList<ReactionDescription>();
 		while ((enteries = reader.readNext()) != null) {
 			// Process the reactants
-			List<String> reactants = new ArrayList<String>();
-			reactants.add(enteries[0]);
-			if (!enteries[1].isEmpty()) { reactants.add(enteries[1]); }
-			
+			List<String> reactant = new ArrayList<String>();
+			for (int ndx = 0; ndx < reactants; ndx++) {
+				if (!enteries[ndx].isEmpty()) {
+					reactant.add(enteries[ndx]);	
+				}
+			}
+						
 			// Process the products
-			List<String> products = new ArrayList<String>();
-			products.add(enteries[2]);
-			if (!enteries[3].isEmpty()) { products.add(enteries[3]); }			
+			List<String> product = new ArrayList<String>();
+			for (int ndx = 0; ndx < products; ndx++) {
+				if (!enteries[reactants + ndx].isEmpty()) { 
+					product.add(enteries[reactants + ndx]); 
+				}
+			}				
 			
 			// Note the reaction rate
-			double reactionRate = Double.parseDouble(enteries[4]);
+			double reactionRate = Double.parseDouble(enteries[reactants + products]);
 			
 			// Append to the running list
-			results.add(new ReactionDescription(reactants, products, reactionRate));
+			results.add(new ReactionDescription(reactant, product, reactionRate));
 		}
 		
 		// Close and return
