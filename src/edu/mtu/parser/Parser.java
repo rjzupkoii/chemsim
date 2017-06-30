@@ -70,9 +70,7 @@ public class Parser {
 			// Process the products
 			List<String> product = new ArrayList<String>();
 			for (int ndx = 0; ndx < products; ndx++) {
-				if (!enteries[reactants + ndx].isEmpty()) { 
-					product.add(enteries[reactants + ndx]); 
-				}
+				product.addAll(parseProduct(enteries[reactants + ndx]));
 			}				
 			
 			// Note the reaction rate
@@ -84,6 +82,36 @@ public class Parser {
 		
 		// Close and return
 		reader.close();
+		return results;
+	}
+	
+	/**
+	 * Parse the given product into multiples, if appropriate.
+	 */
+	private static List<String> parseProduct(String product) {
+		List<String> results = new ArrayList<String>();
+		
+		// Do we have any work to do?
+		if (product.isEmpty()) {
+			return results;
+		}
+		
+		// Is there only a single product?
+		if (!Character.isDigit(product.charAt(0))) {
+			results.add(product);
+			return results;
+		}
+
+		// Parse the number and return the appropriate count of products
+		int count = 0;
+		while (Character.isDigit(product.charAt(count))) { 
+			count++;
+		}
+		String formula = product.substring(count);
+		count = Integer.parseInt(product.substring(0, count));
+		for (int ndx = 0; ndx < count; ndx++) {
+			results.add(formula);
+		}		
 		return results;
 	}
 }
