@@ -12,9 +12,29 @@ public class ChemSimProperties {
 	private double oxygenSaturation = 1.0;
 	private double uvIntensity = 0.025;
 	
-	private String chemicalsFileName = "tests/chemicals.csv";
-	private String reactionsFileName = "tests/reactions.csv";
+	private String chemicalsFileName = "experiment/chemicals.csv";
+	private String reactionsFileName = "experiment/reactions.csv";
 				
+	// TODO Marker for hard-coded operation
+	private int maxHydroxylRadicals = 3;
+	private double hydroxyleRadicalOdds = 0.025;
+	
+	public double getHydroxyleRadicalOdds() {
+		return hydroxyleRadicalOdds;
+	}
+	
+	public int getMaxHydroxylRadicals() {
+		return maxHydroxylRadicals;
+	}
+
+	public void setHydroxyleRadicalOdds(double value) {
+		hydroxyleRadicalOdds = value;
+	}
+	
+	public void setMaxHydroxylRadicals(int value) {
+		maxHydroxylRadicals = value;
+	}
+		
 	// TODO Figure out a way to expose this as an actual MASON inspector
 	public CompoundInspector getCompoundInspector() {
 		return new CompoundInspector();

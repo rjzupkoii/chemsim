@@ -2,11 +2,13 @@ package edu.mtu.simulation.steppable;
 
 import java.util.Iterator;
 
+import edu.mtu.compound.Species;
 import edu.mtu.simulation.ChemSim;
 import edu.mtu.simulation.CompoundBehavior;
 import edu.mtu.simulation.CompoundInspector;
 import sim.engine.SimState;
 import sim.engine.Steppable;
+import sim.util.Int3D;
 
 /**
  * This agent monitors the simulation and stops it when the stopping
@@ -28,12 +30,40 @@ public class Monitor implements Steppable {
 		if (inspector.getAcetoneCount() == 0) {
 			state.finish();
 		}
-		
-		// Check to see if Hydroxyl pathways have been exhausted
-		if (inspector.getHydrogenPeroxideCount() == 0 && 
-			inspector.getHydroxylRadicalCount() == 0 && 
+				
+		// Check to see if hydroxyl pathways have been exhausted
+		/*if (inspector.getHydrogenPeroxideCount() == 0 &&	
 			inspector.getPeroxyRadicalCount() == 0) {
 			state.finish();
+		}*/
+		
+		// TODO Marker for hard-coded activity
+		doHydroxylOperation((ChemSim)state);
+	}
+	
+	/**
+	 * Add hydroxyl radicals to the model as needed.
+	 */
+	private void doHydroxylOperation(ChemSim state) {
+		CompoundInspector inspector = new CompoundInspector();
+		
+		// Check to see if hydroxyl radicals should be introduced
+		int count = inspector.getHydroxylRadicalCount();
+		int maximum = ChemSim.getProperties().getMaxHydroxylRadicals();
+		double odds = ChemSim.getProperties().getHydroxyleRadicalOdds();
+		if (count < maximum) {
+			for (int ndx = (count - 1); ndx < maximum; ndx++) {
+				if (state.random.nextDouble() > odds) {
+					continue;
+				}
+				
+				// Check passed, create a radical
+				Int3D location = ChemSim.getRandomPoint(state.random);
+				Species species = new Species("HO*");
+				species.setPhotosensitive(false);
+				species.setStoppable(state.schedule.scheduleRepeating(species));
+				state.getMolecules().setObjectLocation(species, location);
+			}
 		}
 	}
 	
