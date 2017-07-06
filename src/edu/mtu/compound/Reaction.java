@@ -128,6 +128,12 @@ public class Reaction {
 	 * Insert the species into the schedule at the given location.
 	 */
 	private void createAt(Species species, Int3D location) {
+		// Since we are an aqueous solution, don't bother creating H2O
+		if (species.getFormula().equals("H2O")) {
+			return;
+		}
+		
+		// Create the species at the given location
 		ChemSim state = ChemSim.getInstance();
 		species.setStoppable(state.schedule.scheduleRepeating(species));
 		state.getMolecules().setObjectLocation(species, location);		

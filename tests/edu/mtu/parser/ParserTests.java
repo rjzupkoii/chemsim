@@ -37,7 +37,7 @@ public class ParserTests {
 		reactions.add(new ReactionDescription(new String[]{"CH3OH", "HO*"}, new String[]{"*CH2OH", "H2O"}, 9.63E+08));
 		reactions.add(new ReactionDescription(new String[]{"HCHO", "H2O"}, new String[]{"CH2(OH)2"}, 0.01));
 		reactions.add(new ReactionDescription(new String[]{"HCOOH", "HO*"}, new String[]{"*COOH", "H2O"}, 1.00E+08));
-		reactions.add(new ReactionDescription(new String[]{"HOCCOOH", "HO*"}, new String[]{"*COCOOH", "H2O"}, 6.38E+07));
+		reactions.add(new ReactionDescription(new String[]{"HOCCOOH", "HO*"}, new String[]{"*COCOOH", "H2O", "H2O"}, 6.38E+07));
 		reactions.add(new ReactionDescription(new String[]{"HOCH2COOH", "HO*"}, new String[]{"*CH(OH)COOH"}, 7.12E+07));
 		reactions.add(new ReactionDescription(new String[]{"H2O2", "UV"}, new String[]{"HO*"}, 0));
 	}
