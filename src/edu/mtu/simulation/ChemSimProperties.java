@@ -13,7 +13,8 @@ public class ChemSimProperties {
 	private double uvIntensity = 0.025;
 	
 	private String chemicalsFileName = "tests/chemicals.csv";
-	private String reactionsFileName = "tests/reactions.csv";
+	//private String reactionsFileName = "tests/reactions.csv";
+	private String reactionsFileName = "tests/alife.csv";
 				
 	// TODO Figure out a way to expose this as an actual MASON inspector
 	public CompoundInspector getCompoundInspector() {

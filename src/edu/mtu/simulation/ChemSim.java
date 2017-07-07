@@ -154,7 +154,7 @@ public class ChemSim extends SimState {
 			// removed each time step based upon the new population which requires us knowing the 
 			// initial decay
 			long decay = Math.round(quantity * getProperties().getUvIntensity());
-			double odds = quantity / (double)decay;
+			double odds = decay / (double)quantity;
 			behavior.setDecayQuantity(chemical.formula, decay);
 			behavior.setDecayOdds(chemical.formula, odds);
 		}		
