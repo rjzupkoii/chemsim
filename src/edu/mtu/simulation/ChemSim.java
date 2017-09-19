@@ -3,6 +3,7 @@ package edu.mtu.simulation;
 import java.io.IOException;
 import java.util.List;
 
+import ec.util.MersenneTwisterFast;
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.compound.Species;
 import edu.mtu.parser.ChemicalDto;
@@ -132,6 +133,13 @@ public class ChemSim extends SimState {
 	}
 		
 	/**
+	 * Get a random point in the model's space.
+	 */
+	public static Int3D getRandomPoint(MersenneTwisterFast random) {
+		return new Int3D(random.nextInt(GridWidth), random.nextInt(GridHeight), random.nextInt(GridLength));
+	}
+	
+	/**
 	 * Initialize the model by loading the initial chemicals in the correct ratio.
 	 */
 	private void initializeModel() throws IOException {
@@ -165,7 +173,7 @@ public class ChemSim extends SimState {
 	 */
 	private void createEntities(String formula, int quantity, boolean photosensitive) {
 		for (int ndx = 0; ndx < quantity; ndx++) {
-			Int3D location = new Int3D(random.nextInt(GridWidth), random.nextInt(GridHeight), random.nextInt(GridLength));
+			Int3D location = getRandomPoint(random);
 			Species species = new Species(formula);
 			species.setPhotosensitive(photosensitive);
 			species.setStoppable(schedule.scheduleRepeating(species));
