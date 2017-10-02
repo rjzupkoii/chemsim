@@ -45,26 +45,26 @@ public class Monitor implements Steppable {
 	 * Add hydroxyl radicals to the model as needed.
 	 */
 	private void doHydroxylOperation(ChemSim state) {
-		CompoundInspector inspector = new CompoundInspector();
-		
-		// Check to see if hydroxyl radicals should be introduced
-		int count = inspector.getHydroxylRadicalCount();
-		int maximum = ChemSim.getProperties().getMaxHydroxylRadicals();
-		double odds = ChemSim.getProperties().getHydroxyleRadicalOdds();
-		if (count < maximum) {
-			for (int ndx = (count - 1); ndx < maximum; ndx++) {
-				if (state.random.nextDouble() > odds) {
-					continue;
-				}
-				
-				// Check passed, create a radical
-				Int3D location = ChemSim.getRandomPoint(state.random);
-				Species species = new Species("HO*");
-				species.setPhotosensitive(false);
-				species.setStoppable(state.schedule.scheduleRepeating(species));
-				state.getMolecules().setObjectLocation(species, location);
-			}
-		}
+//		CompoundInspector inspector = new CompoundInspector();
+//		
+//		// Check to see if hydroxyl radicals should be introduced
+//		int count = inspector.getHydroxylRadicalCount();
+//		int maximum = ChemSim.getProperties().getMaxHydroxylRadicals();
+//		double odds = ChemSim.getProperties().getHydroxyleRadicalOdds();
+//		if (count < maximum) {
+//			for (int ndx = (count - 1); ndx < maximum; ndx++) {
+//				if (state.random.nextDouble() > odds) {
+//					continue;
+//				}
+//				
+//				// Check passed, create a radical
+//				Int3D location = ChemSim.getRandomPoint(state.random);
+//				Species species = new Species("HO*");
+//				species.setPhotosensitive(false);
+//				species.setStoppable(state.schedule.scheduleRepeating(species));
+//				state.getMolecules().setObjectLocation(species, location);
+//			}
+//		}
 	}
 	
 	/**

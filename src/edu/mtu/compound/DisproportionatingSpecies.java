@@ -4,12 +4,10 @@ import java.awt.Color;
 import java.util.List;
 
 import edu.mtu.catalog.ReactionDescription;
-import sim.engine.SimState;
 
 /**
  * This class represents a disproportionating chemical entity.
  */
-@SuppressWarnings("serial")
 public class DisproportionatingSpecies extends Species {
 
 	private int age = 0;
@@ -44,15 +42,6 @@ public class DisproportionatingSpecies extends Species {
 		return entity;		
 	}
 	
-	@Override
-	public void step(SimState state) {
-		// Update the age of this species
-		age++;
-		
-		// Disproportionate
-		Reaction.getInstance().disproportionate(this);
-	}
-	
 	/**
 	 * Get how old this species is in time steps.
 	 */
@@ -72,5 +61,13 @@ public class DisproportionatingSpecies extends Species {
 	 */
 	public List<ReactionDescription> getReactions() {
 		return reactions;
+	}
+	
+	/**
+	 * Updates and returns the age.s
+	 */
+	public int updateAge() {
+		age++;
+		return age;
 	}
 }

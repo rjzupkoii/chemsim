@@ -1,10 +1,14 @@
 package edu.mtu.Reactor;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.mtu.compound.Species;
 import javafx.geometry.Point3D;
 import sim.engine.SimState;
+import sim.util.Int3D;
 
 /**
  * The reactor is the container that the experiment takes place in. As a 
@@ -12,11 +16,15 @@ import sim.engine.SimState;
  */
 public class Reactor {
 	
+	// Small value to use for testing and debugging.
+	private final static BigInteger AvogadroNumber = new BigInteger("1000");
+	
 	private static Reactor instance = new Reactor();
 	
+	private BigInteger cellCount; 
 	private double volume;
 	private Map<Point3D, Cell> cells;
-
+		
 	/**
 	 * Constructor.
 	 */
@@ -28,7 +36,7 @@ public class Reactor {
 	public static Reactor getInstance() { 
 		return instance;
 	}
-	
+		
 	/**
 	 * Create partition the volume of the container into the appropriate
 	 * number of cells.
@@ -43,6 +51,7 @@ public class Reactor {
 		if (count > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException("Cell count exceeds interger value");
 		}
+		cellCount = new BigInteger(String.valueOf(count)); 
 		
 		// Find the volume per point
 		this.volume = volume;
@@ -62,6 +71,24 @@ public class Reactor {
 		}
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param formula
+	 * @param mols
+	 * @param photosensitive
+	 */
+	public void createEntities(Species species, float mols, boolean photosensitive) {
+		// Find the quantity per cell (value = (NA * mols) / cells)
+		BigDecimal value = new BigDecimal(AvogadroNumber.multiply(new BigDecimal(mols).toBigInteger()).divide(cellCount));
+		
+		// Allocate the species
+		for (Point3D point : cells.keySet()) {
+			Cell cell = cells.get(point);
+			cell.add(species, value);
+		}
+	}
+	
 	/**
 	 * Get the cell at the given location.
 	 */

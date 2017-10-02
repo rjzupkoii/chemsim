@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import ec.util.MersenneTwisterFast;
+import edu.mtu.Reactor.Reactor;
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.compound.Species;
 import edu.mtu.parser.ChemicalDto;
@@ -16,11 +17,12 @@ import sim.util.Int3D;
 @SuppressWarnings("serial")
 public class ChemSim extends SimState {
 
-	// The nature of the space we are working in
-	public final static int GridWidth = 30;
-	public final static int GridHeight = 30;
-	public final static int GridLength = 30;
+	// The number of cells along one dimension
+	public final static int Cells = 30;
 	
+	// TODO read this from a file, the volume of the container
+	public final static double Volume = 1.8 * 1000;
+		
 	// The molecules that are registered in the simulation
 	private SparseGrid3D molecules;
 	
@@ -60,7 +62,7 @@ public class ChemSim extends SimState {
 		
 		try {
 			// Clear the container of molecules
-			molecules = new SparseGrid3D(GridWidth, GridHeight, GridLength);
+			Reactor.getInstance().createCells(Cells, Volume, this);
 			
 			// Clear any behavior model that currently exists
 			behavior = new CompoundBehavior();
@@ -86,14 +88,6 @@ public class ChemSim extends SimState {
 	 */
 	public SparseGrid3D getMolecules() {
 		return molecules;
-	}
-
-	/**
-	 * Get the container that holds the model's compounds.
-	 * @return
-	 */
-	public Int3D getContainer() {
-		return new Int3D(GridWidth, GridHeight, GridLength);
 	}
 	
 	/**
@@ -131,14 +125,7 @@ public class ChemSim extends SimState {
 		
 		return instance.properties;
 	}
-		
-	/**
-	 * Get a random point in the model's space.
-	 */
-	public static Int3D getRandomPoint(MersenneTwisterFast random) {
-		return new Int3D(random.nextInt(GridWidth), random.nextInt(GridHeight), random.nextInt(GridLength));
-	}
-	
+			
 	/**
 	 * Initialize the model by loading the initial chemicals in the correct ratio.
 	 */
@@ -148,13 +135,15 @@ public class ChemSim extends SimState {
 		
 		// Hold on to a reference to the registry
 		ReactionRegistry instance = ReactionRegistry.getInstance();
-				
+						
 		// Add each of the chemicals to the model, assume they are well mixed
+		Reactor reactor = Reactor.getInstance();
 		for (ChemicalDto chemical : chemicals) {
 			// Add the molecules to the model
-			boolean photosensitive = instance.getPhotolysisReaction(chemical.formula) != null;
+			boolean photosensitive = instance.getPhotolysisReaction(chemical.formula) != null;			
+			Species species = new Species(chemical.formula);
 			int quantity = (int)(chemical.mols * properties.getMoleculesPerMole());
-			createEntities(chemical.formula, quantity, photosensitive);
+			reactor.createEntities(species, quantity, photosensitive);
 			
 			// Calculate it's linear decay rate, f(x) = C - r * t
 			// 
@@ -168,18 +157,6 @@ public class ChemSim extends SimState {
 		}		
 	}
 	
-	/**
-	 * Create the chemical entities and add them to the model.
-	 */
-	private void createEntities(String formula, int quantity, boolean photosensitive) {
-		for (int ndx = 0; ndx < quantity; ndx++) {
-			Int3D location = getRandomPoint(random);
-			Species species = new Species(formula);
-			species.setPhotosensitive(photosensitive);
-			species.setStoppable(schedule.scheduleRepeating(species));
-			molecules.setObjectLocation(species, location);
-		}
-	}
 		
 	/**
 	 * Main entry point for non-UI model.

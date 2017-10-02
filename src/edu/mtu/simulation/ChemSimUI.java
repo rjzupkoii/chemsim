@@ -65,23 +65,24 @@ public class ChemSimUI extends GUIState {
 	public void init(Controller controller) {
 		super.init(controller);
 		
-		// Prepare the display and the wire-frame
-		display = new Display3D(600, 600, this);
-		display.setBackdrop(Color.WHITE);
-		wireFramePortrayal = new WireFrameBoxPortrayal3D(-0.5, -0.5, -0.5, ChemSim.GridWidth, ChemSim.GridHeight, ChemSim.GridLength, Color.BLUE);
-		
-		// Attach the portrayals
-		display.attach(wireFramePortrayal, "Wire Frame");
-		display.attach(compoundPortrayal, "Compounds");
-		
-		// Make sure things are scaled correctly
-		display.translate(-ChemSim.GridWidth / 2.0, -ChemSim.GridHeight / 2.0, -ChemSim.GridLength / 2.0);
-		display.scale(1.0 / ChemSim.GridWidth);
-		
-		// Register and display the frame
-		displayFrame = display.createFrame();
-		controller.registerFrame(displayFrame);
-		displayFrame.setVisible(true);
+		// TODO Come up with another way of displaying the status
+//		// Prepare the display and the wire-frame
+//		display = new Display3D(600, 600, this);
+//		display.setBackdrop(Color.WHITE);
+//		wireFramePortrayal = new WireFrameBoxPortrayal3D(-0.5, -0.5, -0.5, ChemSim.GridWidth, ChemSim.GridHeight, ChemSim.GridLength, Color.BLUE);
+//		
+//		// Attach the portrayals
+//		display.attach(wireFramePortrayal, "Wire Frame");
+//		display.attach(compoundPortrayal, "Compounds");
+//		
+//		// Make sure things are scaled correctly
+//		display.translate(-ChemSim.GridWidth / 2.0, -ChemSim.GridHeight / 2.0, -ChemSim.GridLength / 2.0);
+//		display.scale(1.0 / ChemSim.GridWidth);
+//		
+//		// Register and display the frame
+//		displayFrame = display.createFrame();
+//		controller.registerFrame(displayFrame);
+//		displayFrame.setVisible(true);
 		
 		// Register and display the hydroxyl radical chart
 		hydroxylRadicalChartFrame = hydroxylRadicalChart.createFrame();

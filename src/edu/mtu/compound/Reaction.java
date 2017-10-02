@@ -1,10 +1,14 @@
 package edu.mtu.compound;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import ec.util.MersenneTwisterFast;
+import edu.mtu.Reactor.Cell;
+import edu.mtu.Reactor.Reactor;
 import edu.mtu.catalog.ReactionDescription;
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.simulation.ChemSim;
@@ -37,11 +41,11 @@ public class Reaction {
 	 * Have the chemical species disproportionate according to its reaction rate.
 	 * 
 	 * @param species of the chemical for the disproportionation.
+	 * @param cell where the reaction should take place.
 	 */
-	public void disproportionate(DisproportionatingSpecies species) {
-		// Note the age and location
-		int age = species.getAge();
-		Int3D location = ChemSim.getInstance().getMolecules().getObjectLocation(species);
+	public void disproportionate(DisproportionatingSpecies species, Cell cell) {
+		// Note the age
+		int age = species.updateAge();
 		
 		// Process potential products
 		ArrayList<Integer> indicies = new ArrayList<Integer>();
@@ -57,7 +61,12 @@ public class Reaction {
 			
 			// Create the products for the reaction
 			for (String product : reaction.getProducts()) {
-				createAt(product, location);
+				
+				// TODO Calculate quantity
+				BigDecimal value = BigDecimal.ONE;
+				
+				cell.add(new Species(product), value);
+				cell.add(species,  value.multiply(new BigDecimal("-1")));
 			}
 		}
 		
@@ -73,19 +82,25 @@ public class Reaction {
 	 * 
 	 * @param species of chemical for the reaction.
 	 */
-	public void react(Species species) {
+	public void react(Species species, Cell cell) {
+		// Perform any relevant dispropriation reactions
+		if (species instanceof DisproportionatingSpecies) {
+			disproportionate((DisproportionatingSpecies)species, cell);
+			return;
+		}
+		
 		// First, see if there are any bimolecular reactions to take place
-		if (bimolecularReaction(species)) {
+		if (bimolecularReaction(species, cell)) {
 			return;
 		}
 		
 		// Second, see if unimolecular decay needs to take place
-		if (unimolecularDecay(species)) {
+		if (unimolecularDecay(species, cell)) {
 			return;
 		}
 		
 		// Third, see if photolysis needs to take place
-		if (photolysis(species)) {
+		if (photolysis(species, cell)) {
 			return;
 		}
 	}
@@ -93,67 +108,36 @@ public class Reaction {
 	/**
 	 * Perform a bimolecular reaction on the given species.
 	 */
-	private boolean bimolecularReaction(Species species) {
+	private boolean bimolecularReaction(Species species, Cell cell) {
 		// Get the possible reactions for this species
 		List<ReactionDescription> reactions = ReactionRegistry.getInstance().getBiomolecularReaction(species);
 		if (reactions == null) {
 			return false;
 		}
 		
-		// Get other species at this location
-		ChemSim state = ChemSim.getInstance();
-		Int3D location = state.getMolecules().getObjectLocation(species);
-		Bag bag = state.getMolecules().getObjectsAtLocation(location);
-		if (bag.numObjs == 1) {
-			return false;
-		}
-		
-		for (int ndx = 0; ndx < bag.numObjs; ndx++) {
-			// Press on if this reactant is the same as the species we were provided
-			Species reactant = (Species)bag.get(ndx);
+		// Check to see what other species at this location react with the given one
+		for (Species reactant : cell.getMolecules()) {
 			if (reactant.equals(species)) {
 				continue;
 			}
 			
 			// Process the reactants and press on if a match is not found
-			if (process(species, reactant, reactions, location)) {
+			if (process(species, reactant, reactions, cell)) {
 				return true;
 			}
 		}
-		
+				
 		return false;
-	}
-
-	/**
-	 * Insert the species into the schedule at the given location.
-	 */
-	private void createAt(Species species, Int3D location) {
-		// Since we are an aqueous solution, don't bother creating H2O
-		if (species.getFormula().equals("H2O")) {
-			return;
-		}
-		
-		// Create the species at the given location
-		ChemSim state = ChemSim.getInstance();
-		species.setStoppable(state.schedule.scheduleRepeating(species));
-		state.getMolecules().setObjectLocation(species, location);		
-	}
-	
-	/**
-	 * Create a species with the given formula at the indicated location.
-	 */
-	private void createAt(String formula, Int3D location) {
-		Species species = new Species(formula);
-		createAt(species, location);
 	}
 	
 	/**
 	 * Attempt photolysis on the species.
 	 * 
 	 * @param species to attempt photolysis on.
-	 * @return True if it occurred, false otherwise..
+	 * @param cell where the reaction should take place.
+	 * @return True if it occurred, false otherwise.
 	 */
-	private boolean photolysis(Species species) {
+	private boolean photolysis(Species species, Cell cell) {
 		// Return if there is nothing to do
 		if (!species.getPhotosensitive()) {
 			return false;
@@ -172,18 +156,20 @@ public class Reaction {
 		}
 		
 		// Decay the species based upon it's reaction with UV
-		Int3D location = ChemSim.getInstance().getMolecules().getObjectLocation(species);
 		for (String product : products) {
-			createAt(product, location);
+			// TODO Calculate quantity
+			BigDecimal value = BigDecimal.ONE;
+			
+			cell.add(new Species(product), value);
 		}
-		species.dispose();
+		cell.remove(species);
 		return true;
 	}	
 	
 	/**
 	 * Process the reactions that are possible for this entity.
 	 */
-	private boolean process(Species species, Species reactant, List<ReactionDescription> reactions, Int3D location) {
+	private boolean process(Species species, Species reactant, List<ReactionDescription> reactions, Cell cell) {
 		// Can this reaction occur?
 		List<ReactionDescription> matched = new ArrayList<ReactionDescription>();
 		for (ReactionDescription rd : reactions) {
@@ -198,21 +184,31 @@ public class Reaction {
 		// Should a disproportionation occur?
 		if (matched.size() > 1) {
 			Species product = DisproportionatingSpecies.create(species, reactant, reactions);
-			createAt(product, location);
-			species.dispose();
+			
+			// TODO Calculate quantity
+			BigDecimal value = BigDecimal.ONE;
+			
+			cell.add(product, value);
+			cell.remove(species);
+
 			if (reactant != null) {
-				reactant.dispose();
+				cell.remove(reactant);
 			}
 			return true;
 		}
 		
 		// A standard reaction is occurring
 		for (String formula : matched.get(0).getProducts()) {
-			createAt(formula, location);
+			
+			// TODO Calculate quantity
+			BigDecimal value = BigDecimal.ONE;
+			
+			cell.add(new Species(formula), value);
+			
 		}
-		species.dispose();
+		cell.remove(species);
 		if(reactant != null) {
-			reactant.dispose();
+			cell.remove(reactant);
 		}
 		return true;
 	}
@@ -220,7 +216,7 @@ public class Reaction {
 	/**
 	 * Perform a unicolecular reaction on the given species.
 	 */
-	private boolean unimolecularDecay(Species species) {
+	private boolean unimolecularDecay(Species species, Cell cell) {
 		// Get the possible reactions for this species
 		List<ReactionDescription> reactions = ReactionRegistry.getInstance().getBiomolecularReaction(species);
 		if (reactions == null) {
@@ -228,7 +224,6 @@ public class Reaction {
 		}
 
 		// Return the results of processing the reactions
-		Int3D location = ChemSim.getInstance().getMolecules().getObjectLocation(species);
-		return process(species, null, reactions, location);
+		return process(species, null, reactions, cell);
 	}
 }

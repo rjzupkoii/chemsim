@@ -2,10 +2,6 @@ package edu.mtu.compound;
 
 import java.awt.Color;
 
-import ec.util.MersenneTwisterFast;
-import edu.mtu.simulation.ChemSim;
-import sim.util.Int3D;
-
 /**
  * This class represents a chemical entity.
  */

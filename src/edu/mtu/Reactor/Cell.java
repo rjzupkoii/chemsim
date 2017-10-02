@@ -1,14 +1,17 @@
-package edu.mtu.Reactor;
+ package edu.mtu.Reactor;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import ec.util.MersenneTwisterFast;
+import edu.mtu.compound.Reaction;
 import edu.mtu.compound.Species;
-import edu.mtu.simulation.ChemSim;
 import javafx.geometry.Point3D;
 import sim.engine.SimState;
 import sim.engine.Steppable;
-import sim.util.Int3D;
 
 /***
  * This class represents a single point within the reactor.
@@ -17,7 +20,7 @@ import sim.util.Int3D;
 public class Cell implements Steppable {
 
 	private double volume;
-	private Map<Species, Long> species; 
+	private Map<Species, BigDecimal> speciesList; 
 	private Point3D location;
 	
 	/**
@@ -30,16 +33,23 @@ public class Cell implements Steppable {
 	
 	@Override
 	public void step(SimState state) {
-		// TODO Auto-generated method stub
-		
-		// Other reactions in this space
-		
-		// Photolysis
+		// Reactions
+		for (Species key : speciesList.keySet()) {
+			Reaction.getInstance().react(key, this);
+		}
 		
 		// Diffusion
-		for (Species key : species.keySet()) {
+		for (Species key : speciesList.keySet()) {
 			diffuse(state, key);
 		}
+	}
+	
+	/**
+	 * Update the given species quantity with the indicated quantity.
+	 */
+	public void add(Species species, BigDecimal value) {
+		BigDecimal current = speciesList.get(species);
+		speciesList.put(species, current.add(value));
 	}
 	
 	/**
@@ -86,15 +96,53 @@ public class Cell implements Steppable {
 		
 		// Get the neighboring cell and make the transfer
 		Cell target = reactor.getCell(new Point3D(x, y, z));
-		transfer(species, target);
+		transfer(state, species, target);
+	}
+	
+	/**
+	 * Return a list of all species with at least one entity.s
+	 */
+	public List<Species> getMolecules() {
+		ArrayList<Species> results = new ArrayList<Species>();
+		for (Species species : speciesList.keySet()) {
+			if (speciesList.get(species).compareTo(BigDecimal.ZERO) > 0) {
+				results.add(species);
+			}
+		}
+		return results;
+	}
+	
+	/**
+	 * Get the volume of this cell.
+	 */
+	public double getVolume() {
+		return volume;
+	}
+	
+	public void remove(Species species) {
+		speciesList.put(species, BigDecimal.ZERO);
+	}
+	
+	public void remove(Species species, BigDecimal value) {
+		BigDecimal current = speciesList.get(species);
+		speciesList.put(species, current.add(value));
 	}
 	
 	/**
 	 * Diffuse some moles of given species from this cell to the target 
-	 * @param species
-	 * @param target
+	 * 
+	 * @param state The current state of the simulation.
+	 * @param species The species to be diffused.
+	 * @param target The target cell to receive the species.
 	 */
-	private void transfer(Species species, Cell target) {
-		// TODO method stub
+	private void transfer(SimState state, Species species, Cell target) {
+		// Calculation how much diffusion
+		BigDecimal percentage = new BigDecimal(state.random.nextGaussian());
+		BigDecimal current = speciesList.get(species); 
+		BigDecimal transfer = current.multiply(percentage);
+		
+		// Move the mols
+		speciesList.put(species, current.subtract(transfer));
+		target.add(species, transfer);		
 	}
 }
