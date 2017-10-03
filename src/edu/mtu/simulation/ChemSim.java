@@ -3,7 +3,6 @@ package edu.mtu.simulation;
 import java.io.IOException;
 import java.util.List;
 
-import ec.util.MersenneTwisterFast;
 import edu.mtu.Reactor.Reactor;
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.compound.Species;
@@ -11,21 +10,16 @@ import edu.mtu.parser.ChemicalDto;
 import edu.mtu.parser.Parser;
 import edu.mtu.simulation.steppable.Monitor;
 import sim.engine.SimState;
-import sim.field.grid.SparseGrid3D;
-import sim.util.Int3D;
 
 @SuppressWarnings("serial")
 public class ChemSim extends SimState {
 
 	// The number of cells along one dimension
-	public final static int Cells = 30;
+	public final static int Cells = 5;
 	
 	// TODO read this from a file, the volume of the container
 	public final static double Volume = 1.8 * 1000;
-		
-	// The molecules that are registered in the simulation
-	private SparseGrid3D molecules;
-	
+			
 	// The properties for the simulation, managed by MASON
 	private ChemSimProperties properties;
 	
@@ -83,13 +77,6 @@ public class ChemSim extends SimState {
 		}
 	}
 		
-	/**
-	 * Get the compounds that are present in the model.
-	 */
-	public SparseGrid3D getMolecules() {
-		return molecules;
-	}
-	
 	/**
 	 * Get a reference to the CompoundBehavior singleton that manages decay rates.
 	 */

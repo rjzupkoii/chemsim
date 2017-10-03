@@ -1,14 +1,13 @@
 package edu.mtu.Reactor;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import edu.mtu.compound.Species;
 import javafx.geometry.Point3D;
 import sim.engine.SimState;
-import sim.util.Int3D;
 
 /**
  * The reactor is the container that the experiment takes place in. As a 
@@ -17,12 +16,13 @@ import sim.util.Int3D;
 public class Reactor {
 	
 	// Small value to use for testing and debugging.
-	private final static BigInteger AvogadroNumber = new BigInteger("1000");
+	private final static long AvogadroNumber = 1000l;
 	
 	private static Reactor instance = new Reactor();
-	
-	private BigInteger cellCount; 
+		 
 	private double volume;
+	private long cellCount;
+	private long cellWidth;
 	private Map<Point3D, Cell> cells;
 		
 	/**
@@ -38,6 +38,13 @@ public class Reactor {
 	}
 		
 	/**
+	 * Get the cells in the reactor as a list.
+	 */
+	public List<Cell> getCells() {
+		return new ArrayList<Cell>(cells.values());
+	}
+	
+	/**
 	 * Create partition the volume of the container into the appropriate
 	 * number of cells.
 	 * 
@@ -47,21 +54,21 @@ public class Reactor {
 	 */
 	public void createCells(int size, double volume, SimState state) {
 		// Find the total number of cells
-		long count = (int)Math.pow(size, 3);
-		if (count > Integer.MAX_VALUE) {
+		cellCount = (long)Math.pow(size, 3);
+		if (cellCount > Integer.MAX_VALUE) {
 			throw new IllegalArgumentException("Cell count exceeds interger value");
 		}
-		cellCount = new BigInteger(String.valueOf(count)); 
+		cellWidth = size;
 		
 		// Find the volume per point
 		this.volume = volume;
-		double cellVolume = volume / count;
+		double cellVolume = volume / (double)cellCount;
 		
 		// Prepare the cells
 		cells = new HashMap<Point3D, Cell>();
 		for (int ndx = 0; ndx < size; ndx++) {
 			for (int ndy = 0; ndy < size; ndy++) {
-				for (int ndz = 9; ndz < size; ndz++) {
+				for (int ndz = 0; ndz < size; ndz++) {				
 					Point3D location = new Point3D(ndx, ndy, ndz);
 					Cell cell = new Cell(location, cellVolume);
 					cells.put(location, cell);
@@ -80,7 +87,7 @@ public class Reactor {
 	 */
 	public void createEntities(Species species, float mols, boolean photosensitive) {
 		// Find the quantity per cell (value = (NA * mols) / cells)
-		BigDecimal value = new BigDecimal(AvogadroNumber.multiply(new BigDecimal(mols).toBigInteger()).divide(cellCount));
+		long value = (long)((AvogadroNumber * mols) / cellCount);
 		
 		// Allocate the species
 		for (Point3D point : cells.keySet()) {
@@ -96,8 +103,8 @@ public class Reactor {
 		if (cells.containsKey(location)) {
 			return cells.get(location);
 		}
-		String message = String.format("The location ({0}, {1}, {2}) does not exist.", 
-				location.getX(), location.getY(), location.getZ());
+		String message = String.format("The location (%d, %d, %d) does not exist.", 
+				(int)location.getX(), (int)location.getY(), (int)location.getZ());
 		throw new IllegalArgumentException(message);
 	}
 	
@@ -106,6 +113,13 @@ public class Reactor {
 	 */
 	public int getCellCount() {
 		return (cells != null) ? cells.size() : 0;
+	}
+	
+	/**
+	 * Get the number of cells along any dimension.
+	 */
+	public long getCellWidth() {
+		return cellWidth;
 	}
 	
 	/**

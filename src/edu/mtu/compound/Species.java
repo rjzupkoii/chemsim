@@ -37,6 +37,17 @@ public class Species {
 		return formula.equals(species.getFormula());
 	}
 	
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (!(obj instanceof Species)) {
+			return false;
+		}
+		Species value = (Species)obj;
+		return (formula.equals(value.getFormula()));
+	}
+	
 	/**
 	 * Get the color of this species.
 	 * 
@@ -59,6 +70,10 @@ public class Species {
 	 */
 	public boolean getPhotosensitive() {
 		return photosensitive;
+	}
+	
+	public int hashCode() {
+		return formula.hashCode();
 	}
 		
 	/**

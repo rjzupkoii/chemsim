@@ -2,13 +2,11 @@ package edu.mtu.simulation.steppable;
 
 import java.util.Iterator;
 
-import edu.mtu.compound.Species;
 import edu.mtu.simulation.ChemSim;
 import edu.mtu.simulation.CompoundBehavior;
 import edu.mtu.simulation.CompoundInspector;
 import sim.engine.SimState;
 import sim.engine.Steppable;
-import sim.util.Int3D;
 
 /**
  * This agent monitors the simulation and stops it when the stopping

@@ -1,19 +1,14 @@
 package edu.mtu.compound;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import ec.util.MersenneTwisterFast;
 import edu.mtu.Reactor.Cell;
-import edu.mtu.Reactor.Reactor;
 import edu.mtu.catalog.ReactionDescription;
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.simulation.ChemSim;
-import sim.util.Bag;
-import sim.util.Int3D;
 
 /**
  * This class provides a means for a chemical species to react with other species.
@@ -63,10 +58,10 @@ public class Reaction {
 			for (String product : reaction.getProducts()) {
 				
 				// TODO Calculate quantity
-				BigDecimal value = BigDecimal.ONE;
+				long value = 1;
 				
 				cell.add(new Species(product), value);
-				cell.add(species,  value.multiply(new BigDecimal("-1")));
+				cell.add(species, -value);
 			}
 		}
 		
@@ -158,7 +153,7 @@ public class Reaction {
 		// Decay the species based upon it's reaction with UV
 		for (String product : products) {
 			// TODO Calculate quantity
-			BigDecimal value = BigDecimal.ONE;
+			long value = 1;
 			
 			cell.add(new Species(product), value);
 		}
@@ -186,7 +181,7 @@ public class Reaction {
 			Species product = DisproportionatingSpecies.create(species, reactant, reactions);
 			
 			// TODO Calculate quantity
-			BigDecimal value = BigDecimal.ONE;
+			long value = 1;
 			
 			cell.add(product, value);
 			cell.remove(species);
@@ -201,7 +196,7 @@ public class Reaction {
 		for (String formula : matched.get(0).getProducts()) {
 			
 			// TODO Calculate quantity
-			BigDecimal value = BigDecimal.ONE;
+			long value = 1;
 			
 			cell.add(new Species(formula), value);
 			

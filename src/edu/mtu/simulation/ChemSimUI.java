@@ -125,15 +125,15 @@ public class ChemSimUI extends GUIState {
 	 */
 	private void setupPortrayals() {
 		try {
-			// Set the portrayals of the compounds
-			Species reference = new Species("H2O2");
-			compoundPortrayal.setField(((ChemSim)state).getMolecules());
-			compoundPortrayal.setPortrayalForClass(Species.class, new CompoundPortrayal(reference));
-			compoundPortrayal.setPortrayalForClass(DisproportionatingSpecies.class, new CompoundPortrayal(DisproportionatingSpecies.create(reference, null)));
-			
-			// Make sure the display is scheduled correctly
-			display.createSceneGraph();
-			display.reset();
+//			// Set the portrayals of the compounds
+//			Species reference = new Species("H2O2");
+//			compoundPortrayal.setField(((ChemSim)state).getMolecules());
+//			compoundPortrayal.setPortrayalForClass(Species.class, new CompoundPortrayal(reference));
+//			compoundPortrayal.setPortrayalForClass(DisproportionatingSpecies.class, new CompoundPortrayal(DisproportionatingSpecies.create(reference, null)));
+//			
+//			// Make sure the display is scheduled correctly
+//			display.createSceneGraph();
+//			display.reset();
 			
 			// Add the hydroxyl radical chart
 			this.scheduleRepeatingImmediatelyAfter(hydroxylRadicalChart);

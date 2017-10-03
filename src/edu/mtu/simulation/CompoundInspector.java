@@ -1,23 +1,25 @@
 package edu.mtu.simulation;
 
+import edu.mtu.Reactor.Cell;
+import edu.mtu.Reactor.Reactor;
 import edu.mtu.compound.Species;
 
 // TODO Generate the following block of properties using reflection
 public class CompoundInspector {
 	
-	public int getAcetoneCount() {
+	public long getAcetoneCount() {
 		return countSpecies("CH3COCH3");
 	}
 	
-	public int getHydrogenPeroxideCount() {
+	public long getHydrogenPeroxideCount() {
 		return countSpecies("H2O2");
 	}
 
-	public int getHydroxylRadicalCount() {
+	public long getHydroxylRadicalCount() {
 		return countSpecies("HO*");
 	}
 	
-	public int getPeroxyRadicalCount() {
+	public long getPeroxyRadicalCount() {
 		return countSpecies("HO2");
 	}
 	
@@ -27,12 +29,13 @@ public class CompoundInspector {
 	 * @param formula The formula of the species to count.
 	 * @return The count of species in the model.
 	 */
-	public static int countSpecies(String formula) {
-		int count = 0;
+	public static long countSpecies(String formula) {
+		long count = 0;
 
 		try {
-			for (Object object : ChemSim.getInstance().getMolecules().getAllObjects()) {
-				count += (((Species)object).getFormula().equals(formula)) ? 1 : 0;
+			Species species = new Species(formula);
+			for (Cell cell : Reactor.getInstance().getCells()) {
+				count += cell.count(species);
 			}
 		} catch (NullPointerException ex) {
 			// Ignore these errors since they likely mean the model is not

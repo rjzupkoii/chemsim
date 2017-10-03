@@ -1,8 +1,7 @@
  package edu.mtu.Reactor;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,13 +19,14 @@ import sim.engine.Steppable;
 public class Cell implements Steppable {
 
 	private double volume;
-	private Map<Species, BigDecimal> speciesList; 
+	private Map<Species, Long> speciesList;
 	private Point3D location;
 	
 	/**
 	 * Constructor.
 	 */
 	public Cell(Point3D location, double volume) {
+		speciesList = new HashMap<Species, Long>();
 		this.volume = volume;
 		this.location = location;
 	}
@@ -47,9 +47,25 @@ public class Cell implements Steppable {
 	/**
 	 * Update the given species quantity with the indicated quantity.
 	 */
-	public void add(Species species, BigDecimal value) {
-		BigDecimal current = speciesList.get(species);
-		speciesList.put(species, current.add(value));
+	public void add(Species species, long value) {
+		if (speciesList == null) {
+			throw new IllegalStateException("The reactor has not been initialized."); 
+		}
+		
+		if (!speciesList.containsKey(species)) {
+			speciesList.put(species, value);
+		} else {
+			long current = speciesList.get(species);
+			speciesList.put(species, current + value);
+		}
+	}
+	
+	/**
+	 * Get the number of molecules of the given species.
+	 */
+	public long count(Species species) {
+		boolean check = speciesList.containsKey(species);
+		return check ? speciesList.get(species) : 0;
 	}
 	
 	/**
@@ -58,35 +74,35 @@ public class Cell implements Steppable {
 	private void diffuse(SimState state, Species species) {
 		// Get the size of the reactor
 		Reactor reactor = Reactor.getInstance();
-		int size = reactor.getCellCount();
+		long size = reactor.getCellWidth();
 		if (size == 0) {
 			throw new IllegalStateException("The reactor has not been initialized.");
 		}
 		
-		// Generate the random values for the walk 
+		// Generate the random values for the walk
 		MersenneTwisterFast random = state.random;
 		double walkX = random.nextGaussian();
 		double walkY = random.nextGaussian();
 		double walkZ = random.nextGaussian();
 		
 		// Apply the values, note that we are discarding everything outside of one standard deviation
-		int x = (int)(location.getX() + ((walkX > 0 && walkX <= 1) ? 1 : 0));
+		long x = (long)(location.getX() + ((walkX > 0 && walkX <= 1) ? 1 : 0));
 		x += (walkX <= 0 && walkX >= -1) ? -1 : 0;
 		
-		int y = (int)(location.getY() + ((walkY > 0 && walkY <= 1) ? 1 : 0));
+		long y = (long)(location.getY() + ((walkY > 0 && walkY <= 1) ? 1 : 0));
 		y += (walkY <= 0 && walkY >= -1) ? -1 : 0;
 		
-		int z = (int)(location.getZ() + ((walkZ > 0 && walkZ <= 1) ? 1 : 0));
+		long z = (long)(location.getZ() + ((walkZ > 0 && walkZ <= 1) ? 1 : 0));
 		z += (walkZ <= 0 && walkZ >= -1) ? -1 : 0;
 		
 		// Adjust the location as needed so we stay in the bounds of the container
-		x = (x > size) ? size : x;
+		x = (x >= size) ? size - 1 : x;
 		x = (x < 0) ? 0 : x;
 		
-		y = (y > size) ? size : y;
+		y = (y >= size) ? size - 1: y;
 		y = (y < 0) ? 0 : y;
 		
-		z = (z > size) ? size : z;
+		z = (z >= size) ? size - 1 : z;
 		z = (z < 0) ? 0 : z;
 		
 		// Return if we haven't actually moved
@@ -100,12 +116,12 @@ public class Cell implements Steppable {
 	}
 	
 	/**
-	 * Return a list of all species with at least one entity.s
+	 * Return a list of all species with at least one entity.
 	 */
 	public List<Species> getMolecules() {
 		ArrayList<Species> results = new ArrayList<Species>();
 		for (Species species : speciesList.keySet()) {
-			if (speciesList.get(species).compareTo(BigDecimal.ZERO) > 0) {
+			if (speciesList.get(species) != 0) {
 				results.add(species);
 			}
 		}
@@ -120,12 +136,12 @@ public class Cell implements Steppable {
 	}
 	
 	public void remove(Species species) {
-		speciesList.put(species, BigDecimal.ZERO);
+		speciesList.put(species, 0l);
 	}
 	
-	public void remove(Species species, BigDecimal value) {
-		BigDecimal current = speciesList.get(species);
-		speciesList.put(species, current.add(value));
+	public void remove(Species species, long value) {
+		long current = speciesList.get(species);
+		speciesList.put(species, current + value);
 	}
 	
 	/**
@@ -137,12 +153,12 @@ public class Cell implements Steppable {
 	 */
 	private void transfer(SimState state, Species species, Cell target) {
 		// Calculation how much diffusion
-		BigDecimal percentage = new BigDecimal(state.random.nextGaussian());
-		BigDecimal current = speciesList.get(species); 
-		BigDecimal transfer = current.multiply(percentage);
+		double percentage = state.random.nextGaussian();
+		long current = speciesList.get(species); 
+		long transfer = (long)(current * percentage);
 		
 		// Move the mols
-		speciesList.put(species, current.subtract(transfer));
+		speciesList.put(species, current - transfer);
 		target.add(species, transfer);		
 	}
 }
