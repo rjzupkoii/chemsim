@@ -2,6 +2,7 @@ package edu.mtu.simulation;
 
 import edu.mtu.Reactor.Cell;
 import edu.mtu.Reactor.Reactor;
+import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.compound.Species;
 
 // TODO Generate the following block of properties using reflection
@@ -33,7 +34,7 @@ public class CompoundInspector {
 		long count = 0;
 
 		try {
-			Species species = new Species(formula);
+			Species species = ReactionRegistry.getInstance().getSpecies(formula);
 			for (Cell cell : Reactor.getInstance().getCells()) {
 				count += cell.count(species);
 			}

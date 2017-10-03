@@ -33,15 +33,23 @@ public class Cell implements Steppable {
 	
 	@Override
 	public void step(SimState state) {
+		if (speciesList.isEmpty()) {
+			System.err.println(String.format("Cell (%d, %d, %d) has an empty species list.", 
+					(int)location.getX(), (int)location.getY(), (int)location.getZ()));
+			return;
+		}
+		
 		// Reactions
-		for (Species key : speciesList.keySet()) {
+		ArrayList<Species> keys = new ArrayList<Species>(speciesList.keySet());
+		for (Species key : keys) {
 			Reaction.getInstance().react(key, this);
 		}
 		
 		// Diffusion
-		for (Species key : speciesList.keySet()) {
-			diffuse(state, key);
-		}
+//		keys = new ArrayList<Species>(speciesList.keySet());
+//		for (Species key : keys) {
+//			diffuse(state, key);
+//		}
 	}
 	
 	/**
@@ -51,6 +59,10 @@ public class Cell implements Steppable {
 		if (speciesList == null) {
 			throw new IllegalStateException("The reactor has not been initialized."); 
 		}
+		if (value < 0) {
+			throw new IllegalArgumentException(
+					String.format("The value (%d) for %s cannot be less than zero", value, species.getFormula()));
+		}
 		
 		if (!speciesList.containsKey(species)) {
 			speciesList.put(species, value);
@@ -59,7 +71,7 @@ public class Cell implements Steppable {
 			speciesList.put(species, current + value);
 		}
 	}
-	
+		
 	/**
 	 * Get the number of molecules of the given species.
 	 */
@@ -135,13 +147,32 @@ public class Cell implements Steppable {
 		return volume;
 	}
 	
+	/**
+	 * Removes all of the species form the model.
+	 */
 	public void remove(Species species) {
 		speciesList.put(species, 0l);
 	}
 	
+	/**
+	 * Removes the given quantity of the species from the model. 
+	 */
 	public void remove(Species species, long value) {
-		long current = speciesList.get(species);
-		speciesList.put(species, current + value);
+		if (speciesList == null) {
+			throw new IllegalStateException("The reactor has not been initialized."); 
+		}
+		if (value < 0) {
+			throw new IllegalArgumentException("The value cannot be less than zero");
+		}
+		
+		if (!speciesList.containsKey(species)) {
+			throw new IllegalStateException(String.format("%s does not exist as a species", species.getFormula()));
+		} else {
+			long current = speciesList.get(species);
+			long update = current - value;
+			update = (update < 0) ? 0 : update;
+			speciesList.put(species, update);
+		}
 	}
 	
 	/**
@@ -153,12 +184,16 @@ public class Cell implements Steppable {
 	 */
 	private void transfer(SimState state, Species species, Cell target) {
 		// Calculation how much diffusion
-		double percentage = state.random.nextGaussian();
+		double percentage = Math.abs(state.random.nextGaussian());
 		long current = speciesList.get(species); 
+		if (current < 0) {
+			// TODO This is likely due to a bounds error
+			System.err.println(String.format("Less than zero on %s", species.getFormula()));
+		}
 		long transfer = (long)(current * percentage);
 		
 		// Move the mols
-		speciesList.put(species, current - transfer);
+		remove(species, transfer);
 		target.add(species, transfer);		
 	}
 }

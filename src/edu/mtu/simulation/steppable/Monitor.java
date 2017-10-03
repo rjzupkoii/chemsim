@@ -25,7 +25,8 @@ public class Monitor implements Steppable {
 		updateBehavior();
 				
 		// Check to see if acetone is exhausted
-		if (inspector.getAcetoneCount() == 0) {
+		long count = inspector.getAcetoneCount(); 
+		if (count == 0) {
 			state.finish();
 		}
 				

@@ -121,16 +121,15 @@ public class ChemSim extends SimState {
 		List<ChemicalDto> chemicals = Parser.parseChemicals(properties.getChemicalsFileName());
 		
 		// Hold on to a reference to the registry
-		ReactionRegistry instance = ReactionRegistry.getInstance();
+		ReactionRegistry registry = ReactionRegistry.getInstance();
 						
 		// Add each of the chemicals to the model, assume they are well mixed
 		Reactor reactor = Reactor.getInstance();
 		for (ChemicalDto chemical : chemicals) {
 			// Add the molecules to the model
-			boolean photosensitive = instance.getPhotolysisReaction(chemical.formula) != null;			
-			Species species = new Species(chemical.formula);
+			Species species = registry.getSpecies(chemical.formula);
 			int quantity = (int)(chemical.mols * properties.getMoleculesPerMole());
-			reactor.createEntities(species, quantity, photosensitive);
+			reactor.createEntities(species, quantity);
 			
 			// Calculate it's linear decay rate, f(x) = C - r * t
 			// 

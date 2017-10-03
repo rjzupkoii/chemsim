@@ -17,7 +17,8 @@ public class DisproportionatingSpecies extends Species {
 	 * Constructor.
 	 */
 	public DisproportionatingSpecies(String formula) {
-		super(formula);
+		// NOTE We are assuming that disproportion is always independent of photolysis
+		super(formula, false);
 	}
 
 	/**

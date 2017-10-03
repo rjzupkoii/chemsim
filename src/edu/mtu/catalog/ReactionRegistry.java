@@ -113,9 +113,15 @@ public class ReactionRegistry {
 	}
 	
 	/**
+	 * Generate a new species that matches the given formula.
+	 */
+	public Species getSpecies(String formula) {
+		boolean photosensitive = getPhotolysisReaction(formula) != null;
+		return new Species(formula, photosensitive);
+	}
+	
+	/**
 	 * Returns the list of unimolecular reactions for the chemical species or null.
-	 * @param species
-	 * @return
 	 */
 	public List<ReactionDescription> getUnimolecularReaction(Species species) {
 		return unimolecular.get(species.getFormula());

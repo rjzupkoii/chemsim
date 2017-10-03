@@ -7,14 +7,15 @@ import java.awt.Color;
  */
 public class Species {
 
-	private boolean photosensitive = false;
+	private boolean photosensitive;
 	private String formula;
-	
+		
 	/**
 	 * Constructor.
 	 */
-	public Species(String formula) {
+	public Species(String formula, boolean photosensitive) {
 		this.formula = formula;
+		this.photosensitive = photosensitive;
 	}
 	
 	public static boolean areEqual(Species one, Species two) {

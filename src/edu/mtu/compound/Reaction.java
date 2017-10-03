@@ -55,13 +55,14 @@ public class Reaction {
 			indicies.add(ndx);
 			
 			// Create the products for the reaction
+			ReactionRegistry registry = ReactionRegistry.getInstance();
 			for (String product : reaction.getProducts()) {
 				
 				// TODO Calculate quantity
 				long value = 1;
 				
-				cell.add(new Species(product), value);
-				cell.add(species, -value);
+				cell.add(registry.getSpecies(product), value);
+				cell.remove(species, value);
 			}
 		}
 		
@@ -151,13 +152,14 @@ public class Reaction {
 		}
 		
 		// Decay the species based upon it's reaction with UV
+		ReactionRegistry registry = ReactionRegistry.getInstance();
 		for (String product : products) {
 			// TODO Calculate quantity
 			long value = 1;
 			
-			cell.add(new Species(product), value);
+			cell.add(registry.getSpecies(product), value);
+			cell.remove(species, value);
 		}
-		cell.remove(species);
 		return true;
 	}	
 	
@@ -193,17 +195,17 @@ public class Reaction {
 		}
 		
 		// A standard reaction is occurring
+		ReactionRegistry registry = ReactionRegistry.getInstance();
 		for (String formula : matched.get(0).getProducts()) {
 			
 			// TODO Calculate quantity
 			long value = 1;
 			
-			cell.add(new Species(formula), value);
-			
-		}
-		cell.remove(species);
-		if(reactant != null) {
-			cell.remove(reactant);
+			cell.add(registry.getSpecies(formula), value);
+			cell.remove(species, value);
+			if(reactant != null) {
+				cell.remove(reactant, value);
+			}
 		}
 		return true;
 	}

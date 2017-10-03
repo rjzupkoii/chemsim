@@ -85,7 +85,7 @@ public class Reactor {
 	 * @param mols
 	 * @param photosensitive
 	 */
-	public void createEntities(Species species, float mols, boolean photosensitive) {
+	public void createEntities(Species species, float mols) {
 		// Find the quantity per cell (value = (NA * mols) / cells)
 		long value = (long)((AvogadroNumber * mols) / cellCount);
 		
@@ -121,7 +121,7 @@ public class Reactor {
 	public long getCellWidth() {
 		return cellWidth;
 	}
-	
+		
 	/**
 	 * Get the volume of the container in milliliters (ml).
 	 */
