@@ -42,14 +42,17 @@ public class Cell implements Steppable {
 		// Reactions
 		ArrayList<Species> keys = new ArrayList<Species>(speciesList.keySet());
 		for (Species key : keys) {
+			if (count(key) == 0) {
+				continue;
+			}
 			Reaction.getInstance().react(key, this);
 		}
 		
 		// Diffusion
-//		keys = new ArrayList<Species>(speciesList.keySet());
-//		for (Species key : keys) {
-//			diffuse(state, key);
-//		}
+		keys = new ArrayList<Species>(speciesList.keySet());
+		for (Species key : keys) {
+			diffuse(state, key);
+		}
 	}
 	
 	/**
@@ -183,17 +186,31 @@ public class Cell implements Steppable {
 	 * @param target The target cell to receive the species.
 	 */
 	private void transfer(SimState state, Species species, Cell target) {
-		// Calculation how much diffusion
-		double percentage = Math.abs(state.random.nextGaussian());
+		// Check to see if we can or should do anything
 		long current = speciesList.get(species); 
+		if (current == 0) {
+			return;
+		}
 		if (current < 0) {
 			// TODO This is likely due to a bounds error
 			System.err.println(String.format("Less than zero on %s", species.getFormula()));
 		}
+		
+		// Calculation how much diffusion
+		// TODO Update this to a library with a range of [0, 1]
+		//double percentage = Math.abs(state.random.nextGaussian());
+		double percentage = state.random.nextDouble();
 		long transfer = (long)(current * percentage);
+		
+		System.out.println(species.getFormula());
+		System.out.println(count(species));
+		System.out.println(target.count(species));
 		
 		// Move the mols
 		remove(species, transfer);
-		target.add(species, transfer);		
+		target.add(species, transfer);
+		
+		System.out.println(count(species));
+		System.out.println(target.count(species));
 	}
 }

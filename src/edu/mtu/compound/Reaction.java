@@ -145,18 +145,21 @@ public class Reaction {
 			return false;
 		}
 		
+		// TODO Make this probabilistic
 		// Otherwise, first check to see if it should occur (dice roll)
-		double odds = ChemSim.getBehavior().getDecayOdds(species.getFormula());
-		if (random.nextDouble() > odds) {
-			return false;
-		}
+//		double odds = ChemSim.getBehavior().getDecayOdds(species.getFormula());
+//		if (random.nextDouble() > odds) {
+//			return false;
+//		}
+		
+		
 		
 		// Decay the species based upon it's reaction with UV
 		ReactionRegistry registry = ReactionRegistry.getInstance();
 		for (String product : products) {
 			// TODO Calculate quantity
 			long value = 1;
-			
+					
 			cell.add(registry.getSpecies(product), value);
 			cell.remove(species, value);
 		}
