@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ec.util.MersenneTwisterFast;
 import edu.mtu.Reactor.Cell;
 import edu.mtu.catalog.ReactionDescription;
 import edu.mtu.catalog.ReactionRegistry;
@@ -14,15 +13,18 @@ import edu.mtu.simulation.ChemSim;
  * This class provides a means for a chemical species to react with other species.
  */
 public class Reaction {
-
-	private MersenneTwisterFast random = null;
+	
 	private static Reaction instance = new Reaction();
+	
+	private int hydrogenPeroxideDecay;
+	private int hydrogenPeroxideRatio;
 	
 	/**
 	 * Singleton constructor.
 	 */
 	private Reaction() { 
-		random = ChemSim.getInstance().random;
+		hydrogenPeroxideDecay = ChemSim.getProperties().getHydrogenPeroxideDecay();
+		hydrogenPeroxideRatio = ChemSim.getProperties().getHydrogenPeroxideRatio();
 	}
 	
 	/**
@@ -39,6 +41,12 @@ public class Reaction {
 	 * @param cell where the reaction should take place.
 	 */
 	public void disproportionate(DisproportionatingSpecies species, Cell cell) {
+		// Is there anything to do?
+		long count = cell.count(species);
+		if (count == 0) {
+			return;
+		}
+		
 		// Note the age
 		int age = species.updateAge();
 		
@@ -54,16 +62,12 @@ public class Reaction {
 			// Note the index for removal
 			indicies.add(ndx);
 			
-			// Create the products for the reaction
+			// Create the products for the reaction			
 			ReactionRegistry registry = ReactionRegistry.getInstance();
-			for (String product : reaction.getProducts()) {
-				
-				// TODO Calculate quantity
-				long value = 1;
-				
-				cell.add(registry.getSpecies(product), value);
-				cell.remove(species, value);
+			for (String product : reaction.getProducts()) {			
+				cell.add(registry.getSpecies(product), count);
 			}
+			cell.remove(species, count);
 		}
 		
 		// Remove the reactions that occurred
@@ -145,23 +149,14 @@ public class Reaction {
 			return false;
 		}
 		
-		// TODO Make this probabilistic
-		// Otherwise, first check to see if it should occur (dice roll)
-//		double odds = ChemSim.getBehavior().getDecayOdds(species.getFormula());
-//		if (random.nextDouble() > odds) {
-//			return false;
-//		}
-		
-		
-		
 		// Decay the species based upon it's reaction with UV
 		ReactionRegistry registry = ReactionRegistry.getInstance();
 		for (String product : products) {
-			// TODO Calculate quantity
-			long value = 1;
+			// TODO Marker for changing out the hydrogen peroxide decay quantity
+			long value = hydrogenPeroxideDecay;
 					
 			cell.add(registry.getSpecies(product), value);
-			cell.remove(species, value);
+			cell.remove(species, value * hydrogenPeroxideRatio);
 		}
 		return true;
 	}	
@@ -181,40 +176,47 @@ public class Reaction {
 			return false;
 		}
 		
-		// Should a disproportionation occur?
+		// Add the appropriate number of molecules to the model
+		long value;
 		if (matched.size() > 1) {
+			// A disproporting reaction is occurring
+			value = getQuantity(species,reactant, cell);
 			Species product = DisproportionatingSpecies.create(species, reactant, reactions);
-			
-			// TODO Calculate quantity
-			long value = 1;
-			
 			cell.add(product, value);
-			cell.remove(species);
-
-			if (reactant != null) {
-				cell.remove(reactant);
+		} else {
+			// A standard reaction is occurring
+			value = getQuantity(species,reactant, cell);
+			ReactionRegistry registry = ReactionRegistry.getInstance();
+			for (String formula : matched.get(0).getProducts()) {
+				cell.add(registry.getSpecies(formula), value);
 			}
-			return true;
 		}
 		
-		// A standard reaction is occurring
-		ReactionRegistry registry = ReactionRegistry.getInstance();
-		for (String formula : matched.get(0).getProducts()) {
-			
-			// TODO Calculate quantity
-			long value = 1;
-			
-			cell.add(registry.getSpecies(formula), value);
-			cell.remove(species, value);
-			if(reactant != null) {
-				cell.remove(reactant, value);
-			}
+		// Clean up the reactants that were involved
+		cell.remove(species, value);
+		if (reactant != null) {
+			cell.remove(reactant);
 		}
 		return true;
 	}
 	
 	/**
-	 * Perform a unicolecular reaction on the given species.
+	 * Get the minimum quantity of reactant to use.
+	 */
+	private long getQuantity(Species one, Species two, Cell cell) {
+		long valueOne = (one != null) ? cell.count(one) : 0;
+		long valueTwo = (two != null) ? cell.count(two) : 0;
+		if (valueOne == 0) {
+			return valueTwo;
+		}
+		if (valueTwo == 0) {
+			return valueOne;
+		}
+		return Math.min(valueOne, valueTwo);
+	}
+	
+	/**
+	 * Perform a unimolecular reaction on the given species.
 	 */
 	private boolean unimolecularDecay(Species species, Cell cell) {
 		// Get the possible reactions for this species

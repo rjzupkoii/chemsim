@@ -53,6 +53,9 @@ public class Cell implements Steppable {
 		for (Species key : keys) {
 			diffuse(state, key);
 		}
+		
+		// Clean-up
+		// TODO Remove exhausted disproportionating species
 	}
 	
 	/**
@@ -192,7 +195,7 @@ public class Cell implements Steppable {
 			return;
 		}
 		if (current < 0) {
-			// TODO This is likely due to a bounds error
+			// This is likely due to a bounds error
 			System.err.println(String.format("Less than zero on %s", species.getFormula()));
 		}
 		
@@ -201,16 +204,9 @@ public class Cell implements Steppable {
 		//double percentage = Math.abs(state.random.nextGaussian());
 		double percentage = state.random.nextDouble();
 		long transfer = (long)(current * percentage);
-		
-		System.out.println(species.getFormula());
-		System.out.println(count(species));
-		System.out.println(target.count(species));
-		
+			
 		// Move the mols
 		remove(species, transfer);
 		target.add(species, transfer);
-		
-		System.out.println(count(species));
-		System.out.println(target.count(species));
 	}
 }

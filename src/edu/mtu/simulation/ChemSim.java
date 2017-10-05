@@ -22,10 +22,7 @@ public class ChemSim extends SimState {
 			
 	// The properties for the simulation, managed by MASON
 	private ChemSimProperties properties;
-	
-	// The behavior of the compounds in this run of the simulation
-	private CompoundBehavior behavior;
-			
+				
 	// Singleton instance of the simulation
 	private static ChemSim instance;
 	
@@ -58,9 +55,6 @@ public class ChemSim extends SimState {
 			// Clear the container of molecules
 			Reactor.getInstance().createCells(Cells, Volume, this);
 			
-			// Clear any behavior model that currently exists
-			behavior = new CompoundBehavior();
-
 			// Import the reactions into the model
 			ReactionRegistry instance = ReactionRegistry.getInstance();
 			instance.clear();
@@ -75,18 +69,6 @@ public class ChemSim extends SimState {
 			ex.printStackTrace();
 			System.exit(1);
 		}
-	}
-		
-	/**
-	 * Get a reference to the CompoundBehavior singleton that manages decay rates.
-	 */
-	public static CompoundBehavior getBehavior() {
-		// We expect the class to already be instantiated
-		if (instance == null) {
-			throw new IllegalStateException();
-		}
-		
-		return instance.behavior;
 	}
 	
 	/**
@@ -130,16 +112,6 @@ public class ChemSim extends SimState {
 			Species species = registry.getSpecies(chemical.formula);
 			int quantity = (int)(chemical.mols * properties.getMoleculesPerMole());
 			reactor.createEntities(species, quantity);
-			
-			// Calculate it's linear decay rate, f(x) = C - r * t
-			// 
-			// Note that this means we need to determine the odds that any individual agent will be 
-			// removed each time step based upon the new population which requires us knowing the 
-			// initial decay
-			long decay = Math.round(quantity * getProperties().getUvIntensity());
-			double odds = decay / (double)quantity;
-			behavior.setDecayQuantity(chemical.formula, decay);
-			behavior.setDecayOdds(chemical.formula, odds);
 		}		
 	}
 	

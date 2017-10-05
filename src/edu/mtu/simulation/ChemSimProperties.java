@@ -1,40 +1,24 @@
 package edu.mtu.simulation;
 
+import edu.mtu.Reactor.Reactor;
+
 public class ChemSimProperties {
 	
-	// Initial settings for the model
+	// Default time step durations for disproporting species
 	private int fastPathway = 1;
 	private int mediumPathway = 2;
 	private int slowPathway = 3;	
+
+	// Default for how many hydrogen peroxide molecules decay into hydroxyl radicals
+	private int hydrogenPeroxideRatio = 10;
 	
-	private int moleculesPerMole = 10;
+	// Default for how fast hydrogen peroxide decays into hydroxyl radicals
+	private int hydrogenPeroxideDecay = 100;
 	
-	private double oxygenSaturation = 1.0;
-	private double uvIntensity = 0.025;
-	
+	// Default paths to experiments
 	private String chemicalsFileName = "experiment/chemicals.csv";
 	private String reactionsFileName = "experiment/reactions.csv";
-				
-	// TODO Marker for hard-coded operation
-	private int maxHydroxylRadicals = 3;
-	private double hydroxyleRadicalOdds = 0.025;
-	
-	public double getHydroxyleRadicalOdds() {
-		return hydroxyleRadicalOdds;
-	}
-	
-	public int getMaxHydroxylRadicals() {
-		return maxHydroxylRadicals;
-	}
-
-	public void setHydroxyleRadicalOdds(double value) {
-		hydroxyleRadicalOdds = value;
-	}
-	
-	public void setMaxHydroxylRadicals(int value) {
-		maxHydroxylRadicals = value;
-	}
-		
+						
 	// TODO Figure out a way to expose this as an actual MASON inspector
 	public CompoundInspector getCompoundInspector() {
 		return new CompoundInspector();
@@ -47,29 +31,29 @@ public class ChemSimProperties {
 	public int getFastPathway() {
 		return fastPathway;
 	}
+	
+	public int getHydrogenPeroxideDecay() {
+		return hydrogenPeroxideDecay;
+	}
 
+	public int getHydrogenPeroxideRatio() {
+		return hydrogenPeroxideRatio;
+	}
+	
 	public int getMediumPathway() {
 		return mediumPathway;
 	}
 	
-	public int getMoleculesPerMole() {
-		return moleculesPerMole;
+	public long getMoleculesPerMole() {
+		return Reactor.AvogadroNumber;
 	}
-	
-	public double getOxygenSaturation() {
-		return oxygenSaturation;
-	}
-	
+		
 	public String getReactionsFileName() {
 		return reactionsFileName;
 	}
 	
 	public int getSlowPathway() {
 		return slowPathway;
-	}
-
-	public double getUvIntensity() {
-		return uvIntensity;
 	}
 	
 	public void setChemicalsFileName(String value) {
@@ -80,27 +64,23 @@ public class ChemSimProperties {
 		fastPathway = value;
 	}
 			
+	public void setHydrogenPeroxideDecay(int value) {
+		hydrogenPeroxideDecay = value;
+	}
+	
+	public void setHydrogenPeroxideRatio(int value) {
+		hydrogenPeroxideRatio = value;
+	}
+	
 	public void setMediumPathway(int value) {
 		mediumPathway = value;
 	}
-	
-	public void setMoleculesPerMole(int value) {
-		moleculesPerMole = value;
-	}
 
-	public void setOxygenSaturation(double value) {
-		oxygenSaturation  = value;
-	}
-	
 	public void setReactionsFileName(String value) {
 		reactionsFileName = value;
 	}
 	
 	public void setSlowPathway(int value) {
 		slowPathway = value;
-	}	
-	
-	public void setUvIntensity(double value) {
-		uvIntensity = value;
 	}
 }
