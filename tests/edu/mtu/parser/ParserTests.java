@@ -25,6 +25,8 @@ public class ParserTests {
 	static {
 		chemicals.add(new ChemicalDto("Hydrogen Peroxide", "H2O2", 150.0));
 		chemicals.add(new ChemicalDto("Acetone", "CH3COCH3", 11.0));
+		chemicals.add(new ChemicalDto("Water", "H2O", 1001.1));
+		chemicals.add(new ChemicalDto("Hydrogen", "H", 0.00125));
 	}
 	
 	private static List<ReactionDescription> reactions = new ArrayList<ReactionDescription>();

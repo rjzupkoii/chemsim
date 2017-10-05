@@ -85,8 +85,8 @@ public class Reactor {
 	 * @param mols
 	 * @param photosensitive
 	 */
-	public void createEntities(Species species, float mols) {
-		// Find the quantity per cell (value = (NA * mols) / cells)
+	public void createEntities(Species species, double mols) {
+		// Find the quantity per cell
 		long value = (long)((AvogadroNumber * mols) / cellCount);
 		
 		// Allocate the species

@@ -110,8 +110,7 @@ public class ChemSim extends SimState {
 		for (ChemicalDto chemical : chemicals) {
 			// Add the molecules to the model
 			Species species = registry.getSpecies(chemical.formula);
-			int quantity = (int)(chemical.mols * properties.getMoleculesPerMole());
-			reactor.createEntities(species, quantity);
+			reactor.createEntities(species, chemical.mols);
 		}		
 	}
 	
