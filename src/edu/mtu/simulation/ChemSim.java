@@ -9,6 +9,7 @@ import edu.mtu.compound.Species;
 import edu.mtu.parser.ChemicalDto;
 import edu.mtu.parser.Parser;
 import edu.mtu.simulation.steppable.Monitor;
+import edu.mtu.simulation.tracking.TrackEnties;
 import sim.engine.SimState;
 
 @SuppressWarnings("serial")
@@ -22,9 +23,12 @@ public class ChemSim extends SimState {
 			
 	// The properties for the simulation, managed by MASON
 	private ChemSimProperties properties;
-				
+	
 	// Singleton instance of the simulation
 	private static ChemSim instance;
+	
+	// Entity count tracker for the simulation
+	private TrackEnties tracker;
 	
 	/**
 	 * Constructor.
@@ -62,12 +66,26 @@ public class ChemSim extends SimState {
 						
 			// Initialize the model
 			initializeModel();
+			// TODO Load the file name from someplace else
+			tracker = new TrackEnties("results.csv");
+			this.schedule.scheduleRepeating(tracker);
 			this.schedule.scheduleRepeating(new Monitor());			
 			
 		} catch (Exception ex) {
 			// We can't recover from errors here
 			ex.printStackTrace();
 			System.exit(1);
+		}
+	}
+	
+	/**
+	 * Complete the simulation.
+	 */
+	@Override
+	public void finish() {
+		super.finish();
+		if (tracker != null) {
+			tracker.complete();
 		}
 	}
 	

@@ -16,7 +16,7 @@ import sim.engine.SimState;
 public class Reactor {
 	
 	// Small value to use for testing and debugging.
-	public final static long AvogadroNumber = 1000;
+	public final static long AvogadroNumber = 10000000;
 	
 	private static Reactor instance = new Reactor();
 		 

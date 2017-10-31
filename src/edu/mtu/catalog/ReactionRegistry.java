@@ -3,6 +3,7 @@ package edu.mtu.catalog;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -99,6 +100,26 @@ public class ReactionRegistry {
 	}
 	
 	/**
+	 * Get a list of all the entities in the registry.
+	 * @return
+	 */
+	public List<String> getEntityList() {
+		HashSet<String> entities = new HashSet<String>();
+		
+		for (String key : photolysis.keySet()) {
+			entities.add(key);
+			for (String value : photolysis.get(key)) {
+				entities.add(value);
+			}
+		}
+		
+		entities.addAll(extractEntities(unimolecular));
+		entities.addAll(extractEntities(bimolecular));
+		
+		return new ArrayList<String>(entities);
+	}
+		
+	/**
 	 * Returns the photolysis products for the chemical species or null.
 	 */
 	public List<String> getPhotolysisReaction(String formula) {
@@ -149,5 +170,20 @@ public class ReactionRegistry {
 			// Must be a bimolecular reaction
 			addBimolecularReaction(reaction);
 		}
+	}
+	
+	/**
+	 * Extract the unique entity names from the collection.
+	 */
+	private HashSet<String> extractEntities(Map<String, List<ReactionDescription>> reactions) {
+		HashSet<String> entities = new HashSet<String>();
+		for (String key : unimolecular.keySet()) {
+			entities.add(key);
+			for (ReactionDescription value : unimolecular.get(key)) {
+				entities.addAll(value.getReactants());
+				entities.addAll(value.getProducts());
+			}
+		}
+		return entities;
 	}
 }
