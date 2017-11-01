@@ -123,8 +123,11 @@ public class ChemSim extends SimState {
 		// Hold on to a reference to the registry
 		ReactionRegistry registry = ReactionRegistry.getInstance();
 						
-		// Add each of the chemicals to the model, assume they are well mixed
+		// Calculate Avogadro's number
 		Reactor reactor = Reactor.getInstance();
+		reactor.calculateAvogadroNumber(chemicals);
+		
+		// Add each of the chemicals to the model, assume they are well mixed
 		for (ChemicalDto chemical : chemicals) {
 			// Add the molecules to the model
 			Species species = registry.getSpecies(chemical.formula);

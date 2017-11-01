@@ -45,7 +45,7 @@ public class ChemSimProperties {
 	}
 	
 	public long getMoleculesPerMole() {
-		return Reactor.AvogadroNumber;
+		return Reactor.getInstance().getAvogadroNumber();
 	}
 		
 	public String getReactionsFileName() {

@@ -5,7 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.activity.InvalidActivityException;
+
 import edu.mtu.compound.Species;
+import edu.mtu.parser.ChemicalDto;
 import javafx.geometry.Point3D;
 import sim.engine.SimState;
 
@@ -15,12 +18,10 @@ import sim.engine.SimState;
  */
 public class Reactor {
 	
-	// Small value to use for testing and debugging.
-	public final static long AvogadroNumber = 10000000;
-	
 	private static Reactor instance = new Reactor();
-		 
+		
 	private double volume;
+	private long avogadroNumber;
 	private long cellCount;
 	private long cellWidth;
 	private Map<Point3D, Cell> cells;
@@ -42,6 +43,22 @@ public class Reactor {
 	 */
 	public List<Cell> getCells() {
 		return new ArrayList<Cell>(cells.values());
+	}
+	
+	/**
+	 * Prepare the reactor using the given entity quantity as the largest starting condition.
+	 * 
+	 * @param mol The number of moles of the entity.
+	 */
+	public void calculateAvogadroNumber(List<ChemicalDto> items) {
+		// Find the largest value
+		double value = items.get(0).mols;
+		for (int ndx = 1; ndx < items.size(); ndx++) {
+			value = Math.max(value, items.get(ndx).mols);
+		}
+		
+		// Use it to set Avogadro's Number
+		avogadroNumber = (long)(Integer.MAX_VALUE / value);		
 	}
 	
 	/**
@@ -79,21 +96,32 @@ public class Reactor {
 	}
 
 	/**
+	 * Creates entities of of the given species in a uniformly distributed fashion.
 	 * 
-	 * 
-	 * @param formula
-	 * @param mols
-	 * @param photosensitive
+	 * @param species The chemical species to create.
+	 * @param mols The number of moles to create.
 	 */
-	public void createEntities(Species species, double mols) {
+	public void createEntities(Species species, double mols) throws InvalidActivityException {
+		// Error if we haven't been initialized yet
+		if (avogadroNumber == 0) {
+			throw new InvalidActivityException("Avogadro\'s Number has not been set yet.");
+		}
+		
 		// Find the quantity per cell
-		long value = (long)((AvogadroNumber * mols) / cellCount);
+		long value = (long)((avogadroNumber * mols) / cellCount);
 		
 		// Allocate the species
 		for (Point3D point : cells.keySet()) {
 			Cell cell = cells.get(point);
 			cell.add(species, value);
 		}
+	}
+	
+	/**
+	 * Get the calculated Avogadro Number.
+	 */
+	public long getAvogadroNumber() {
+		return avogadroNumber;
 	}
 	
 	/**

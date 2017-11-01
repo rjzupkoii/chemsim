@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import edu.mtu.Reactor.Reactor;
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.simulation.CompoundInspector;
 import sim.engine.SimState;
@@ -34,7 +35,8 @@ public class TrackEnties implements Steppable {
 			// Prepare the tracking file
 			writer = new BufferedCsvWriter(fileName, false);
 			writer.write(entities);
-		} catch (IOException e) {
+		} catch (IOException ex) {
+			System.err.println(ex);
 			System.err.println("Unable to create the tracking file at, " + fileName);
 			System.exit(-1);
 		}
@@ -54,8 +56,9 @@ public class TrackEnties implements Steppable {
 	@Override
 	public void step(SimState state) {
 		try {
+			long avogadroNumber = Reactor.getInstance().getAvogadroNumber();
 			for (String entity : entities) {
-				writer.write(CompoundInspector.countSpecies(entity));
+				writer.write(CompoundInspector.countSpecies(entity) / (double)avogadroNumber);
 			}
 			writer.newline();
 		} catch (IOException ex) {
