@@ -18,10 +18,10 @@ public class Monitor implements Steppable {
 		CompoundInspector inspector = new CompoundInspector();
 						
 		// Check to see if acetone is exhausted
-		long count = inspector.getAcetoneCount(); 
+		/*long count = inspector.getAcetoneCount(); 
 		if (count == 0) {
 			state.finish();
-		}
+		}*/
 				
 		// Check to see if hydroxyl pathways have been exhausted
 		/*if (inspector.getHydrogenPeroxideCount() == 0 &&	

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.mtu.Reactor.Cell;
+import edu.mtu.Reactor.Reactor;
 import edu.mtu.catalog.ReactionDescription;
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.simulation.ChemSim;
@@ -16,15 +17,13 @@ public class Reaction {
 	
 	private static Reaction instance = new Reaction();
 	
-	private int hydrogenPeroxideDecay;
-	private int hydrogenPeroxideRatio;
+	private double hydrogenPeroxideDecay;
 	
 	/**
 	 * Singleton constructor.
 	 */
 	private Reaction() { 
 		hydrogenPeroxideDecay = ChemSim.getProperties().getHydrogenPeroxideDecay();
-		hydrogenPeroxideRatio = ChemSim.getProperties().getHydrogenPeroxideRatio();
 	}
 	
 	/**
@@ -153,8 +152,9 @@ public class Reaction {
 		ReactionRegistry registry = ReactionRegistry.getInstance();
 		for (String product : products) {
 			// TODO Marker for changing out the hydrogen peroxide decay quantity
-			cell.add(registry.getSpecies(product), hydrogenPeroxideDecay);
-			cell.remove(species, hydrogenPeroxideRatio);
+			long value = (long)(hydrogenPeroxideDecay * Reactor.getInstance().getAvogadroNumber());
+			cell.add(registry.getSpecies(product), value);
+			cell.remove(species, value);
 		}
 		return true;
 	}	

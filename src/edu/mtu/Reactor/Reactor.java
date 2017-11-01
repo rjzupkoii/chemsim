@@ -58,7 +58,7 @@ public class Reactor {
 		}
 		
 		// Use it to set Avogadro's Number
-		avogadroNumber = (long)(Integer.MAX_VALUE / value);		
+		avogadroNumber = (long)(Integer.MAX_VALUE / value);
 	}
 	
 	/**

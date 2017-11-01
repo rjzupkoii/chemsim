@@ -16,7 +16,7 @@ import sim.engine.SimState;
 public class ChemSim extends SimState {
 
 	// The number of cells along one dimension
-	public final static int Cells = 5;
+	public final static int Cells = 10;
 	
 	// TODO read this from a file, the volume of the container
 	public final static double Volume = 1.8 * 1000;
