@@ -10,10 +10,10 @@ public class ChemSimProperties {
 	private int slowPathway = 3;	
 
 	// Default for how many hydrogen peroxide molecules decay into hydroxyl radicals, per cell basis
-	private int hydrogenPeroxideRatio = 3;
+	private int hydrogenPeroxideRatio = 60;
 	
 	// Default for how fast hydrogen peroxide decays into hydroxyl radicals, per cell basis
-	private int hydrogenPeroxideDecay = 3;
+	private int hydrogenPeroxideDecay = 60;
 	
 	// Default paths to experiments
 	private String chemicalsFileName = "experiment/chemicals.csv";

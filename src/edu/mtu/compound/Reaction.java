@@ -153,10 +153,8 @@ public class Reaction {
 		ReactionRegistry registry = ReactionRegistry.getInstance();
 		for (String product : products) {
 			// TODO Marker for changing out the hydrogen peroxide decay quantity
-			long value = hydrogenPeroxideDecay;
-					
-			cell.add(registry.getSpecies(product), value);
-			cell.remove(species, value * hydrogenPeroxideRatio);
+			cell.add(registry.getSpecies(product), hydrogenPeroxideDecay);
+			cell.remove(species, hydrogenPeroxideRatio);
 		}
 		return true;
 	}	
