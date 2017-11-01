@@ -177,9 +177,9 @@ public class ReactionRegistry {
 	 */
 	private HashSet<String> extractEntities(Map<String, List<ReactionDescription>> reactions) {
 		HashSet<String> entities = new HashSet<String>();
-		for (String key : unimolecular.keySet()) {
+		for (String key : reactions.keySet()) {
 			entities.add(key);
-			for (ReactionDescription value : unimolecular.get(key)) {
+			for (ReactionDescription value : reactions.get(key)) {
 				entities.addAll(value.getReactants());
 				entities.addAll(value.getProducts());
 			}

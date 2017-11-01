@@ -3,43 +3,43 @@
   associations="true" dependencies="true" nesting-relationships="true" router="FAN">  
   <class id="1" language="java" name="edu.mtu.catalog.Nomenclature" project="ChemSim" 
     file="/ChemSim/src/edu/mtu/catalog/Nomenclature.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="155" width="201" x="243" y="37"/>    
+    <position height="159" width="201" x="94" y="37"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="2" language="java" name="edu.mtu.compound.Reaction" project="ChemSim" 
-    file="/ChemSim/src/edu/mtu/compound/Reaction.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="536" y="548"/>    
+  <class id="2" language="java" name="edu.mtu.catalog.ReactionDescription" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/catalog/ReactionDescription.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="213" width="319" x="886" y="1411"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="3" language="java" name="edu.mtu.compound.Species" project="ChemSim" 
-    file="/ChemSim/src/edu/mtu/compound/Species.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="586" y="134"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
-      sort-features="false" accessors="false" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
-    </display>  
-  </class>  
-  <class id="4" language="java" name="edu.mtu.parser.Parser" project="ChemSim" 
-    file="/ChemSim/src/edu/mtu/parser/Parser.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="137" width="161" x="42" y="37"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
-      sort-features="false" accessors="false" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
-    </display>  
-  </class>  
-  <class id="5" language="java" name="edu.mtu.catalog.ReactionRegistry" project="ChemSim" 
+  <class id="3" language="java" name="edu.mtu.catalog.ReactionRegistry" project="ChemSim" 
     file="/ChemSim/src/edu/mtu/catalog/ReactionRegistry.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="937" y="248"/>    
+    <position height="321" width="364" x="829" y="823"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="4" language="java" name="edu.mtu.compound.Reaction" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/compound/Reaction.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="267" width="395" x="1188" y="37"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="5" language="java" name="edu.mtu.compound.Species" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/compound/Species.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="285" width="223" x="726" y="1664"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -48,73 +48,314 @@
   </class>  
   <class id="6" language="java" name="edu.mtu.compound.DisproportionatingSpecies" project="ChemSim" 
     file="/ChemSim/src/edu/mtu/compound/DisproportionatingSpecies.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="137" width="208" x="234" y="232"/>    
+    <position height="213" width="454" x="970" y="1989"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="7" language="java" name="edu.mtu.catalog.ReactionDescription" project="ChemSim" 
-    file="/ChemSim/src/edu/mtu/catalog/ReactionDescription.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="947" y="532"/>    
+  <class id="7" language="java" name="edu.mtu.parser.ChemicalDto" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/parser/ChemicalDto.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="141" width="213" x="1245" y="1411"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <dependency id="8">    
+  <class id="8" language="java" name="edu.mtu.parser.Parser" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/parser/Parser.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="141" width="299" x="925" y="1194"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="9" language="java" name="edu.mtu.simulation.ChemSim" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/simulation/ChemSim.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="339" width="275" x="766" y="434"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="10" language="java" name="edu.mtu.simulation.CompoundInspector" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/simulation/CompoundInspector.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="177" width="203" x="502" y="1194"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="11" language="java" name="edu.mtu.simulation.ChemSimUI" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/simulation/ChemSimUI.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="357" width="285" x="387" y="37"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="12" language="java" name="edu.mtu.simulation.CompoundBehavior" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/simulation/CompoundBehavior.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="213" width="257" x="1285" y="823"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="13" language="java" name="edu.mtu.simulation.CompoundPortrayal" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/simulation/CompoundPortrayal.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="123" width="304" x="62" y="434"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="14" language="java" name="edu.mtu.simulation.ChemSimProperties" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/simulation/ChemSimProperties.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="285" width="276" x="408" y="823"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="15" language="java" name="edu.mtu.simulation.steppable.Monitor" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/simulation/steppable/Monitor.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="141" width="230" x="726" y="37"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="false" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <dependency id="16">    
+    <bendpoint x="777" y="823"/>    
+    <bendpoint x="777" y="1194"/>    
+    <bendpoint x="777" y="1411"/>    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="17">    
+    <bendpoint x="867" y="1194"/>    
     <end type="SOURCE" refId="3"/>    
     <end type="TARGET" refId="2"/>  
   </dependency>  
-  <association id="9">    
-    <end type="SOURCE" refId="5" navigable="false">      
-      <attribute id="10" name="instance">        
-        <position height="0" width="0" x="0" y="0"/>      
-      </attribute>      
-      <multiplicity id="11" minimum="0" maximum="1">        
-        <position height="0" width="0" x="0" y="0"/>      
-      </multiplicity>    
+  <dependency id="18">    
+    <end type="SOURCE" refId="14"/>    
+    <end type="TARGET" refId="10"/>  
+  </dependency>  
+  <dependency id="19">    
+    <bendpoint x="819" y="1194"/>    
+    <bendpoint x="819" y="1411"/>    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="20">    
+    <bendpoint x="31" y="434"/>    
+    <bendpoint x="31" y="823"/>    
+    <bendpoint x="31" y="1194"/>    
+    <bendpoint x="31" y="1411"/>    
+    <bendpoint x="33" y="1772"/>    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <generalization id="21">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="5"/>  
+  </generalization>  
+  <association id="22">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="23" name="instance"/>      
+      <multiplicity id="24" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="5" navigable="true"/>    
+    <end type="TARGET" refId="9" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="12">    
+  <dependency id="25">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <dependency id="26">    
+    <bendpoint x="763" y="1013"/>    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="9"/>  
+  </dependency>  
+  <dependency id="27">    
+    <bendpoint x="1102" y="434"/>    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="3"/>  
+  </dependency>  
+  <association id="28">    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="29" name="instance"/>      
+      <multiplicity id="30" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="31">    
+    <bendpoint x="356" y="823"/>    
+    <bendpoint x="356" y="1194"/>    
+    <bendpoint x="356" y="1411"/>    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="32">    
+    <bendpoint x="1593" y="434"/>    
+    <bendpoint x="1593" y="823"/>    
+    <bendpoint x="1593" y="1194"/>    
+    <bendpoint x="1593" y="1411"/>    
+    <bendpoint x="1593" y="1664"/>    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <dependency id="33">    
+    <bendpoint x="1194" y="755"/>    
+    <bendpoint x="798" y="823"/>    
+    <bendpoint x="798" y="1194"/>    
+    <bendpoint x="798" y="1411"/>    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="34">    
+    <bendpoint x="1233" y="823"/>    
+    <bendpoint x="1236" y="1094"/>    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="8"/>  
+  </dependency>  
+  <dependency id="35">    
+    <bendpoint x="655" y="460"/>    
+    <end type="SOURCE" refId="15"/>    
+    <end type="TARGET" refId="14"/>  
+  </dependency>  
+  <association id="36">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="37" name="behavior"/>      
+      <multiplicity id="38" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="12" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="39">    
     <end type="SOURCE" refId="2"/>    
     <end type="TARGET" refId="5"/>  
   </dependency>  
-  <dependency id="13">    
-    <end type="SOURCE" refId="5"/>    
+  <dependency id="40">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="9"/>  
+  </dependency>  
+  <association id="41">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="42" name="instance"/>      
+      <multiplicity id="43" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="44">    
+    <bendpoint x="1123" y="434"/>    
+    <end type="SOURCE" refId="15"/>    
+    <end type="TARGET" refId="12"/>  
+  </dependency>  
+  <dependency id="45">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="3"/>  
+  </dependency>  
+  <dependency id="46">    
+    <end type="SOURCE" refId="15"/>    
+    <end type="TARGET" refId="9"/>  
+  </dependency>  
+  <dependency id="47">    
+    <bendpoint x="396" y="434"/>    
+    <bendpoint x="377" y="823"/>    
+    <bendpoint x="377" y="1194"/>    
+    <bendpoint x="377" y="1411"/>    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="48">    
+    <bendpoint x="1254" y="823"/>    
+    <bendpoint x="1254" y="1194"/>    
+    <end type="SOURCE" refId="9"/>    
     <end type="TARGET" refId="7"/>  
   </dependency>  
-  <dependency id="14">    
-    <end type="SOURCE" refId="6"/>    
-    <end type="TARGET" refId="2"/>  
+  <dependency id="49">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="13"/>  
   </dependency>  
-  <dependency id="15">    
-    <end type="SOURCE" refId="2"/>    
-    <end type="TARGET" refId="3"/>  
+  <dependency id="50">    
+    <bendpoint x="417" y="434"/>    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="14"/>  
   </dependency>  
-  <generalization id="16">    
-    <end type="SOURCE" refId="6"/>    
-    <end type="TARGET" refId="3"/>  
-  </generalization>  
-  <association id="17">    
-    <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="18" name="instance">        
-        <position height="0" width="0" x="2" y="41"/>      
-      </attribute>      
-      <multiplicity id="19" minimum="0" maximum="1">        
-        <position height="0" width="0" x="2" y="41"/>      
-      </multiplicity>    
+  <dependency id="51">    
+    <bendpoint x="623" y="1411"/>    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="52">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="9"/>  
+  </dependency>  
+  <dependency id="53">    
+    <bendpoint x="1246" y="434"/>    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="12"/>  
+  </dependency>  
+  <dependency id="54">    
+    <bendpoint x="735" y="434"/>    
+    <bendpoint x="735" y="823"/>    
+    <bendpoint x="735" y="1194"/>    
+    <bendpoint x="735" y="1411"/>    
+    <end type="SOURCE" refId="15"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <association id="55">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="56" name="properties"/>      
+      <multiplicity id="57" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="14" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="58">    
+    <bendpoint x="979" y="1664"/>    
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="59" name="reactions"/>      
+      <multiplicity id="60" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="2" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="20">    
-    <end type="SOURCE" refId="2"/>    
-    <end type="TARGET" refId="6"/>  
+  <dependency id="61">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="7"/>  
+  </dependency>  
+  <dependency id="62">    
+    <bendpoint x="1572" y="434"/>    
+    <bendpoint x="1572" y="823"/>    
+    <bendpoint x="1572" y="1194"/>    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <dependency id="63">    
+    <bendpoint x="714" y="434"/>    
+    <bendpoint x="714" y="823"/>    
+    <bendpoint x="729" y="1047"/>    
+    <end type="SOURCE" refId="15"/>    
+    <end type="TARGET" refId="10"/>  
+  </dependency>  
+  <dependency id="64">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="8"/>  
   </dependency>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
     sort-features="false" accessors="false" visibility="true">    
