@@ -14,13 +14,7 @@ import sim.engine.SimState;
 
 @SuppressWarnings("serial")
 public class ChemSim extends SimState {
-
-	// The number of cells along one dimension
-	public final static int Cells = 10;
-	
-	// TODO read this from a file, the volume of the container
-	public final static double Volume = 1.8 * 1000;
-			
+				
 	// The properties for the simulation, managed by MASON
 	private ChemSimProperties properties;
 	
@@ -57,7 +51,9 @@ public class ChemSim extends SimState {
 		
 		try {
 			// Clear the container of molecules
-			Reactor.getInstance().createCells(Cells, Volume, this);
+			int cells = properties.getCellCount();
+			double volume = properties.getReactorVolume();
+			Reactor.getInstance().createCells(cells, volume, this);
 			
 			// Import the reactions into the model
 			ReactionRegistry instance = ReactionRegistry.getInstance();
@@ -67,7 +63,7 @@ public class ChemSim extends SimState {
 			// Initialize the model
 			initializeModel();
 			// TODO Load the file name from someplace else
-			tracker = new TrackEnties("results.csv");
+			tracker = new TrackEnties("results.csv", properties.getOverWriteResults());
 			this.schedule.scheduleRepeating(tracker);
 			this.schedule.scheduleRepeating(new Monitor());			
 			

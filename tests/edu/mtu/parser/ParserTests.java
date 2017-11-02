@@ -48,7 +48,7 @@ public class ParserTests {
 	 * Test to make sure we can parse chemicals files.
 	 */
 	@Test
-	public void parseChemicals() throws IOException {
+	public void parseChemicalsTest() throws IOException {
 		List<ChemicalDto> results = Parser.parseChemicals(chemicalsFileName);
 		
 		Assert.assertEquals(chemicals.size(), results.size());

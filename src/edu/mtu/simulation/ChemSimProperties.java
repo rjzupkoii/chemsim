@@ -9,9 +9,18 @@ public class ChemSimProperties {
 	private int mediumPathway = 2;
 	private int slowPathway = 3;	
 	
+	// Flag for if results should be overwritten
+	private boolean overWriteResults = true;
+	
 	// Default for how fast hydrogen peroxide decays into hydroxyl radicals, per cell basis
 	private double hydrogenPeroxideDecay = 5.4 * Math.pow(10, -7);		// mol/sec (3.0x10^-7 mol/L*sec)
-		
+	
+	// Reactor volume in liters
+	private double reactorVolume = 1.8;
+
+	// Number of cells along one axis
+	private int cellCount = 5;
+	
 	// Default paths to experiments
 	private String chemicalsFileName = "experiment/chemicals.csv";
 	private String reactionsFileName = "experiment/reactions.csv";
@@ -19,6 +28,10 @@ public class ChemSimProperties {
 	// TODO Figure out a way to expose this as an actual MASON inspector
 	public CompoundInspector getCompoundInspector() {
 		return new CompoundInspector();
+	}
+	
+	public int getCellCount() {
+		return cellCount;
 	}
 	
 	public String getChemicalsFileName() {
@@ -44,12 +57,24 @@ public class ChemSimProperties {
 		return Reactor.getInstance().getAvogadroNumber();
 	}
 		
+	public boolean getOverWriteResults() {
+		return overWriteResults;
+	}
+	
 	public String getReactionsFileName() {
 		return reactionsFileName;
 	}
 	
+	public double getReactorVolume() {
+		return reactorVolume;
+	}
+	
 	public int getSlowPathway() {
 		return slowPathway;
+	}
+	
+	public void setCellCount(int value) {
+		cellCount = value;
 	}
 	
 	public void setChemicalsFileName(String value) {
@@ -68,8 +93,16 @@ public class ChemSimProperties {
 		mediumPathway = value;
 	}
 
+	public void setOverWriteResults(boolean value) {
+		overWriteResults = value;
+	}
+	
 	public void setReactionsFileName(String value) {
 		reactionsFileName = value;
+	}
+	
+	public void setReactorVolume(double value) {
+		reactorVolume = value;
 	}
 	
 	public void setSlowPathway(int value) {

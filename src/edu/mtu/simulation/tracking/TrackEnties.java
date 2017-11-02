@@ -6,6 +6,8 @@ import java.util.List;
 
 import edu.mtu.Reactor.Reactor;
 import edu.mtu.catalog.ReactionRegistry;
+import edu.mtu.simulation.ChemSim;
+import edu.mtu.simulation.ChemSimProperties;
 import edu.mtu.simulation.CompoundInspector;
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -23,7 +25,7 @@ public class TrackEnties implements Steppable {
 	/**
 	 * Constructor, prepare the list of entities.
 	 */
-	public TrackEnties(String fileName) {
+	public TrackEnties(String fileName, boolean overwrite) {
 		entities = ReactionRegistry.getInstance().getEntityList();
 		if (entities.size() == 0) {
 			System.err.println("No entities were found.");
@@ -33,8 +35,30 @@ public class TrackEnties implements Steppable {
 				
 		try {
 			// Prepare the tracking file
-			writer = new BufferedCsvWriter(fileName, false);
+			writer = new BufferedCsvWriter(fileName, overwrite);
+			
+			// Note some values
+			ChemSimProperties properties = ChemSim.getProperties();
+			int cells = properties.getCellCount();
+			long avagadro = Reactor.getInstance().getAvogadroNumber();
+			double decay = properties.getHydrogenPeroxideDecay();
+			
+			// Note the experimental condtions
+			writer.write("H2O2 Decay, mol/L*sec");
+			writer.write(decay);
+			writer.newline();
+			writer.newline();
+			
+			// Note the calculated values
+			writer.write("Simulated Avagadro's Number");
+			writer.write(avagadro);
+			writer.newline();
+			writer.write("H2O2 Decay, entities/L*sec");
+			writer.write(decay * avagadro);
+			writer.newline();
+			
 			writer.write(entities);
+			writer.flush();
 		} catch (IOException ex) {
 			System.err.println(ex);
 			System.err.println("Unable to create the tracking file at, " + fileName);

@@ -14,10 +14,10 @@ public class BufferedCsvWriter {
 	 * Open the file for writing.
 	 * 
 	 * @param fileName The file name and path.
-	 * @param append True if the file should be appended to, false otherwise.
+	 * @param overwrite True if the file should be overwritten, false otherwise.
 	 */
-	public BufferedCsvWriter(String fileName, boolean append) throws IOException {
-		open(fileName, append);
+	public BufferedCsvWriter(String fileName, boolean overwrite) throws IOException {
+		open(fileName, overwrite);
 	}
 	
 	/**
@@ -54,11 +54,11 @@ public class BufferedCsvWriter {
 	 * Open the file for writing.
 	 * 
 	 * @param fileName The file name and path.
-	 * @param append True if the file should be appended to, false otherwise.
+	 * @param overwrite True if the file should be overwritten, false otherwise.
 	 */
-	public void open(String fileName, boolean append) throws IOException {
+	public void open(String fileName, boolean overwrite) throws IOException {
 		this.fileName = fileName;
-		FileWriter file = new FileWriter(fileName, append);
+		FileWriter file = (overwrite) ? new FileWriter(fileName) : new FileWriter(fileName, overwrite);
 		writer = new BufferedWriter(file);
 	}
 
@@ -82,6 +82,13 @@ public class BufferedCsvWriter {
 	public void write(double value) throws IOException {
 		writer.write(value + ",");
 	}	
+	
+	/**
+	 * Write the indicated value to the file as a cell.
+	 */
+	public void write(String value) throws IOException {
+		writer.write(value + ",");
+	}
 	
 	/**
 	 * Write the list of values to the file, finish with a new line.

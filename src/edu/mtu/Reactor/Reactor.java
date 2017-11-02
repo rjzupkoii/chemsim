@@ -50,7 +50,7 @@ public class Reactor {
 	 * 
 	 * @param mol The number of moles of the entity.
 	 */
-	public void calculateAvogadroNumber(List<ChemicalDto> items) {
+	public long calculateAvogadroNumber(List<ChemicalDto> items) {
 		// Find the largest value
 		double value = items.get(0).mols;
 		for (int ndx = 1; ndx < items.size(); ndx++) {
@@ -58,7 +58,8 @@ public class Reactor {
 		}
 		
 		// Use it to set Avogadro's Number
-		avogadroNumber = (long)(Integer.MAX_VALUE / value);
+		avogadroNumber = (long)(Long.MAX_VALUE / value);
+		return avogadroNumber;
 	}
 	
 	/**

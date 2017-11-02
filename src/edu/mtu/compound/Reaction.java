@@ -16,15 +16,11 @@ import edu.mtu.simulation.ChemSim;
 public class Reaction {
 	
 	private static Reaction instance = new Reaction();
-	
-	private double hydrogenPeroxideDecay;
-	
+		
 	/**
 	 * Singleton constructor.
 	 */
-	private Reaction() { 
-		hydrogenPeroxideDecay = ChemSim.getProperties().getHydrogenPeroxideDecay();
-	}
+	private Reaction() { }
 	
 	/**
 	 * Get the instance of the singleton.
@@ -152,7 +148,8 @@ public class Reaction {
 		ReactionRegistry registry = ReactionRegistry.getInstance();
 		for (String product : products) {
 			// TODO Marker for changing out the hydrogen peroxide decay quantity
-			long value = (long)(hydrogenPeroxideDecay * Reactor.getInstance().getAvogadroNumber());
+			long value = (long)(ChemSim.getProperties().getHydrogenPeroxideDecay() * Reactor.getInstance().getAvogadroNumber());
+			
 			cell.add(registry.getSpecies(product), value);
 			cell.remove(species, value);
 		}
