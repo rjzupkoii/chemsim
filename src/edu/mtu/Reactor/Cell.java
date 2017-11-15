@@ -19,14 +19,14 @@ import sim.engine.Steppable;
 public class Cell implements Steppable {
 
 	private double volume;
-	private Map<Species, Long> speciesList;
+	private Map<Species, Double> speciesList;
 	private Point3D location;
 	
 	/**
 	 * Constructor.
 	 */
 	public Cell(Point3D location, double volume) {
-		speciesList = new HashMap<Species, Long>();
+		speciesList = new HashMap<Species, Double>();
 		this.volume = volume;
 		this.location = location;
 	}
@@ -61,7 +61,7 @@ public class Cell implements Steppable {
 	/**
 	 * Update the given species quantity with the indicated quantity.
 	 */
-	public void add(Species species, long value) {
+	public void add(Species species, double value) {
 		if (speciesList == null) {
 			throw new IllegalStateException("The reactor has not been initialized."); 
 		}
@@ -73,7 +73,7 @@ public class Cell implements Steppable {
 		if (!speciesList.containsKey(species)) {
 			speciesList.put(species, value);
 		} else {
-			long current = speciesList.get(species);
+			double current = speciesList.get(species);
 			speciesList.put(species, current + value);
 		}
 	}
@@ -81,9 +81,9 @@ public class Cell implements Steppable {
 	/**
 	 * Get the number of molecules of the given species.
 	 */
-	public long count(Species species) {
+	public double count(Species species) {
 		boolean check = speciesList.containsKey(species);
-		return check ? speciesList.get(species) : 0;
+		return check ? speciesList.get(species) : 0.0;
 	}
 	
 	/**
@@ -157,13 +157,13 @@ public class Cell implements Steppable {
 	 * Removes all of the species form the model.
 	 */
 	public void remove(Species species) {
-		speciesList.put(species, 0l);
+		speciesList.put(species, 0.0);
 	}
 	
 	/**
 	 * Removes the given quantity of the species from the model. 
 	 */
-	public void remove(Species species, long value) {
+	public void remove(Species species, double value) {
 		if (speciesList == null) {
 			throw new IllegalStateException("The reactor has not been initialized."); 
 		}
@@ -174,8 +174,8 @@ public class Cell implements Steppable {
 		if (!speciesList.containsKey(species)) {
 			throw new IllegalStateException(String.format("%s does not exist as a species", species.getFormula()));
 		} else {
-			long current = speciesList.get(species);
-			long update = current - value;
+			double current = speciesList.get(species);
+			double update = current - value;
 			update = (update < 0) ? 0 : update;
 			speciesList.put(species, update);
 		}
@@ -190,7 +190,7 @@ public class Cell implements Steppable {
 	 */
 	private void transfer(SimState state, Species species, Cell target) {
 		// Check to see if we can or should do anything
-		long current = speciesList.get(species); 
+		double current = speciesList.get(species); 
 		if (current == 0) {
 			return;
 		}
@@ -203,7 +203,7 @@ public class Cell implements Steppable {
 		// TODO Update this to a library with a range of [0, 1]
 		//double percentage = Math.abs(state.random.nextGaussian());
 		double percentage = state.random.nextDouble();
-		long transfer = (long)(current * percentage);
+		int transfer = (int)(current * percentage);
 			
 		// Move the mols
 		remove(species, transfer);

@@ -12,8 +12,8 @@ public class ChemSimProperties {
 	// Flag for if results should be overwritten
 	private boolean overWriteResults = true;
 	
-	// Default for how fast hydrogen peroxide decays into hydroxyl radicals, per cell basis
-	private double hydrogenPeroxideDecay = 5.4 * Math.pow(10, -7);		// mol/sec (3.0x10^-7 mol/L*sec)
+	// Default for how fast hydrogen peroxide decays into hydroxyl radicals for the reactor
+	private double hydrogenPeroxideDecay = 3.0 * Math.pow(10, -7);		// mol/L*sec
 	
 	// Reactor volume in liters
 	private double reactorVolume = 1.8;
@@ -53,7 +53,7 @@ public class ChemSimProperties {
 		return mediumPathway;
 	}
 	
-	public long getMoleculesPerMole() {
+	public double getMoleculesPerMole() {
 		return Reactor.getInstance().getAvogadroNumber();
 	}
 		
@@ -85,7 +85,7 @@ public class ChemSimProperties {
 		fastPathway = value;
 	}
 			
-	public void setHydrogenPeroxideDecay(int value) {
+	public void setHydrogenPeroxideDecay(double value) {
 		hydrogenPeroxideDecay = value;
 	}
 		

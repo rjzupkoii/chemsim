@@ -21,7 +21,7 @@ public class Reactor {
 	private static Reactor instance = new Reactor();
 		
 	private double volume;
-	private long avogadroNumber;
+	private double avogadroNumber;
 	private long cellCount;
 	private long cellWidth;
 	private Map<Point3D, Cell> cells;
@@ -50,7 +50,7 @@ public class Reactor {
 	 * 
 	 * @param mol The number of moles of the entity.
 	 */
-	public long calculateAvogadroNumber(List<ChemicalDto> items) {
+	public double calculateAvogadroNumber(List<ChemicalDto> items) {
 		// Find the largest value
 		double value = items.get(0).mols;
 		for (int ndx = 1; ndx < items.size(); ndx++) {
@@ -58,7 +58,7 @@ public class Reactor {
 		}
 		
 		// Use it to set Avogadro's Number
-		avogadroNumber = (long)(Long.MAX_VALUE / value);
+		avogadroNumber = (Integer.MAX_VALUE / value);
 		return avogadroNumber;
 	}
 	
@@ -109,7 +109,7 @@ public class Reactor {
 		}
 		
 		// Find the quantity per cell
-		long value = (long)((avogadroNumber * mols) / cellCount);
+		int value = (int)((mols / cellCount) * avogadroNumber);
 		
 		// Allocate the species
 		for (Point3D point : cells.keySet()) {
@@ -121,7 +121,7 @@ public class Reactor {
 	/**
 	 * Get the calculated Avogadro Number.
 	 */
-	public long getAvogadroNumber() {
+	public double getAvogadroNumber() {
 		return avogadroNumber;
 	}
 	

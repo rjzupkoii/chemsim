@@ -20,16 +20,16 @@ public class ReactorTests {
 		
 		ArrayList<ChemicalDto> items = new ArrayList<ChemicalDto>();
 		items.add(new ChemicalDto("1", "1", 1));
-		long result = instance.calculateAvogadroNumber(items);
-		Assert.assertEquals(Long.MAX_VALUE, result);
+		double result = instance.calculateAvogadroNumber(items);
+		Assert.assertEquals(Integer.MAX_VALUE, result);
 		
 		items.add(new ChemicalDto("2", "2", 2));
 		result = instance.calculateAvogadroNumber(items);
-		Assert.assertEquals((long)(Long.MAX_VALUE / 2.0), result);
+		Assert.assertEquals((int)(Integer.MAX_VALUE / 2.0), result);
 		
 		items.add(new ChemicalDto("0.5", "0.5", 0.5));
 		items.add(new ChemicalDto("3.5", "3.5", 3.5));
 		result = instance.calculateAvogadroNumber(items);
-		Assert.assertEquals((long)(Long.MAX_VALUE / 3.5), result);
+		Assert.assertEquals((int)(Integer.MAX_VALUE / 3.5), result);
 	}
 }

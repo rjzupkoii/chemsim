@@ -9,6 +9,7 @@ import edu.mtu.Reactor.Reactor;
 import edu.mtu.catalog.ReactionDescription;
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.simulation.ChemSim;
+import edu.mtu.simulation.ChemSimProperties;
 
 /**
  * This class provides a means for a chemical species to react with other species.
@@ -28,6 +29,14 @@ public class Reaction {
 	public static Reaction getInstance() {
 		return instance;
 	}
+	
+	/**
+	 * Calculate what the per cell decay quantity should be.
+	 */
+	public static double calculateDecayQuantity(int cells, double volume, double avagadroNumber, double mols) {
+		double decay = (mols * volume) / Math.pow(cells, 3);
+		return decay * avagadroNumber;
+	}
 		
 	/**
 	 * Have the chemical species disproportionate according to its reaction rate.
@@ -37,7 +46,7 @@ public class Reaction {
 	 */
 	public void disproportionate(DisproportionatingSpecies species, Cell cell) {
 		// Is there anything to do?
-		long count = cell.count(species);
+		double count = cell.count(species);
 		if (count == 0) {
 			return;
 		}
@@ -144,12 +153,23 @@ public class Reaction {
 			return false;
 		}
 		
-		// Decay the species based upon it's reaction with UV
+		// Grab some references
 		ReactionRegistry registry = ReactionRegistry.getInstance();
+		ChemSimProperties properties = ChemSim.getProperties();
+		int cells = properties.getCellCount();
+
+		// TODO The properties should have correct value? Right now it is being set in ChemSim as scaled molecules/volume/sec
+		// TODO so we just need to figure out what it is on a cellular basis
+		double value = properties.getHydrogenPeroxideDecay() / Math.pow(cells, 3);
+
+
+		// TODO Marker for changing out the hydrogen peroxide decay quantity
+		// double volume = properties.getReactorVolume();
+		// double avagadroNumber = Reactor.getInstance().getAvogadroNumber();
+		// double value = calculateDecayQuantity(cells, volume, avagadroNumber, ChemSim.getProperties().getHydrogenPeroxideDecay());
+				
+		// Decay the species based upon it's reaction with UV
 		for (String product : products) {
-			// TODO Marker for changing out the hydrogen peroxide decay quantity
-			long value = (long)(ChemSim.getProperties().getHydrogenPeroxideDecay() * Reactor.getInstance().getAvogadroNumber());
-			
 			cell.add(registry.getSpecies(product), value);
 			cell.remove(species, value);
 		}
@@ -172,7 +192,7 @@ public class Reaction {
 		}
 		
 		// Add the appropriate number of molecules to the model
-		long value;
+		double value;
 		if (matched.size() > 1) {
 			// A disproporting reaction is occurring
 			value = getQuantity(species,reactant, cell);
@@ -198,9 +218,9 @@ public class Reaction {
 	/**
 	 * Get the minimum quantity of reactant to use.
 	 */
-	private long getQuantity(Species one, Species two, Cell cell) {
-		long valueOne = (one != null) ? cell.count(one) : 0;
-		long valueTwo = (two != null) ? cell.count(two) : 0;
+	private double getQuantity(Species one, Species two, Cell cell) {
+		double valueOne = (one != null) ? cell.count(one) : 0;
+		double valueTwo = (two != null) ? cell.count(two) : 0;
 		if (valueOne == 0) {
 			return valueTwo;
 		}

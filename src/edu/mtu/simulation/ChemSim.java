@@ -1,6 +1,7 @@
 package edu.mtu.simulation;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import edu.mtu.Reactor.Reactor;
@@ -121,7 +122,12 @@ public class ChemSim extends SimState {
 						
 		// Calculate Avogadro's number
 		Reactor reactor = Reactor.getInstance();
-		reactor.calculateAvogadroNumber(chemicals);
+		double scale = reactor.calculateAvogadroNumber(chemicals);
+		
+		// Scale the value to use for H2O2 decay
+		double decay = properties.getHydrogenPeroxideDecay();					// TODO Marker
+		decay = scaleDecay(decay, scale, properties.getReactorVolume());		// scaled molecules/volume/sec
+		properties.setHydrogenPeroxideDecay(decay);
 		
 		// Add each of the chemicals to the model, assume they are well mixed
 		for (ChemicalDto chemical : chemicals) {
@@ -131,7 +137,31 @@ public class ChemSim extends SimState {
 		}		
 	}
 	
+	/**
+	 * Scale the decay given based upon the actual Avagadro's number and reactor size.
+	 * 
+	 * @param decay The hydrogen peroxide decay in mol/L/sec
+	 * @param scaling The maximum value to use for scaling.
+	 * @param volume The volume of the reactor in L.
+	 * @return The new hydrogen peroxide decay in scaled molecules/volume/sec
+	 */
+	private double scaleDecay(double decay, double scaling, double volume) {
+		BigDecimal avagadro = new BigDecimal("6.0221409e+23");
 		
+		// Calculate out what the decay is in terms of Avagadro's Number
+		BigDecimal calculation = new BigDecimal(decay);
+		calculation = calculation.multiply(avagadro);							// molecules/L/sec
+		calculation = calculation.multiply(new BigDecimal(volume));				// molecules/volume/sec
+		
+		// Now scale that to the model's value, floor((scale * value) / Avagadro) 
+		calculation = calculation.multiply(new BigDecimal(scaling));			// scale * value
+		calculation = calculation.divide(avagadro);								// (scale * value) / Avagadro
+		double result = Math.floor(calculation.doubleValue());					// floor((scale * value) / Avagadro)
+		
+		// Return the results
+		return result;
+	}
+			
 	/**
 	 * Main entry point for non-UI model.
 	 */

@@ -40,7 +40,7 @@ public class TrackEnties implements Steppable {
 			// Note some values
 			ChemSimProperties properties = ChemSim.getProperties();
 			int cells = properties.getCellCount();
-			long avagadro = Reactor.getInstance().getAvogadroNumber();
+			double avagadro = Reactor.getInstance().getAvogadroNumber();
 			double decay = properties.getHydrogenPeroxideDecay();
 			
 			// Note the experimental condtions
@@ -80,9 +80,9 @@ public class TrackEnties implements Steppable {
 	@Override
 	public void step(SimState state) {
 		try {
-			long avogadroNumber = Reactor.getInstance().getAvogadroNumber();
+			double avogadroNumber = Reactor.getInstance().getAvogadroNumber();
 			for (String entity : entities) {
-				writer.write(CompoundInspector.countSpecies(entity) / (double)avogadroNumber);
+				writer.write(CompoundInspector.countSpecies(entity) / avogadroNumber);
 			}
 			writer.newline();
 		} catch (IOException ex) {
