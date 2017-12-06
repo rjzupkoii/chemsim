@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.mtu.Reactor.Cell;
-import edu.mtu.Reactor.Reactor;
 import edu.mtu.catalog.ReactionDescription;
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.simulation.ChemSim;
@@ -125,6 +124,13 @@ public class Reaction {
 				continue;
 			}
 			
+			// TODO Eliminate the special treatment
+			// Acetone + HO* get special treatment
+			if (checkAcetoneDecay(species, reactant)) {
+				doAcetoneDecay(species, reactant, cell);
+				return true;
+			}
+						
 			// Process the reactants and press on if a match is not found
 			if (process(species, reactant, reactions, cell)) {
 				return true;
@@ -132,6 +138,26 @@ public class Reaction {
 		}
 				
 		return false;
+	}
+	
+	private boolean checkAcetoneDecay(Species one, Species two) {
+		if (one.getFormula().equals("HO*") && two.getFormula().equals("CH3COCH3")) {
+			return true;
+		}
+		if (two.getFormula().equals("HO*") && one.getFormula().equals("CH3COCH3")) {
+			return true;
+		}
+		return false;
+	}
+	
+	private void doAcetoneDecay(Species one, Species two, Cell cell) {
+		// Start by assume that the equation is balanced
+		double value = getQuantity(one, two, cell);
+		
+		// Remove the HO* from the system
+		cell.remove(new Species("HO*", false), value);
+		cell.remove(new Species("CH3COCH3", false), value * ChemSim.getProperties().getAcetoneAdjustment());
+		cell.add(new Species("*CH2COCH3", false), value);		
 	}
 	
 	/**
@@ -161,15 +187,8 @@ public class Reaction {
 		// TODO The properties should have correct value? Right now it is being set in ChemSim as scaled molecules/volume/sec
 		// TODO so we just need to figure out what it is on a cellular basis
 		double value = properties.getHydrogenPeroxideDecay() / Math.pow(cells, 3);
-		
-		double magic = 0.18;
-		value *= magic;
-
-
-		// TODO Marker for changing out the hydrogen peroxide decay quantity
-		// double volume = properties.getReactorVolume();
-		// double avagadroNumber = Reactor.getInstance().getAvogadroNumber();
-		// double value = calculateDecayQuantity(cells, volume, avagadroNumber, ChemSim.getProperties().getHydrogenPeroxideDecay());
+		double adjustment = properties.getHydroxylAdjustment();
+		value *= adjustment;
 				
 		// Decay the species based upon it's reaction with UV
 		for (String product : products) {

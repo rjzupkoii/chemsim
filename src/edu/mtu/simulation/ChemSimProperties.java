@@ -15,6 +15,14 @@ public class ChemSimProperties {
 	// Default for how fast hydrogen peroxide decays into hydroxyl radicals for the reactor
 	private double hydrogenPeroxideDecay = 3.0 * Math.pow(10, -7);		// mol/L*sec
 	
+	// Adjustment to be applied to hydroxyl based upon how much is available for use in the system
+	private double hydroxylAdjustment = 0.18;
+	
+	// Assume no adjustment to acetone
+	private double acetoneAdjustment = 1.0;	
+	public double getAcetoneAdjustment() { return acetoneAdjustment; }
+	public void setAcetonAdjustment(double value) { acetoneAdjustment = value; }
+	
 	// Reactor volume in liters
 	private double reactorVolume = 1.8;
 
@@ -49,6 +57,10 @@ public class ChemSimProperties {
 		return hydrogenPeroxideDecay;
 	}
 
+	public double getHydroxylAdjustment() {
+		return hydroxylAdjustment;
+	}
+	
 	public int getMediumPathway() {
 		return mediumPathway;
 	}
@@ -89,6 +101,10 @@ public class ChemSimProperties {
 		hydrogenPeroxideDecay = value;
 	}
 		
+	public void setHydroxylAdjustment(double value) {
+		hydroxylAdjustment = value;
+	}
+	
 	public void setMediumPathway(int value) {
 		mediumPathway = value;
 	}

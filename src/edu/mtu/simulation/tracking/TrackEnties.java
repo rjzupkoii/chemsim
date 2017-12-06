@@ -39,32 +39,35 @@ public class TrackEnties implements Steppable {
 			
 			// Note some values
 			ChemSimProperties properties = ChemSim.getProperties();
-			int cells = properties.getCellCount();
-			double avagadro = Reactor.getInstance().getAvogadroNumber();
-			double decay = properties.getHydrogenPeroxideDecay();
-			
-			// Note the experimental condtions
+					
+			// Note the experimental conditions
 			writer.write("Reactor Volume");
 			writer.write(properties.getReactorVolume());
-			writer.write("Units");
-			writer.write("mols");
+			writer.newline();
 			writer.write("Cells");
 			writer.write(Math.pow(properties.getCellCount(), 3));
-			
-//			writer.write("H2O2 Decay, mol/L*sec");
-//			writer.write(decay);
-			
-			writer.newline();
 			writer.newline();
 			
-//			// Note the calculated values
-//			writer.write("Simulated Avagadro's Number");
-//			writer.write(avagadro);
-//			writer.newline();
-//			writer.write("H2O2 Decay, entities/L*sec");
-//			writer.write(decay * avagadro);
-//			writer.newline();
+			// Note formulaic properties
+			writer.write("H2O2 Decay, mol/L*sec");
+			writer.write(properties.getHydrogenPeroxideDecay());
+			writer.newline();
+			writer.write("Hydroxyl Adjustment");
+			writer.write(properties.getHydroxylAdjustment());
+			writer.newline();
+			writer.write("Acetone Adjustment");
+			writer.write(properties.getAcetoneAdjustment());
+			writer.newline();
 			
+			// Note the calculated values
+			writer.write("Simulated Avagadro's Number");
+			writer.write(Reactor.getInstance().getAvogadroNumber());
+			writer.newline();
+			writer.write("H2O2 Decay, entities/L*sec");
+			writer.write(properties.getHydrogenPeroxideDecay() * Reactor.getInstance().getAvogadroNumber());
+			writer.newline();
+			
+			// Write the names of the entities out
 			writer.write(entities);
 			writer.flush();
 		} catch (IOException ex) {
