@@ -19,7 +19,7 @@ public class ChemSimProperties {
 	private double reactorVolume = 1.8;
 
 	// Number of cells along one axis
-	private int cellCount = 5;
+	private int cellCount = 25;
 	
 	// Default paths to experiments
 	private String chemicalsFileName = "experiment/chemicals.csv";

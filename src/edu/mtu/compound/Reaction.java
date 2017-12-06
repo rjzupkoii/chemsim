@@ -161,6 +161,9 @@ public class Reaction {
 		// TODO The properties should have correct value? Right now it is being set in ChemSim as scaled molecules/volume/sec
 		// TODO so we just need to figure out what it is on a cellular basis
 		double value = properties.getHydrogenPeroxideDecay() / Math.pow(cells, 3);
+		
+		double magic = 0.18;
+		value *= magic;
 
 
 		// TODO Marker for changing out the hydrogen peroxide decay quantity

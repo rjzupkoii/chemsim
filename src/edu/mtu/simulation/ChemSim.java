@@ -65,6 +65,7 @@ public class ChemSim extends SimState {
 			initializeModel();
 			// TODO Load the file name from someplace else
 			tracker = new TrackEnties("results.csv", properties.getOverWriteResults());
+			tracker.step(this);
 			this.schedule.scheduleRepeating(tracker);
 			this.schedule.scheduleRepeating(new Monitor());			
 			
@@ -125,7 +126,7 @@ public class ChemSim extends SimState {
 		double scale = reactor.calculateAvogadroNumber(chemicals);
 		
 		// Scale the value to use for H2O2 decay
-		double decay = properties.getHydrogenPeroxideDecay();					// TODO Marker
+		double decay = properties.getHydrogenPeroxideDecay() * 60;					// TODO Marker
 		decay = scaleDecay(decay, scale, properties.getReactorVolume());		// scaled molecules/volume/sec
 		properties.setHydrogenPeroxideDecay(decay);
 		

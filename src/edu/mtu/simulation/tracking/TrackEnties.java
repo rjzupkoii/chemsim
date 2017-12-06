@@ -44,18 +44,26 @@ public class TrackEnties implements Steppable {
 			double decay = properties.getHydrogenPeroxideDecay();
 			
 			// Note the experimental condtions
-			writer.write("H2O2 Decay, mol/L*sec");
-			writer.write(decay);
+			writer.write("Reactor Volume");
+			writer.write(properties.getReactorVolume());
+			writer.write("Units");
+			writer.write("mols");
+			writer.write("Cells");
+			writer.write(Math.pow(properties.getCellCount(), 3));
+			
+//			writer.write("H2O2 Decay, mol/L*sec");
+//			writer.write(decay);
+			
 			writer.newline();
 			writer.newline();
 			
-			// Note the calculated values
-			writer.write("Simulated Avagadro's Number");
-			writer.write(avagadro);
-			writer.newline();
-			writer.write("H2O2 Decay, entities/L*sec");
-			writer.write(decay * avagadro);
-			writer.newline();
+//			// Note the calculated values
+//			writer.write("Simulated Avagadro's Number");
+//			writer.write(avagadro);
+//			writer.newline();
+//			writer.write("H2O2 Decay, entities/L*sec");
+//			writer.write(decay * avagadro);
+//			writer.newline();
 			
 			writer.write(entities);
 			writer.flush();
