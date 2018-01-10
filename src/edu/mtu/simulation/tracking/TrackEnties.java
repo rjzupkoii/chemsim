@@ -8,16 +8,12 @@ import edu.mtu.Reactor.Reactor;
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.simulation.ChemSim;
 import edu.mtu.simulation.ChemSimProperties;
-import edu.mtu.simulation.CompoundInspector;
-import sim.engine.SimState;
-import sim.engine.Steppable;
 
 /**
  * This steppable provides a means of tracking the count of chemical entities 
  * that exist in the model.
  */
-@SuppressWarnings("serial")
-public class TrackEnties implements Steppable {
+public class TrackEnties {
 
 	private BufferedCsvWriter writer; 
 	private List<String> entities;
@@ -60,11 +56,8 @@ public class TrackEnties implements Steppable {
 			writer.newline();
 			
 			// Note the calculated values
-			writer.write("Simulated Avagadro's Number");
-			writer.write(Reactor.getInstance().getAvogadroNumber());
-			writer.newline();
 			writer.write("H2O2 Decay, entities/L*sec");
-			writer.write(properties.getHydrogenPeroxideDecay() * Reactor.getInstance().getAvogadroNumber());
+			writer.write(properties.getHydrogenPeroxideDecay());
 			writer.newline();
 			
 			// Write the names of the entities out
@@ -85,20 +78,6 @@ public class TrackEnties implements Steppable {
 			writer.close();
 		} catch (IOException ex) {
 			// Wrapping up, do nothing
-		}
-	}
-	
-	@Override
-	public void step(SimState state) {
-		try {
-			double avogadroNumber = Reactor.getInstance().getAvogadroNumber();
-			for (String entity : entities) {
-				writer.write(CompoundInspector.countSpecies(entity) / avogadroNumber);
-			}
-			writer.newline();
-		} catch (IOException ex) {
-			System.err.println("Unable to write to the tracking file at, " + writer.getFileName());
-			System.exit(-1);
 		}
 	}
 }

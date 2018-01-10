@@ -1,7 +1,5 @@
 package edu.mtu.simulation;
 
-import edu.mtu.Reactor.Reactor;
-
 public class ChemSimProperties {
 	
 	// Default time step durations for disproporting species
@@ -32,12 +30,7 @@ public class ChemSimProperties {
 	// Default paths to experiments
 	private String chemicalsFileName = "experiment/chemicals.csv";
 	private String reactionsFileName = "experiment/reactions.csv";
-						
-	// TODO Figure out a way to expose this as an actual MASON inspector
-	public CompoundInspector getCompoundInspector() {
-		return new CompoundInspector();
-	}
-	
+							
 	public int getCellCount() {
 		return cellCount;
 	}
@@ -64,11 +57,7 @@ public class ChemSimProperties {
 	public int getMediumPathway() {
 		return mediumPathway;
 	}
-	
-	public double getMoleculesPerMole() {
-		return Reactor.getInstance().getAvogadroNumber();
-	}
-		
+			
 	public boolean getOverWriteResults() {
 		return overWriteResults;
 	}

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import edu.mtu.Reactor.Cell;
 import edu.mtu.catalog.ReactionDescription;
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.simulation.ChemSim;
@@ -43,13 +42,8 @@ public class Reaction {
 	 * @param species of the chemical for the disproportionation.
 	 * @param cell where the reaction should take place.
 	 */
-	public void disproportionate(DisproportionatingSpecies species, Cell cell) {
-		// Is there anything to do?
-		double count = cell.count(species);
-		if (count == 0) {
-			return;
-		}
-		
+	public void disproportionate(DisproportionatingSpecies species) {
+	
 		// Note the age
 		int age = species.updateAge();
 		
@@ -68,9 +62,9 @@ public class Reaction {
 			// Create the products for the reaction			
 			ReactionRegistry registry = ReactionRegistry.getInstance();
 			for (String product : reaction.getProducts()) {			
-				cell.add(registry.getSpecies(product), count);
+//				cell.add(registry.getSpecies(product), count);
 			}
-			cell.remove(species, count);
+//			cell.remove(species, count);
 		}
 		
 		// Remove the reactions that occurred
@@ -85,25 +79,25 @@ public class Reaction {
 	 * 
 	 * @param species of chemical for the reaction.
 	 */
-	public void react(Species species, Cell cell) {
+	public void react(Species species) {
 		// Perform any relevant dispropriation reactions
 		if (species instanceof DisproportionatingSpecies) {
-			disproportionate((DisproportionatingSpecies)species, cell);
+			disproportionate((DisproportionatingSpecies)species);
 			return;
 		}
 		
 		// First, see if there are any bimolecular reactions to take place
-		if (bimolecularReaction(species, cell)) {
+		if (bimolecularReaction(species)) {
 			return;
 		}
 		
 		// Second, see if unimolecular decay needs to take place
-		if (unimolecularDecay(species, cell)) {
+		if (unimolecularDecay(species)) {
 			return;
 		}
 		
 		// Third, see if photolysis needs to take place
-		if (photolysis(species, cell)) {
+		if (photolysis(species)) {
 			return;
 		}
 	}
@@ -111,7 +105,7 @@ public class Reaction {
 	/**
 	 * Perform a bimolecular reaction on the given species.
 	 */
-	private boolean bimolecularReaction(Species species, Cell cell) {
+	private boolean bimolecularReaction(Species species) {
 		// Get the possible reactions for this species
 		List<ReactionDescription> reactions = ReactionRegistry.getInstance().getBiomolecularReaction(species);
 		if (reactions == null) {
@@ -119,45 +113,25 @@ public class Reaction {
 		}
 		
 		// Check to see what other species at this location react with the given one
-		for (Species reactant : cell.getMolecules()) {
-			if (reactant.equals(species)) {
-				continue;
-			}
-			
-			// TODO Eliminate the special treatment
-			// Acetone + HO* get special treatment
-			if (checkAcetoneDecay(species, reactant)) {
-				doAcetoneDecay(species, reactant, cell);
-				return true;
-			}
-						
-			// Process the reactants and press on if a match is not found
-			if (process(species, reactant, reactions, cell)) {
-				return true;
-			}
-		}
+//		for (Species reactant : cell.getMolecules()) {
+//			if (reactant.equals(species)) {
+//				continue;
+//			}
+//			
+//			// TODO Eliminate the special treatment
+//			// Acetone + HO* get special treatment
+//			if (checkAcetoneDecay(species, reactant)) {
+//				doAcetoneDecay(species, reactant, cell);
+//				return true;
+//			}
+//						
+//			// Process the reactants and press on if a match is not found
+//			if (process(species, reactant, reactions, cell)) {
+//				return true;
+//			}
+//		}
 				
 		return false;
-	}
-	
-	private boolean checkAcetoneDecay(Species one, Species two) {
-		if (one.getFormula().equals("HO*") && two.getFormula().equals("CH3COCH3")) {
-			return true;
-		}
-		if (two.getFormula().equals("HO*") && one.getFormula().equals("CH3COCH3")) {
-			return true;
-		}
-		return false;
-	}
-	
-	private void doAcetoneDecay(Species one, Species two, Cell cell) {
-		// Start by assume that the equation is balanced
-		double value = getQuantity(one, two, cell);
-		
-		// Remove the HO* from the system
-		cell.remove(new Species("HO*", false), value);
-		cell.remove(new Species("CH3COCH3", false), value * ChemSim.getProperties().getAcetoneAdjustment());
-		cell.add(new Species("*CH2COCH3", false), value);		
 	}
 	
 	/**
@@ -167,7 +141,7 @@ public class Reaction {
 	 * @param cell where the reaction should take place.
 	 * @return True if it occurred, false otherwise.
 	 */
-	private boolean photolysis(Species species, Cell cell) {
+	private boolean photolysis(Species species) {
 		// Return if there is nothing to do
 		if (!species.getPhotosensitive()) {
 			return false;
@@ -191,17 +165,17 @@ public class Reaction {
 		value *= adjustment;
 				
 		// Decay the species based upon it's reaction with UV
-		for (String product : products) {
-			cell.add(registry.getSpecies(product), value);
-			cell.remove(species, value);
-		}
+//		for (String product : products) {
+//			cell.add(registry.getSpecies(product), value);
+//			cell.remove(species, value);
+//		}
 		return true;
 	}	
 	
 	/**
 	 * Process the reactions that are possible for this entity.
 	 */
-	private boolean process(Species species, Species reactant, List<ReactionDescription> reactions, Cell cell) {
+	private boolean process(Species species, Species reactant, List<ReactionDescription> reactions) {
 		// Can this reaction occur?
 		List<ReactionDescription> matched = new ArrayList<ReactionDescription>();
 		for (ReactionDescription rd : reactions) {
@@ -217,45 +191,30 @@ public class Reaction {
 		double value;
 		if (matched.size() > 1) {
 			// A disproporting reaction is occurring
-			value = getQuantity(species,reactant, cell);
+//			value = getQuantity(species,reactant, cell);
 			Species product = DisproportionatingSpecies.create(species, reactant, reactions);
-			cell.add(product, value);
+//			cell.add(product, value);
 		} else {
 			// A standard reaction is occurring
-			value = getQuantity(species,reactant, cell);
+//			value = getQuantity(species,reactant, cell);
 			ReactionRegistry registry = ReactionRegistry.getInstance();
 			for (String formula : matched.get(0).getProducts()) {
-				cell.add(registry.getSpecies(formula), value);
+//				cell.add(registry.getSpecies(formula), value);
 			}
 		}
 		
 		// Clean up the reactants that were involved
-		cell.remove(species, value);
+//		cell.remove(species, value);
 		if (reactant != null) {
-			cell.remove(reactant);
+//			cell.remove(reactant);
 		}
 		return true;
 	}
-	
-	/**
-	 * Get the minimum quantity of reactant to use.
-	 */
-	private double getQuantity(Species one, Species two, Cell cell) {
-		double valueOne = (one != null) ? cell.count(one) : 0;
-		double valueTwo = (two != null) ? cell.count(two) : 0;
-		if (valueOne == 0) {
-			return valueTwo;
-		}
-		if (valueTwo == 0) {
-			return valueOne;
-		}
-		return Math.min(valueOne, valueTwo);
-	}
-	
+		
 	/**
 	 * Perform a unimolecular reaction on the given species.
 	 */
-	private boolean unimolecularDecay(Species species, Cell cell) {
+	private boolean unimolecularDecay(Species species) {
 		// Get the possible reactions for this species
 		List<ReactionDescription> reactions = ReactionRegistry.getInstance().getBiomolecularReaction(species);
 		if (reactions == null) {
@@ -263,6 +222,6 @@ public class Reaction {
 		}
 
 		// Return the results of processing the reactions
-		return process(species, null, reactions, cell);
+		return process(species, null, reactions);
 	}
 }

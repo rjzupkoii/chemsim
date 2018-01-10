@@ -9,12 +9,9 @@ import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.compound.Species;
 import edu.mtu.parser.ChemicalDto;
 import edu.mtu.parser.Parser;
-import edu.mtu.simulation.steppable.Monitor;
 import edu.mtu.simulation.tracking.TrackEnties;
-import sim.engine.SimState;
 
-@SuppressWarnings("serial")
-public class ChemSim extends SimState {
+public class ChemSim {
 				
 	// The properties for the simulation, managed by MASON
 	private ChemSimProperties properties;
@@ -29,8 +26,6 @@ public class ChemSim extends SimState {
 	 * Constructor.
 	 */
 	public ChemSim(long seed) {
-		super(seed);
-		
 		// This actually breaks the standard pattern for a singleton, but we only 
 		// expect MASON to start one instance of the simulation. This also gives 
 		// us access to the simulation state without having to pass it around.
@@ -46,15 +41,11 @@ public class ChemSim extends SimState {
 	/**
 	 * Setup and start the simulation
 	 */
-	@Override
 	public void start() {
-		super.start();
-		
 		try {
 			// Clear the container of molecules
 			int cells = properties.getCellCount();
 			double volume = properties.getReactorVolume();
-			Reactor.getInstance().createCells(cells, volume, this);
 			
 			// Import the reactions into the model
 			ReactionRegistry instance = ReactionRegistry.getInstance();
@@ -65,9 +56,9 @@ public class ChemSim extends SimState {
 			initializeModel();
 			// TODO Load the file name from someplace else
 			tracker = new TrackEnties("results.csv", properties.getOverWriteResults());
-			tracker.step(this);
-			this.schedule.scheduleRepeating(tracker);
-			this.schedule.scheduleRepeating(new Monitor());			
+//			tracker.step(this);
+//			this.schedule.scheduleRepeating(tracker);
+//			this.schedule.scheduleRepeating(new Monitor());			
 			
 		} catch (Exception ex) {
 			// We can't recover from errors here
@@ -79,9 +70,7 @@ public class ChemSim extends SimState {
 	/**
 	 * Complete the simulation.
 	 */
-	@Override
 	public void finish() {
-		super.finish();
 		if (tracker != null) {
 			tracker.complete();
 		}
@@ -121,16 +110,16 @@ public class ChemSim extends SimState {
 		// Hold on to a reference to the registry
 		ReactionRegistry registry = ReactionRegistry.getInstance();
 						
-		// Calculate Avogadro's number
-		Reactor reactor = Reactor.getInstance();
-		double scale = reactor.calculateAvogadroNumber(chemicals);
+		// TODO Correct scaling
 		
 		// Scale the value to use for H2O2 decay
+		double scale = 0.0;
 		double decay = properties.getHydrogenPeroxideDecay() * 60;					// TODO Marker
 		decay = scaleDecay(decay, scale, properties.getReactorVolume());		// scaled molecules/volume/sec
 		properties.setHydrogenPeroxideDecay(decay);
 		
 		// Add each of the chemicals to the model, assume they are well mixed
+		Reactor reactor = Reactor.getInstance();
 		for (ChemicalDto chemical : chemicals) {
 			// Add the molecules to the model
 			Species species = registry.getSpecies(chemical.formula);
@@ -167,7 +156,9 @@ public class ChemSim extends SimState {
 	 * Main entry point for non-UI model.
 	 */
 	public static void main(String[] args) {
-		doLoop(ChemSim.class, args);
+		
+		// TODO Kick off the simulation
+		
 		System.exit(0);
 	}	
 }
