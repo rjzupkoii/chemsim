@@ -101,7 +101,6 @@ public class Schedule {
 			// If this is the marker, signal the that a time step has been completed
 			if (node == last) {
 				timeStep++;
-				simulation.doTimeStep();
 				if (timeStep == runTill) {
 					stopping = true;
 				}
@@ -109,7 +108,7 @@ public class Schedule {
 			
 			// Check to see if we need to stop
 			if (stopping || stop) {
-				simulation.complete(stop);
+				simulation.finish(stop);
 				stop = true;
 			}
 		}

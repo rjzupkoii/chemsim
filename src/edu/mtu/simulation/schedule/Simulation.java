@@ -6,14 +6,19 @@ package edu.mtu.simulation.schedule;
  */
 public interface Simulation {
 	/**
+	 * Initialize the simulation using the seed provided for the random number generator. 
+	 */
+	public void initialize(long seed);
+	
+	/**
+	 * Start the simulation, run for the given number of time steps.
+	 */
+	public void start(int timeSteps);
+	
+	/**
 	 * Invoked when the scheduler has been stopped.
 	 * 
 	 * @param terminated True when the schedule was terminated during a time step, false otherwise.
 	 */
-	public void complete(boolean terminated);
-	
-	/**
-	 * Invoked when a time step has been completed.
-	 */
-	public void doTimeStep(); 
+	public void finish(boolean terminated);
 }

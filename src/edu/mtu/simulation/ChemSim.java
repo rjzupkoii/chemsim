@@ -9,15 +9,16 @@ import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.compound.Species;
 import edu.mtu.parser.ChemicalDto;
 import edu.mtu.parser.Parser;
+import edu.mtu.simulation.schedule.Simulation;
 import edu.mtu.simulation.tracking.TrackEnties;
 
-public class ChemSim {
+public class ChemSim implements Simulation {
 				
 	// The properties for the simulation, managed by MASON
 	private ChemSimProperties properties;
 	
 	// Singleton instance of the simulation
-	private static ChemSim instance;
+	private static ChemSim instance = new ChemSim();
 	
 	// Entity count tracker for the simulation
 	private TrackEnties tracker;
@@ -25,23 +26,14 @@ public class ChemSim {
 	/**
 	 * Constructor.
 	 */
-	public ChemSim(long seed) {
-		// This actually breaks the standard pattern for a singleton, but we only 
-		// expect MASON to start one instance of the simulation. This also gives 
-		// us access to the simulation state without having to pass it around.
-		if (instance != null) {
-			throw new IllegalStateException();
-		}
-		
-		// Note the this object and the properties
+	private ChemSim() {
 		properties = new ChemSimProperties();
-		instance = this;
 	}
 		
 	/**
 	 * Setup and start the simulation
 	 */
-	public void start() {
+	public void initialize(long seed) {
 		try {
 			// Clear the container of molecules
 			int cells = properties.getCellCount();
@@ -68,9 +60,18 @@ public class ChemSim {
 	}
 	
 	/**
+	 * Start the simulation.
+	 */
+	@Override
+	public void start(int timeSteps) {
+		
+	}
+	
+	/**
 	 * Complete the simulation.
 	 */
-	public void finish() {
+	@Override
+	public void finish(boolean terminated) {
 		if (tracker != null) {
 			tracker.complete();
 		}
@@ -80,11 +81,9 @@ public class ChemSim {
 	 * Get a reference to the ChemSim singleton.
 	 */
 	public static ChemSim getInstance() {
-		// We expect to be constructed by MASON, so no instance can be created before then
 		if (instance == null) {
 			throw new IllegalStateException();
-		}
-		
+		}		
 		return instance;
 	}
 	
@@ -92,11 +91,9 @@ public class ChemSim {
 	 * Get the properties that are associated with this simulation.
 	 */
 	public static ChemSimProperties getProperties() {
-		// We expect the class to already be instantiated
 		if (instance == null) {
 			throw new IllegalStateException();
 		}
-		
 		return instance.properties;
 	}
 			
@@ -157,8 +154,13 @@ public class ChemSim {
 	 */
 	public static void main(String[] args) {
 		
-		// TODO Kick off the simulation
-		
+		// Initialize the simulation
+		long seed = System.currentTimeMillis();
+		ChemSim instance = ChemSim.getInstance();
+		instance.initialize(seed);
+				
+		// Run the simulation and exit
+		instance.start(100);
 		System.exit(0);
-	}	
+	}
 }

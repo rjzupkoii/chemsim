@@ -45,16 +45,14 @@ public class ScheduleTests implements Simulation {
 	}
 
 	@Override
-	public void complete(boolean terminated) {
-		System.out.println("Completed: " + schedule.getTimeStep());
-		Assert.assertEquals(timeSteps, schedule.getTimeStep());
-	}
+	public void initialize(long seed) { }
 
 	@Override
-	public void doTimeStep() {
-		int count = schedule.getCount();
-		int timeStep = schedule.getTimeStep();
-		System.out.println("Time step: " + timeStep + ", Count: " + count);
-		schedule.insert(new TestSteppable(count));
+	public void start(int timeSteps) { }
+	
+	@Override
+	public void finish(boolean terminated) {
+		System.out.println("Completed: " + schedule.getTimeStep());
+		Assert.assertEquals(timeSteps, schedule.getTimeStep());
 	}
 }
