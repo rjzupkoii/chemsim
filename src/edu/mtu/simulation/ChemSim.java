@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.activity.InvalidActivityException;
+
+import ec.util.MersenneTwisterFast;
 import edu.mtu.Reactor.Reactor;
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.compound.Species;
@@ -24,6 +27,11 @@ public class ChemSim implements Simulation {
 	private TrackEnties tracker;
 	
 	/**
+	 * Random number generator that is tied to the simulation. 
+	 */
+	public MersenneTwisterFast random;
+	
+	/**
 	 * Constructor.
 	 */
 	private ChemSim() {
@@ -35,16 +43,13 @@ public class ChemSim implements Simulation {
 	 */
 	public void initialize(long seed) {
 		try {
-			// Clear the container of molecules
-			int cells = properties.getCellCount();
-			double volume = properties.getReactorVolume();
-			
 			// Import the reactions into the model
 			ReactionRegistry instance = ReactionRegistry.getInstance();
 			instance.clear();
 			instance.load(properties.getReactionsFileName());
 						
 			// Initialize the model
+			random = new MersenneTwisterFast(seed);
 			initializeModel();
 			// TODO Load the file name from someplace else
 			tracker = new TrackEnties("results.csv", properties.getOverWriteResults());
@@ -96,6 +101,16 @@ public class ChemSim implements Simulation {
 		}
 		return instance.properties;
 	}
+	
+	/**
+	 * Creates entities of of the given species in a uniformly distributed fashion.
+	 */
+	private void createEntities(Species species, long count) throws InvalidActivityException {
+		
+		// TODO Write this method
+		throw new UnsupportedOperationException();
+		
+	}
 			
 	/**
 	 * Initialize the model by loading the initial chemicals in the correct ratio.
@@ -117,10 +132,16 @@ public class ChemSim implements Simulation {
 		
 		// Add each of the chemicals to the model, assume they are well mixed
 		Reactor reactor = Reactor.getInstance();
+		System.out.println("Total Memory: " + Runtime.getRuntime().totalMemory());
+		System.out.println("Max Molecule Count: " + reactor.getMaximumMolecules());
+		
 		for (ChemicalDto chemical : chemicals) {
 			// Add the molecules to the model
 			Species species = registry.getSpecies(chemical.formula);
-			reactor.createEntities(species, chemical.mols);
+			
+			// TODO find the count
+			long count = 0;
+			createEntities(species, count);
 		}		
 	}
 	

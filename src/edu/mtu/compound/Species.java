@@ -5,6 +5,7 @@ import java.awt.Color;
 /**
  * This class represents a chemical entity.
  */
+@Deprecated
 public class Species {
 
 	private boolean photosensitive;
