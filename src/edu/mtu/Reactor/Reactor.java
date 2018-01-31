@@ -3,7 +3,6 @@ package edu.mtu.Reactor;
 import com.sun.jna.Native;
 
 import edu.mtu.compound.Molecule;
-import edu.mtu.compound.Species;
 import sim.field.grid.SparseGrid3D;
 import sim.util.Bag;
 import sim.util.Int3D;
@@ -33,7 +32,7 @@ public class Reactor {
 		long heapSize = Runtime.getRuntime().totalMemory();
 		
 		// Calculate out how many molecules we can create
-		int size = Native.getNativeSize(Species.class);
+		int size = Native.getNativeSize(Molecule.class);
 		moleculeCount = (long)((heapSize * 0.9) / size);
 	}
 	
@@ -76,6 +75,17 @@ public class Reactor {
 	public void initalize(int width, int height, int length) {
 		container = new Int3D(width, height, length);
 		grid = new SparseGrid3D(width, height, length);
+	}
+	
+	public void insert(Molecule molecule, Int3D location) {
+		grid.setObjectLocation(molecule, location);
+	}
+	
+	/**
+	 * Remove the molecule from the grid.
+	 */
+	public void remove(Molecule molecule) {
+		grid.remove(molecule);
 	}
 	
 	/**

@@ -9,11 +9,11 @@ import sim.util.Int3D;
 public class Molecule extends Steppable{
 
 	private String formula;
-	
+		
 	/**
 	 * Constructor.
 	 */
-	public Molecule(String formula, Int3D location) {
+	public Molecule(String formula) {
 		this.formula = formula;
 	}
 	
@@ -23,12 +23,23 @@ public class Molecule extends Steppable{
 		Reactor reactor = Reactor.getInstance();
 		Int3D location = move(reactor.getLocation(this), reactor.getContainer());
 		
-		// See if a reaction should occur, if not, apply the movement
-		if (!react(location)) {		
+		if (react(location)) {
+			// If a reaction occurred, dispose of this molecule
+			dispose();
+		} else {
+			// Otherwise, apply the movement
 			reactor.setLocation(this, location);
-		}
+		}		
 	}
 		
+	/**
+	 * Dispose of this molecule.
+	 */
+	public void dispose() {
+		Reactor.getInstance().remove(this);
+		ChemSim.getSchedule().remove(this);
+	}
+	
 	/**
 	 * Get the formula of this molecule.
 	 */

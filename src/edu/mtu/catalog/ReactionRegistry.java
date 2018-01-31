@@ -9,7 +9,7 @@ import java.util.Map;
 
 import javax.activity.InvalidActivityException;
 
-import edu.mtu.compound.Species;
+import edu.mtu.compound.Molecule;
 import edu.mtu.parser.Parser;
 
 /**
@@ -95,8 +95,8 @@ public class ReactionRegistry {
 	/**
 	 * Returns the list of bimolecular reactions for the chemical species or null.
 	 */
-	public List<ReactionDescription> getBiomolecularReaction(Species species) {
-		return bimolecular.get(species.getFormula());
+	public List<ReactionDescription> getBiomolecularReaction(Molecule molecule) {
+		return bimolecular.get(molecule.getFormula());
 	}
 	
 	/**
@@ -129,23 +129,15 @@ public class ReactionRegistry {
 	/**
 	 * Returns the photolysis products for the chemical species or null.
 	 */
-	public List<String> getPhotolysisReaction(Species species) {
-		return photolysis.get(species.getFormula());
+	public List<String> getPhotolysisReaction(Molecule molecule) {
+		return photolysis.get(molecule.getFormula());
 	}
-	
-	/**
-	 * Generate a new species that matches the given formula.
-	 */
-	public Species getSpecies(String formula) {
-		boolean photosensitive = getPhotolysisReaction(formula) != null;
-		return new Species(formula, photosensitive);
-	}
-	
+		
 	/**
 	 * Returns the list of unimolecular reactions for the chemical species or null.
 	 */
-	public List<ReactionDescription> getUnimolecularReaction(Species species) {
-		return unimolecular.get(species.getFormula());
+	public List<ReactionDescription> getUnimolecularReaction(Molecule molecule) {
+		return unimolecular.get(molecule.getFormula());
 	}
 	
 	/**

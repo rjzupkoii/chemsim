@@ -3,7 +3,7 @@
   associations="true" dependencies="true" nesting-relationships="true" router="FAN">  
   <class id="1" language="java" name="edu.mtu.catalog.Nomenclature" project="ChemSim" 
     file="/ChemSim/src/edu/mtu/catalog/Nomenclature.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="159" width="201" x="602" y="37"/>    
+    <position height="159" width="201" x="307" y="37"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -12,7 +12,7 @@
   </class>  
   <class id="2" language="java" name="edu.mtu.compound.Reaction" project="ChemSim" 
     file="/ChemSim/src/edu/mtu/compound/Reaction.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="231" width="363" x="1133" y="679"/>    
+    <position height="231" width="375" x="62" y="679"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -21,7 +21,7 @@
   </class>  
   <class id="3" language="java" name="edu.mtu.simulation.ChemSim" project="ChemSim" 
     file="/ChemSim/src/edu/mtu/simulation/ChemSim.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="267" width="259" x="989" y="960"/>    
+    <position height="303" width="259" x="341" y="960"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -30,343 +30,295 @@
   </class>  
   <class id="4" language="java" name="edu.mtu.catalog.ReactionDescription" project="ChemSim" 
     file="/ChemSim/src/edu/mtu/catalog/ReactionDescription.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="213" width="319" x="1054" y="2543"/>    
+    <position height="213" width="319" x="41" y="2073"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="5" language="java" name="edu.mtu.simulation.CompoundPortrayal" project="ChemSim" 
-    file="/ChemSim/src/edu/mtu/simulation/CompoundPortrayal.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="123" width="304" x="769" y="1594"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
-      sort-features="false" accessors="false" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
-    </display>  
-  </class>  
-  <class id="6" language="java" name="edu.mtu.catalog.ReactionRegistry" project="ChemSim" 
+  <class id="5" language="java" name="edu.mtu.catalog.ReactionRegistry" project="ChemSim" 
     file="/ChemSim/src/edu/mtu/catalog/ReactionRegistry.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="375" width="423" x="296" y="1594"/>    
+    <position height="357" width="423" x="62" y="1666"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="7" language="java" name="edu.mtu.simulation.schedule.Node" project="ChemSim" 
+  <class id="6" language="java" name="edu.mtu.simulation.schedule.Node" project="ChemSim" 
     file="/ChemSim/src/edu/mtu/simulation/schedule/Node.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="87" width="166" x="1206" y="380"/>    
+    <position height="87" width="166" x="617" y="380"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="8" language="java" name="edu.mtu.simulation.tracking.BufferedCsvWriter" project="ChemSim" 
+  <class id="7" language="java" name="edu.mtu.simulation.tracking.BufferedCsvWriter" project="ChemSim" 
     file="/ChemSim/src/edu/mtu/simulation/tracking/BufferedCsvWriter.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="303" width="213" x="43" y="1594"/>    
+    <position height="303" width="213" x="535" y="1666"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="9" language="java" name="edu.mtu.simulation.tracking.TrackEnties" project="ChemSim" 
+  <class id="8" language="java" name="edu.mtu.simulation.tracking.TrackEnties" project="ChemSim" 
     file="/ChemSim/src/edu/mtu/simulation/tracking/TrackEnties.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="123" width="178" x="607" y="1277"/>    
+    <position height="123" width="178" x="341" y="1313"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="10" language="java" name="edu.mtu.simulation.schedule.Schedule" project="ChemSim" 
+  <class id="9" language="java" name="edu.mtu.simulation.schedule.Schedule" project="ChemSim" 
     file="/ChemSim/src/edu/mtu/simulation/schedule/Schedule.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="303" width="166" x="1403" y="37"/>    
+    <position height="303" width="166" x="814" y="37"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="11" language="java" name="edu.mtu.compound.Species" project="ChemSim" 
-    file="/ChemSim/src/edu/mtu/compound/Species.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="231" width="223" x="1094" y="2019"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
-      sort-features="false" accessors="false" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
-    </display>  
-  </class>  
-  <class id="12" language="java" name="edu.mtu.compound.Molecule" project="ChemSim" 
+  <class id="10" language="java" name="edu.mtu.compound.Molecule" project="ChemSim" 
     file="/ChemSim/src/edu/mtu/compound/Molecule.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="944" y="683"/>    
+    <position height="195" width="157" x="631" y="679"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <interface id="13" language="java" name="edu.mtu.simulation.schedule.Simulation" project="ChemSim" 
+  <interface id="11" language="java" name="edu.mtu.simulation.schedule.Simulation" project="ChemSim" 
     file="/ChemSim/src/edu/mtu/simulation/schedule/Simulation.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="123" width="166" x="1319" y="1277"/>    
+    <position height="123" width="166" x="835" y="1313"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </interface>  
-  <class id="14" language="java" name="edu.mtu.simulation.schedule.Steppable" project="ChemSim" 
+  <class id="12" language="java" name="edu.mtu.simulation.schedule.Steppable" project="ChemSim" 
     file="/ChemSim/src/edu/mtu/simulation/schedule/Steppable.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="122" width="166" x="1237" y="517"/>    
+    <position height="122" width="166" x="648" y="517"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="15" language="java" name="edu.mtu.simulation.ChemSimProperties" project="ChemSim" 
+  <class id="13" language="java" name="edu.mtu.simulation.ChemSimProperties" project="ChemSim" 
     file="/ChemSim/src/edu/mtu/simulation/ChemSimProperties.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="321" width="213" x="1155" y="1594"/>    
+    <position height="321" width="213" x="788" y="1666"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="16" language="java" name="edu.mtu.Reactor.Reactor" project="ChemSim" 
+  <class id="14" language="java" name="edu.mtu.Reactor.Reactor" project="ChemSim" 
     file="/ChemSim/src/edu/mtu/Reactor/Reactor.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="267" width="205" x="879" y="1277"/>    
+    <position height="303" width="205" x="580" y="1313"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="false" visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="17" language="java" name="edu.mtu.compound.DisproportionatingSpecies" project="ChemSim" 
-    file="/ChemSim/src/edu/mtu/compound/DisproportionatingSpecies.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="213" width="454" x="1094" y="2290"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
-      sort-features="false" accessors="false" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
-    </display>  
-  </class>  
-  <generalization id="18">    
-    <end type="SOURCE" refId="12"/>    
-    <end type="TARGET" refId="14"/>  
-  </generalization>  
-  <dependency id="19">    
-    <bendpoint x="1288" y="960"/>    
-    <bendpoint x="1288" y="1277"/>    
-    <bendpoint x="1398" y="1594"/>    
+  <dependency id="15">    
+    <bendpoint x="71" y="960"/>    
+    <bendpoint x="71" y="1313"/>    
     <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="16">    
+    <bendpoint x="844" y="380"/>    
+    <bendpoint x="844" y="517"/>    
+    <bendpoint x="844" y="679"/>    
+    <bendpoint x="844" y="960"/>    
+    <end type="SOURCE" refId="9"/>    
     <end type="TARGET" refId="11"/>  
   </dependency>  
-  <dependency id="20">    
-    <end type="SOURCE" refId="2"/>    
-    <end type="TARGET" refId="3"/>  
+  <realization id="17">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="11"/>  
+  </realization>  
+  <dependency id="18">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="5"/>  
   </dependency>  
-  <association id="21">    
-    <bendpoint x="1145" y="1277"/>    
-    <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="22" name="properties"/>      
-      <multiplicity id="23" minimum="0" maximum="1"/>    
+  <association id="19">    
+    <end type="SOURCE" refId="14" navigable="false">      
+      <attribute id="20" name="instance">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="21" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
     </end>    
-    <end type="TARGET" refId="15" navigable="true"/>    
+    <end type="TARGET" refId="14" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="24">    
-    <bendpoint x="1515" y="960"/>    
-    <bendpoint x="1515" y="1277"/>    
+  <dependency id="22">    
+    <bendpoint x="31" y="960"/>    
+    <bendpoint x="31" y="1313"/>    
+    <bendpoint x="31" y="1666"/>    
     <end type="SOURCE" refId="2"/>    
-    <end type="TARGET" refId="15"/>  
+    <end type="TARGET" refId="4"/>  
   </dependency>  
-  <association id="25">    
+  <association id="23">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="24" name="writer">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="25" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="26">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="14"/>  
+  </dependency>  
+  <association id="27">    
     <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="26" name="instance"/>      
-      <multiplicity id="27" minimum="0" maximum="1"/>    
+      <attribute id="28" name="instance">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="29" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
     </end>    
     <end type="TARGET" refId="3" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="28">    
-    <end type="SOURCE" refId="5"/>    
-    <end type="TARGET" refId="11"/>  
-  </dependency>  
-  <association id="29">    
-    <end type="SOURCE" refId="10" navigable="false">      
-      <attribute id="30" name="current"/>      
-      <multiplicity id="31" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="7" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="32">    
-    <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="33" name="instance"/>      
-      <multiplicity id="34" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="2" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <dependency id="35">    
-    <bendpoint x="576" y="960"/>    
-    <bendpoint x="576" y="1277"/>    
-    <end type="SOURCE" refId="2"/>    
-    <end type="TARGET" refId="6"/>  
-  </dependency>  
-  <association id="36">    
+  <association id="30">    
     <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="37" name="writer"/>      
-      <multiplicity id="38" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="8" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="39">    
-    <end type="SOURCE" refId="17" navigable="false">      
-      <attribute id="40" name="reactions"/>      
-      <multiplicity id="41" minimum="0" maximum="2147483647"/>    
-    </end>    
-    <end type="TARGET" refId="4" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="42">    
-    <end type="SOURCE" refId="16" navigable="false">      
-      <attribute id="43" name="instance"/>      
-      <multiplicity id="44" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="16" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <dependency id="45">    
-    <end type="SOURCE" refId="12"/>    
-    <end type="TARGET" refId="3"/>  
-  </dependency>  
-  <association id="46">    
-    <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="47" name="next"/>      
-      <multiplicity id="48" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="7" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <dependency id="49">    
-    <bendpoint x="1412" y="380"/>    
-    <end type="SOURCE" refId="10"/>    
-    <end type="TARGET" refId="14"/>  
-  </dependency>  
-  <dependency id="50">    
-    <bendpoint x="1557" y="960"/>    
-    <bendpoint x="1557" y="1277"/>    
-    <bendpoint x="1557" y="1594"/>    
-    <bendpoint x="1557" y="2019"/>    
-    <end type="SOURCE" refId="2"/>    
-    <end type="TARGET" refId="17"/>  
-  </dependency>  
-  <dependency id="51">    
-    <bendpoint x="815" y="1277"/>    
-    <end type="SOURCE" refId="3"/>    
-    <end type="TARGET" refId="6"/>  
-  </dependency>  
-  <dependency id="52">    
-    <bendpoint x="1578" y="960"/>    
-    <bendpoint x="1578" y="1277"/>    
-    <bendpoint x="1578" y="1594"/>    
-    <bendpoint x="1578" y="2019"/>    
-    <bendpoint x="1578" y="2290"/>    
-    <end type="SOURCE" refId="2"/>    
-    <end type="TARGET" refId="4"/>  
-  </dependency>  
-  <dependency id="53">    
-    <bendpoint x="1536" y="380"/>    
-    <bendpoint x="1536" y="517"/>    
-    <bendpoint x="1536" y="679"/>    
-    <bendpoint x="1536" y="960"/>    
-    <end type="SOURCE" refId="10"/>    
-    <end type="TARGET" refId="13"/>  
-  </dependency>  
-  <dependency id="54">    
-    <bendpoint x="916" y="960"/>    
-    <end type="SOURCE" refId="12"/>    
-    <end type="TARGET" refId="16"/>  
-  </dependency>  
-  <dependency id="55">    
-    <bendpoint x="1124" y="1277"/>    
-    <bendpoint x="1124" y="1594"/>    
-    <end type="SOURCE" refId="3"/>    
-    <end type="TARGET" refId="11"/>  
-  </dependency>  
-  <dependency id="56">    
-    <bendpoint x="1103" y="1594"/>    
-    <end type="SOURCE" refId="16"/>    
-    <end type="TARGET" refId="11"/>  
-  </dependency>  
-  <dependency id="57">    
-    <end type="SOURCE" refId="3"/>    
-    <end type="TARGET" refId="16"/>  
-  </dependency>  
-  <dependency id="58">    
-    <bendpoint x="1063" y="2290"/>    
-    <end type="SOURCE" refId="4"/>    
-    <end type="TARGET" refId="11"/>  
-  </dependency>  
-  <dependency id="59">    
-    <bendpoint x="684" y="2019"/>    
-    <bendpoint x="684" y="2290"/>    
-    <end type="SOURCE" refId="6"/>    
-    <end type="TARGET" refId="4"/>  
-  </dependency>  
-  <association id="60">    
-    <end type="SOURCE" refId="10" navigable="false">      
-      <attribute id="61" name="last"/>      
-      <multiplicity id="62" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="7" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <dependency id="63">    
-    <end type="SOURCE" refId="9"/>    
-    <end type="TARGET" refId="6"/>  
-  </dependency>  
-  <association id="64">    
-    <end type="SOURCE" refId="6" navigable="false">      
-      <attribute id="65" name="instance"/>      
-      <multiplicity id="66" minimum="0" maximum="1"/>    
+      <attribute id="31" name="last">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="32" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
     </end>    
     <end type="TARGET" refId="6" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="67">    
-    <end type="SOURCE" refId="3" navigable="false">      
-      <attribute id="68" name="tracker"/>      
-      <multiplicity id="69" minimum="0" maximum="1"/>    
+  <dependency id="33">    
+    <bendpoint x="640" y="960"/>    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="14"/>  
+  </dependency>  
+  <association id="34">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="35" name="instance">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="36" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
     </end>    
-    <end type="TARGET" refId="9" navigable="true"/>    
+    <end type="TARGET" refId="2" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <generalization id="70">    
-    <end type="SOURCE" refId="17"/>    
-    <end type="TARGET" refId="11"/>  
-  </generalization>  
-  <realization id="71">    
-    <end type="SOURCE" refId="3"/>    
+  <dependency id="37">    
+    <end type="SOURCE" refId="8"/>    
     <end type="TARGET" refId="13"/>  
-  </realization>  
-  <generalization id="72">    
-    <end type="SOURCE" refId="14"/>    
-    <end type="TARGET" refId="7"/>  
-  </generalization>  
-  <dependency id="73">    
-    <end type="SOURCE" refId="9"/>    
-    <end type="TARGET" refId="15"/>  
   </dependency>  
-  <dependency id="74">    
-    <end type="SOURCE" refId="6"/>    
-    <end type="TARGET" refId="11"/>  
+  <generalization id="38">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="12"/>  
+  </generalization>  
+  <dependency id="39">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="3"/>  
+  </dependency>  
+  <association id="40">    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="41" name="current">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="42" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="43">    
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="6"/>  
+  </generalization>  
+  <association id="44">    
+    <bendpoint x="549" y="1313"/>    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="45" name="properties">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="46" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="47">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="48" name="tracker">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="49" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="8" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="50">    
+    <bendpoint x="210" y="1313"/>    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <association id="51">    
+    <end type="SOURCE" refId="5" navigable="false">      
+      <attribute id="52" name="instance">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="53" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="54">    
+    <bendpoint x="823" y="380"/>    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="12"/>  
+  </dependency>  
+  <association id="55">    
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="56" name="next">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </attribute>      
+      <multiplicity id="57" minimum="0" maximum="1">        
+        <position height="0" width="0" x="0" y="0"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="58">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="4"/>  
+  </dependency>  
+  <dependency id="59">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="3"/>  
   </dependency>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
     sort-features="false" accessors="false" visibility="true">    

@@ -1,6 +1,5 @@
 package edu.mtu.compound;
 
-import java.awt.Color;
 import java.util.List;
 
 import edu.mtu.catalog.ReactionDescription;
@@ -8,7 +7,7 @@ import edu.mtu.catalog.ReactionDescription;
 /**
  * This class represents a disproportionating chemical entity.
  */
-public class DisproportionatingSpecies extends Species {
+public class DisproportionatingMolecule extends Molecule {
 
 	// TODO Refactor this class to be unique within the cell
 	
@@ -18,16 +17,16 @@ public class DisproportionatingSpecies extends Species {
 	/**
 	 * Constructor.
 	 */
-	public DisproportionatingSpecies(String formula) {
+	public DisproportionatingMolecule(String formula) {
 		// NOTE We are assuming that disproportion is always independent of photolysis
-		super(formula, false);
+		super(formula);
 	}
 
 	/**
 	 * Create a new disproportionating species from the species and reactions provided. 
 	 */
-	public static DisproportionatingSpecies create(Species species, List<ReactionDescription> reactions) {
-		DisproportionatingSpecies enttiy = new DisproportionatingSpecies(species.getFormula());
+	public static DisproportionatingMolecule create(Molecule species, List<ReactionDescription> reactions) {
+		DisproportionatingMolecule enttiy = new DisproportionatingMolecule(species.getFormula());
 		enttiy.reactions = reactions;
 		return enttiy;
 	}
@@ -35,12 +34,12 @@ public class DisproportionatingSpecies extends Species {
 	/**
 	 * Create a new disproportionating species from the species and reactions provided.
 	 */
-	public static DisproportionatingSpecies create(Species one, Species two, List<ReactionDescription> reactions) { 
+	public static DisproportionatingMolecule create(Molecule one, Molecule two, List<ReactionDescription> reactions) { 
 		if (two == null) {
 			return create(one,reactions);
 		}
 		
-		DisproportionatingSpecies entity = new DisproportionatingSpecies(one.getFormula() + " + " + two.getFormula());
+		DisproportionatingMolecule entity = new DisproportionatingMolecule(one.getFormula() + " + " + two.getFormula());
 		entity.reactions = reactions;
 		return entity;		
 	}
@@ -51,14 +50,7 @@ public class DisproportionatingSpecies extends Species {
 	public int getAge() {
 		return age;
 	}
-	
-	/**
-	 * Get the color for this entity.
-	 */
-	public Color getColor() {
-		return Color.RED;
-	}
-	
+		
 	/**
 	 * Get the reactions for this entity.
 	 */

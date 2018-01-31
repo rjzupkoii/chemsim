@@ -9,9 +9,10 @@ import javax.activity.InvalidActivityException;
 import ec.util.MersenneTwisterFast;
 import edu.mtu.Reactor.Reactor;
 import edu.mtu.catalog.ReactionRegistry;
-import edu.mtu.compound.Species;
+import edu.mtu.compound.Molecule;
 import edu.mtu.parser.ChemicalDto;
 import edu.mtu.parser.Parser;
+import edu.mtu.simulation.schedule.Schedule;
 import edu.mtu.simulation.schedule.Simulation;
 import edu.mtu.simulation.tracking.TrackEnties;
 
@@ -22,6 +23,8 @@ public class ChemSim implements Simulation {
 	
 	// Singleton instance of the simulation
 	private static ChemSim instance = new ChemSim();
+	
+	private Schedule schedule = new Schedule();
 	
 	// Entity count tracker for the simulation
 	private TrackEnties tracker;
@@ -51,6 +54,7 @@ public class ChemSim implements Simulation {
 			// Initialize the model
 			random = new MersenneTwisterFast(seed);
 			initializeModel();
+			
 			// TODO Load the file name from someplace else
 			tracker = new TrackEnties("results.csv", properties.getOverWriteResults());
 //			tracker.step(this);
@@ -103,9 +107,19 @@ public class ChemSim implements Simulation {
 	}
 	
 	/**
+	 * Get the schedule that is currently running.
+	 */
+	public static Schedule getSchedule() {
+		if (instance == null) {
+			throw new IllegalStateException();
+		}
+		return instance.schedule;
+	}
+	
+	/**
 	 * Creates entities of of the given species in a uniformly distributed fashion.
 	 */
-	private void createEntities(Species species, long count) throws InvalidActivityException {
+	private void createEntities(Molecule molecule, long count) throws InvalidActivityException {
 		
 		// TODO Write this method
 		throw new UnsupportedOperationException();
@@ -127,7 +141,7 @@ public class ChemSim implements Simulation {
 		// Scale the value to use for H2O2 decay
 		double scale = 0.0;
 		double decay = properties.getHydrogenPeroxideDecay() * 60;					// TODO Marker
-		decay = scaleDecay(decay, scale, properties.getReactorVolume());		// scaled molecules/volume/sec
+		decay = scaleDecay(decay, scale, properties.getReactorVolume());
 		properties.setHydrogenPeroxideDecay(decay);
 		
 		// Add each of the chemicals to the model, assume they are well mixed
@@ -137,11 +151,11 @@ public class ChemSim implements Simulation {
 		
 		for (ChemicalDto chemical : chemicals) {
 			// Add the molecules to the model
-			Species species = registry.getSpecies(chemical.formula);
+			Molecule molecule = new Molecule(chemical.formula);
 			
 			// TODO find the count
 			long count = 0;
-			createEntities(species, count);
+			createEntities(molecule, count);
 		}		
 	}
 	

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import edu.mtu.compound.Species;
+import edu.mtu.compound.Molecule;
 
 /**
  * This class represents a single chemical equation.
@@ -45,9 +45,9 @@ public class ReactionDescription {
 	/**
 	 * Check to see if the reactants are part of this reaction description.
 	 */
-	public boolean checkReactants(Species one, Species two) {
-		boolean partOne = Species.areEqual(reactants.get(0), one);
-		boolean partTwo = Species.areEqual(reactants.get(1), two);
+	public boolean checkReactants(Molecule one, Molecule two) {
+		boolean partOne = one.getFormula().equals(reactants.get(0));
+		boolean partTwo = two.getFormula().equals(reactants.get(1));
 		return partOne && partTwo;
 	}
 	
