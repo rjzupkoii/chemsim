@@ -17,13 +17,6 @@ public class DisproportionatingMolecule extends Molecule {
 	/**
 	 * Constructor.
 	 */
-	public DisproportionatingMolecule(int hash) {
-		super(hash);
-	}
-	
-	/**
-	 * Constructor.
-	 */
 	public DisproportionatingMolecule(String formula) {
 		// NOTE We are assuming that disproportion is always independent of photolysis
 		super(formula);
@@ -33,7 +26,7 @@ public class DisproportionatingMolecule extends Molecule {
 	 * Create a new disproportionating species from the species and reactions provided. 
 	 */
 	public static DisproportionatingMolecule create(Molecule species, List<ReactionDescription> reactions) {
-		DisproportionatingMolecule enttiy = new DisproportionatingMolecule(species.getFormulaHash());
+		DisproportionatingMolecule enttiy = new DisproportionatingMolecule(species.getFormula());
 		enttiy.reactions = reactions;
 		return enttiy;
 	}
@@ -46,7 +39,7 @@ public class DisproportionatingMolecule extends Molecule {
 			return create(one,reactions);
 		}
 		
-		DisproportionatingMolecule entity = new DisproportionatingMolecule(one.getFormulaHash() + " + " + two.getFormulaHash());
+		DisproportionatingMolecule entity = new DisproportionatingMolecule(one.getFormula() + " + " + two.getFormula());
 		entity.reactions = reactions;
 		return entity;		
 	}

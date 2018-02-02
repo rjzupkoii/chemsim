@@ -50,8 +50,8 @@ public class ReactionDescription {
 	 * Check to see if the reactants are part of this reaction description.
 	 */
 	public boolean checkReactants(Molecule one, Molecule two) {
-		boolean partOne = one.getFormulaHash() == reactants.get(0).hashCode();
-		boolean partTwo = two.getFormulaHash() == reactants.get(1).hashCode();
+		boolean partOne = one.getFormula().equals(reactants.get(0));
+		boolean partTwo = two.getFormula().equals(reactants.get(1));
 		return partOne && partTwo;
 	}
 	
