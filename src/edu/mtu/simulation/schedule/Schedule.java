@@ -101,6 +101,9 @@ public class Schedule {
 			// If this is the marker, signal the that a time step has been completed
 			if (node == last) {
 				timeStep++;
+				if (timeStep % 10 == 0) {
+					System.out.println(timeStep + " of " + runTill);
+				}				
 				if (timeStep == runTill) {
 					stopping = true;
 				}

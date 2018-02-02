@@ -3,6 +3,7 @@ package edu.mtu.simulation;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import ec.util.MersenneTwisterFast;
@@ -59,10 +60,7 @@ public class ChemSim implements Simulation {
 			initializeModel();		
 			
 			// TODO Load the file name from someplace else
-			tracker = new TrackEnties("results.csv", properties.getOverWriteResults());
-//			tracker.step(this);
-//			this.schedule.scheduleRepeating(tracker);
-//			this.schedule.scheduleRepeating(new Monitor());			
+			tracker = new TrackEnties("results.csv", properties.getOverWriteResults());	
 			
 		} catch (Exception ex) {
 			// We can't recover from errors here
@@ -76,7 +74,8 @@ public class ChemSim implements Simulation {
 	 */
 	@Override
 	public void start(int timeSteps) {
-		
+		System.out.println("\nStarting simulation...");
+		schedule.start(this, timeSteps);
 	}
 	
 	/**
@@ -87,6 +86,7 @@ public class ChemSim implements Simulation {
 		if (tracker != null) {
 			tracker.complete();
 		}
+		System.out.println("\n" + LocalDateTime.now());
 	}
 	
 	/**
@@ -184,8 +184,8 @@ public class ChemSim implements Simulation {
 		long size = Reactor.getInstance().getMoleculeSize();
 		long maxMolecules = Reactor.getInstance().getMaximumMolecules();
 		Int3D container = Reactor.getInstance().getContainer();
-		
-		System.out.println("Max Memory:         " + Runtime.getRuntime().maxMemory() + "b");
+		System.out.println("\n" + LocalDateTime.now());		
+		System.out.println("\nMax Memory:         " + Runtime.getRuntime().maxMemory() + "b");
 		System.out.println("Molecule Size:      " + size + "b");
 		System.out.println("Max Molecule Count: " + maxMolecules + " (" + size * maxMolecules + "b)");
 		System.out.println("Reactor Dimensions: " + container.x + ", " + container.x + ", " + container.x);
