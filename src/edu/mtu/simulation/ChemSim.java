@@ -54,7 +54,9 @@ public class ChemSim implements Simulation {
 						
 			// Initialize the model
 			random = new MersenneTwisterFast(seed);
-			initializeModel();
+			Reactor.getInstance().initalize();
+			printHeader();
+			initializeModel();		
 			
 			// TODO Load the file name from someplace else
 			tracker = new TrackEnties("results.csv", properties.getOverWriteResults());
@@ -123,19 +125,7 @@ public class ChemSim implements Simulation {
 	private void initializeModel() throws IOException {
 		// Create the initial compounds in the model
 		List<ChemicalDto> chemicals = Parser.parseChemicals(properties.getChemicalsFileName());
-				
-		// Add each of the chemicals to the model, assume they are well mixed
-		Reactor reactor = Reactor.getInstance();
-		System.out.println("Total Memory: " + Runtime.getRuntime().totalMemory() + "b");
-		System.out.println("Free Memory: " + Runtime.getRuntime().freeMemory() + "b");
-		long maxMolecules = reactor.getMaximumMolecules();
-		System.out.println("Max Molecule Count: " + maxMolecules);
-		
-		// Use the maximum molecule count to estimate a size for the reactor
-		int size = (int)(Math.cbrt(maxMolecules) * 2);
-		reactor.initalize(size, size, size);
-		System.out.println("Reactor size: " + size + ", " + size + ", " + size);
-				
+										
 		// Find the scaling for the chemicals
 		chemicals = findIntitalCount(chemicals);
 		
@@ -144,6 +134,7 @@ public class ChemSim implements Simulation {
 		for (ChemicalDto entry : chemicals) {
 			total += entry.count;
 		}
+		Reactor reactor = Reactor.getInstance();
 		long multiplier = reactor.getMaximumMolecules() / total;
 		
 		// Add the chemicals to the model
@@ -157,9 +148,6 @@ public class ChemSim implements Simulation {
 				schedule.insert(molecule);
 			}
 		}	
-		
-		// Note the current memory
-		System.out.println("Free Memory: " + Runtime.getRuntime().freeMemory() + "b");
 	}
 	
 	/**
@@ -187,13 +175,24 @@ public class ChemSim implements Simulation {
 								
 		// Scale based upon the smallest entry
 		return input;
+	} 
+
+	/**
+	 * Display basic system / JVM information.
+	 */
+	private void printHeader() {
+		long size = Reactor.getInstance().getMoleculeSize();
+		long maxMolecules = Reactor.getInstance().getMaximumMolecules();
+		Int3D container = Reactor.getInstance().getContainer();
+		
+		System.out.println("Max Memory:         " + Runtime.getRuntime().maxMemory() + "b");
+		System.out.println("Molecule Size:      " + size + "b");
+		System.out.println("Max Molecule Count: " + maxMolecules + " (" + size * maxMolecules + "b)");
+		System.out.println("Reactor Dimensions: " + container.x + ", " + container.x + ", " + container.x);
 	}
 	
 	/**
 	 * Main entry point for non-UI model.
-	 * @throws IOException 
-	 * @throws IllegalAccessException 
-	 * @throws IllegalArgumentException 
 	 */
 	public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, IOException {
 				

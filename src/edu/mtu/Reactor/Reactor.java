@@ -1,7 +1,5 @@
 package edu.mtu.Reactor;
 
-import java.io.IOException;
-
 import edu.mtu.compound.Molecule;
 import net.sourceforge.sizeof.SizeOf;
 import sim.field.grid.SparseGrid3D;
@@ -18,9 +16,12 @@ import sim.util.Int3D;
  */
 public class Reactor {
 	
+	public final static double MemoryOverhead = 0.9;
+	
 	private static Reactor instance = new Reactor();
 	
 	private long moleculeCount;
+	private long moleculeSize;
 
 	private Int3D container;
 	private SparseGrid3D grid; 
@@ -28,24 +29,7 @@ public class Reactor {
 	/**
 	 * Constructor.
 	 */
-	private Reactor() { 
-		try {
-			// Start by determining how much space we have to work with, note
-			// that this is based upon free memory to account for program over
-			// head that we have no control over
-			System.gc();
-			long heapSize = Runtime.getRuntime().freeMemory();
-			
-			// Calculate out how many molecules we can create
-			Molecule reference = new Molecule("DEADBEEF");
-			long size = SizeOf.iterativeSizeOf(reference);
-			moleculeCount = (long) ((heapSize * 0.9) / size);
-		} catch (IllegalArgumentException | IllegalAccessException | IOException ex) {
-			System.err.println("Fatal Error while constructring Reactor");
-			System.err.println(ex.getMessage());
-			System.exit(-1);
-		}
-	}
+	private Reactor() { }
 	
 	/**
 	 * Get an instance of the reactor.
@@ -79,13 +63,39 @@ public class Reactor {
 		Bag bag = grid.getObjectsAtLocation(location);
 		return (Molecule[])bag.toArray();
 	}
+	
+	/**
+	 * Return the estimated total size of a molecule, in bytes.
+	 */
+	public long getMoleculeSize() {
+		return moleculeSize;
+	}
 			
 	/**
 	 * Initialize the reactor with the given dimensions.
 	 */
-	public void initalize(int width, int height, int length) {
-		container = new Int3D(width, height, length);
-		grid = new SparseGrid3D(width, height, length);
+	public void initalize() {
+		try {
+			// Start by determining how much space we have to work with, note
+			// that this is based upon free memory to account for program over
+			// head that we have no control over
+			long heapSize = Runtime.getRuntime().maxMemory();
+			
+			// Calculate out how many molecules we can create, note that the molecule 
+			// will exist in the sparse matrix and the schedule as well
+			moleculeSize = SizeOf.deepSizeOf(new Molecule("CH3COCH2OH")) * 3;
+			moleculeCount = (long) ((heapSize * MemoryOverhead) / moleculeSize);
+			
+			// Use the maximum molecule count to estimate a size for the reactor
+			int dimension = (int)(Math.cbrt(moleculeCount) * 2);
+			container = new Int3D(dimension, dimension, dimension);
+			grid = new SparseGrid3D(dimension, dimension, dimension);
+			
+		} catch (IllegalArgumentException ex) {
+			System.err.println("Fatal Error while initalizing the Reactor");
+			System.err.println(ex.getMessage());
+			System.exit(-1);
+		}
 	}
 	
 	/**
