@@ -11,7 +11,7 @@ public class ChemSimProperties {
 	private boolean overWriteResults = true;
 	
 	// Default for how fast hydrogen peroxide decays into hydroxyl radicals for the reactor
-	private double hydrogenPeroxideDecay = 3.0 * Math.pow(10, -7);		// mol/L*sec
+	private double hydrogenPeroxideDecay = 0.15;		// TODO Fix this, again. 
 	
 	// Adjustment to be applied to hydroxyl based upon how much is available for use in the system
 	private double hydroxylAdjustment = 0.18;

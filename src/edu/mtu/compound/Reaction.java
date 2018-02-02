@@ -147,6 +147,8 @@ public class Reaction {
 			return false;
 		}
 		
+		// TODO Do the odds of the reaction here
+		
 		// Add the products at this location
 		Reactor reactor = Reactor.getInstance();
 		Int3D location = reactor.getLocation(molecule);

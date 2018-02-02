@@ -96,7 +96,7 @@ public class ReactionRegistry {
 	 * Returns the list of bimolecular reactions for the chemical species or null.
 	 */
 	public List<ReactionDescription> getBiomolecularReaction(Molecule molecule) {
-		return bimolecular.get(molecule.getFormula());
+		return bimolecular.get(molecule.getFormulaHash());
 	}
 	
 	/**
@@ -130,14 +130,14 @@ public class ReactionRegistry {
 	 * Returns the photolysis products for the chemical species or null.
 	 */
 	public List<String> getPhotolysisReaction(Molecule molecule) {
-		return photolysis.get(molecule.getFormula());
+		return photolysis.get(molecule.getFormulaHash());
 	}
 		
 	/**
 	 * Returns the list of unimolecular reactions for the chemical species or null.
 	 */
 	public List<ReactionDescription> getUnimolecularReaction(Molecule molecule) {
-		return unimolecular.get(molecule.getFormula());
+		return unimolecular.get(molecule.getFormulaHash());
 	}
 	
 	/**

@@ -1,8 +1,9 @@
 package edu.mtu.Reactor;
 
-import com.sun.jna.Native;
+import java.io.IOException;
 
 import edu.mtu.compound.Molecule;
+import net.sourceforge.sizeof.SizeOf;
 import sim.field.grid.SparseGrid3D;
 import sim.util.Bag;
 import sim.util.Int3D;
@@ -28,12 +29,21 @@ public class Reactor {
 	 * Constructor.
 	 */
 	private Reactor() { 
-		// Start by determining how much space we have to work with
-		long heapSize = Runtime.getRuntime().totalMemory();
-		
-		// Calculate out how many molecules we can create
-		int size = Native.getNativeSize(Molecule.class);
-		moleculeCount = (long)((heapSize * 0.9) / size);
+		try {
+			// Start by determining how much space we have to work with, note
+			// that this is based upon free memory to account for program over
+			// head that we have no control over
+			long heapSize = Runtime.getRuntime().freeMemory();
+			
+			// Calculate out how many molecules we can create
+			Molecule reference = new Molecule("DEADBEEF");
+			long size = SizeOf.iterativeSizeOf(reference);
+			moleculeCount = (long) ((heapSize * 0.9) / size);
+		} catch (IllegalArgumentException | IllegalAccessException | IOException ex) {
+			System.err.println("Fatal Error while constructring Reactor");
+			System.err.println(ex.getMessage());
+			System.exit(-1);
+		}
 	}
 	
 	/**

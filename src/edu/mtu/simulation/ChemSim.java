@@ -1,7 +1,6 @@
 package edu.mtu.simulation;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
 import javax.activity.InvalidActivityException;
@@ -15,6 +14,7 @@ import edu.mtu.parser.Parser;
 import edu.mtu.simulation.schedule.Schedule;
 import edu.mtu.simulation.schedule.Simulation;
 import edu.mtu.simulation.tracking.TrackEnties;
+import net.sourceforge.sizeof.SizeOf;
 
 public class ChemSim implements Simulation {
 				
@@ -132,21 +132,11 @@ public class ChemSim implements Simulation {
 	private void initializeModel() throws IOException {
 		// Create the initial compounds in the model
 		List<ChemicalDto> chemicals = Parser.parseChemicals(properties.getChemicalsFileName());
-		
-		// Hold on to a reference to the registry
-		ReactionRegistry registry = ReactionRegistry.getInstance();
-						
-		// TODO Correct scaling
-		
-		// Scale the value to use for H2O2 decay
-		double scale = 0.0;
-		double decay = properties.getHydrogenPeroxideDecay() * 60;					// TODO Marker
-		decay = scaleDecay(decay, scale, properties.getReactorVolume());
-		properties.setHydrogenPeroxideDecay(decay);
-		
+				
 		// Add each of the chemicals to the model, assume they are well mixed
 		Reactor reactor = Reactor.getInstance();
-		System.out.println("Total Memory: " + Runtime.getRuntime().totalMemory());
+		System.out.println("Total Memory: " + Runtime.getRuntime().totalMemory() + "b");
+		System.out.println("Free Memory: " + Runtime.getRuntime().freeMemory() + "b");
 		System.out.println("Max Molecule Count: " + reactor.getMaximumMolecules());
 		
 		for (ChemicalDto chemical : chemicals) {
@@ -158,36 +148,18 @@ public class ChemSim implements Simulation {
 			createEntities(molecule, count);
 		}		
 	}
-	
-	/**
-	 * Scale the decay given based upon the actual Avagadro's number and reactor size.
-	 * 
-	 * @param decay The hydrogen peroxide decay in mol/L/sec
-	 * @param scaling The maximum value to use for scaling.
-	 * @param volume The volume of the reactor in L.
-	 * @return The new hydrogen peroxide decay in scaled molecules/volume/sec
-	 */
-	private double scaleDecay(double decay, double scaling, double volume) {
-		BigDecimal avagadro = new BigDecimal("6.0221409e+23");
-		
-		// Calculate out what the decay is in terms of Avagadro's Number
-		BigDecimal calculation = new BigDecimal(decay);
-		calculation = calculation.multiply(avagadro);							// molecules/L/sec
-		calculation = calculation.multiply(new BigDecimal(volume));				// molecules/volume/sec
-		
-		// Now scale that to the model's value, floor((scale * value) / Avagadro) 
-		calculation = calculation.multiply(new BigDecimal(scaling));			// scale * value
-		calculation = calculation.divide(avagadro);								// (scale * value) / Avagadro
-		double result = Math.floor(calculation.doubleValue());					// floor((scale * value) / Avagadro)
-		
-		// Return the results
-		return result;
-	}
-			
+				
 	/**
 	 * Main entry point for non-UI model.
+	 * @throws IOException 
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, IOException {
+				
+		// Configure SizeOf, note that the program MUST be invoked with -javaagent:lib/SizeOf.jar
+		SizeOf.skipStaticField(true);
+		SizeOf.setMinSizeToLog(10);
 		
 		// Initialize the simulation
 		long seed = System.currentTimeMillis();

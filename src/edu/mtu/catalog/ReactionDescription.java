@@ -2,6 +2,8 @@ package edu.mtu.catalog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
 
 import edu.mtu.compound.Molecule;
@@ -10,6 +12,8 @@ import edu.mtu.compound.Molecule;
  * This class represents a single chemical equation.
  */
 public class ReactionDescription {
+	
+	private HashMap<Integer, String> dictionary = new HashMap<Integer, String>(); 
 	
 	private List<String> products = new ArrayList<String>();
 	private List<String> reactants = new ArrayList<String>();
@@ -46,9 +50,16 @@ public class ReactionDescription {
 	 * Check to see if the reactants are part of this reaction description.
 	 */
 	public boolean checkReactants(Molecule one, Molecule two) {
-		boolean partOne = one.getFormula().equals(reactants.get(0));
-		boolean partTwo = two.getFormula().equals(reactants.get(1));
+		boolean partOne = one.getFormulaHash() == reactants.get(0).hashCode();
+		boolean partTwo = two.getFormulaHash() == reactants.get(1).hashCode();
 		return partOne && partTwo;
+	}
+	
+	/**
+	 * Get the formula that maps to the given hash.
+	 */
+	public String getFormula(int hash) {
+		return dictionary.get(hash);
 	}
 	
 	/**
