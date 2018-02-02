@@ -8,6 +8,8 @@ public class ChemicalDto {
 	public String formula;
 	public double mols;
 	
+	public long count;
+	
 	public ChemicalDto(String name, String formula, double mols) {
 		this.name = name;
 		this.formula = formula;

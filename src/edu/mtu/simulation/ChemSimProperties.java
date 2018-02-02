@@ -29,7 +29,8 @@ public class ChemSimProperties {
 	
 	// Default paths to experiments
 	private String chemicalsFileName = "experiment/chemicals.csv";
-	private String reactionsFileName = "experiment/reactions.csv";
+	//private String reactionsFileName = "experiment/reactions.csv";
+	private String reactionsFileName = "experiment/simple.csv";
 							
 	public int getCellCount() {
 		return cellCount;

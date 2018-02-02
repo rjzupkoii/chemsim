@@ -1,9 +1,9 @@
 package edu.mtu.simulation;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
-
-import javax.activity.InvalidActivityException;
 
 import ec.util.MersenneTwisterFast;
 import edu.mtu.Reactor.Reactor;
@@ -15,6 +15,7 @@ import edu.mtu.simulation.schedule.Schedule;
 import edu.mtu.simulation.schedule.Simulation;
 import edu.mtu.simulation.tracking.TrackEnties;
 import net.sourceforge.sizeof.SizeOf;
+import sim.util.Int3D;
 
 public class ChemSim implements Simulation {
 				
@@ -115,17 +116,7 @@ public class ChemSim implements Simulation {
 		}
 		return instance.schedule;
 	}
-	
-	/**
-	 * Creates entities of of the given species in a uniformly distributed fashion.
-	 */
-	private void createEntities(Molecule molecule, long count) throws InvalidActivityException {
 		
-		// TODO Write this method
-		throw new UnsupportedOperationException();
-		
-	}
-			
 	/**
 	 * Initialize the model by loading the initial chemicals in the correct ratio.
 	 */
@@ -137,18 +128,67 @@ public class ChemSim implements Simulation {
 		Reactor reactor = Reactor.getInstance();
 		System.out.println("Total Memory: " + Runtime.getRuntime().totalMemory() + "b");
 		System.out.println("Free Memory: " + Runtime.getRuntime().freeMemory() + "b");
-		System.out.println("Max Molecule Count: " + reactor.getMaximumMolecules());
+		long maxMolecules = reactor.getMaximumMolecules();
+		System.out.println("Max Molecule Count: " + maxMolecules);
 		
-		for (ChemicalDto chemical : chemicals) {
-			// Add the molecules to the model
-			Molecule molecule = new Molecule(chemical.formula);
-			
-			// TODO find the count
-			long count = 0;
-			createEntities(molecule, count);
-		}		
-	}
+		// Use the maximum molecule count to estimate a size for the reactor
+		int size = (int)(Math.cbrt(maxMolecules) * 2);
+		reactor.initalize(size, size, size);
+		System.out.println("Reactor size: " + size + ", " + size + ", " + size);
 				
+		// Find the scaling for the chemicals
+		chemicals = findIntitalCount(chemicals);
+		
+		// Calculate out the multiplier
+		long total = 0;
+		for (ChemicalDto entry : chemicals) {
+			total += entry.count;
+		}
+		long multiplier = reactor.getMaximumMolecules() / total;
+		
+		// Add the chemicals to the model
+		Int3D container = reactor.getContainer();
+		for (ChemicalDto chemical : chemicals) {
+			System.out.println("Generating " + chemical.count * multiplier + " molecules of " + chemical.formula);
+			for (int ndx = 0; ndx < chemical.count * multiplier; ndx++) {
+				Int3D location = new Int3D(random.nextInt(container.x), random.nextInt(container.y), random.nextInt(container.z));
+				Molecule molecule = new Molecule(chemical.formula);
+				reactor.insert(molecule, location);
+				schedule.insert(molecule);
+			}
+		}	
+		
+		// Note the current memory
+		System.out.println("Free Memory: " + Runtime.getRuntime().freeMemory() + "b");
+	}
+	
+	/**
+	 * Find the proportions for the chemicals input.
+	 */
+	private List<ChemicalDto> findIntitalCount(List<ChemicalDto> input) {
+		// Find the smallest entry
+		double smallest = Double.MAX_VALUE;
+		for (ChemicalDto entry : input) {
+			if (entry.mols < smallest) {
+				smallest = entry.mols;
+			}
+		}
+		
+		// Find the exponent to offset the value
+		NumberFormat format = new DecimalFormat("0.#E0");		
+		String value = format.format(smallest);
+		int exponent = Integer.parseInt(value.substring(value.indexOf("E") + 1));
+		
+		// TODO Add support to scale negative or positive values
+		exponent = Math.abs(exponent) + 1;
+		for (int ndx = 0; ndx < input.size(); ndx++) {
+			input.get(ndx).count = (long)(input.get(ndx).mols * Math.pow(10, exponent)); 
+		}
+								
+		// Scale based upon the smallest entry
+		return input;
+	}
+	
 	/**
 	 * Main entry point for non-UI model.
 	 * @throws IOException 

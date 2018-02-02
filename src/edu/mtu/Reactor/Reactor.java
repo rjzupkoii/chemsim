@@ -33,6 +33,7 @@ public class Reactor {
 			// Start by determining how much space we have to work with, note
 			// that this is based upon free memory to account for program over
 			// head that we have no control over
+			System.gc();
 			long heapSize = Runtime.getRuntime().freeMemory();
 			
 			// Calculate out how many molecules we can create
@@ -87,6 +88,9 @@ public class Reactor {
 		grid = new SparseGrid3D(width, height, length);
 	}
 	
+	/**
+	 * Insert the given molecule at the given location.
+	 */
 	public void insert(Molecule molecule, Int3D location) {
 		grid.setObjectLocation(molecule, location);
 	}
