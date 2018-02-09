@@ -21,7 +21,7 @@ import sim.util.Int3D;
 public class ChemSim implements Simulation {
 				
 	// The properties for the simulation, managed by MASON
-	private ChemSimProperties properties;
+	private ModelProperities properties;
 	
 	// Singleton instance of the simulation
 	private static ChemSim instance = new ChemSim();
@@ -40,7 +40,7 @@ public class ChemSim implements Simulation {
 	 * Constructor.
 	 */
 	private ChemSim() {
-		properties = new ChemSimProperties();
+		properties = new ModelProperities();
 	}
 		
 	/**
@@ -48,10 +48,13 @@ public class ChemSim implements Simulation {
 	 */
 	public void initialize(long seed) {
 		try {
+			// Note the properties
+			SimulationProperties simulation = SimulationProperties.getInstance();
+			
 			// Import the reactions into the model
 			ReactionRegistry instance = ReactionRegistry.getInstance();
 			instance.clear();
-			instance.load(properties.getReactionsFileName());
+			instance.load(simulation.getReactionsFileName());
 						
 			// Initialize the model
 			random = new MersenneTwisterFast(seed);
@@ -59,8 +62,9 @@ public class ChemSim implements Simulation {
 			printHeader();
 			initializeModel();		
 			
-			// TODO Load the file name from someplace else
-			tracker = new TrackEnties("results.csv", properties.getOverWriteResults());	
+			// Initialize the tracker
+			String fileName = simulation.getResultsFileName();
+			tracker = new TrackEnties(fileName, simulation.getOverWriteResults());	
 			
 		} catch (Exception ex) {
 			// We can't recover from errors here
@@ -79,6 +83,14 @@ public class ChemSim implements Simulation {
 	}
 	
 	/**
+	 * Note that one time step has been completed.
+	 */
+	@Override
+	public void step() {
+		tracker.reset();
+	}
+	
+	/**
 	 * Complete the simulation.
 	 */
 	@Override
@@ -86,6 +98,7 @@ public class ChemSim implements Simulation {
 		if (tracker != null) {
 			tracker.complete();
 		}
+		System.out.println("\nSimulation results written to: " + SimulationProperties.getInstance().getResultsFileName());
 		System.out.println("\n" + LocalDateTime.now());
 	}
 	
@@ -102,7 +115,7 @@ public class ChemSim implements Simulation {
 	/**
 	 * Get the properties that are associated with this simulation.
 	 */
-	public static ChemSimProperties getProperties() {
+	public static ModelProperities getProperties() {
 		if (instance == null) {
 			throw new IllegalStateException();
 		}
@@ -113,18 +126,22 @@ public class ChemSim implements Simulation {
 	 * Get the schedule that is currently running.
 	 */
 	public static Schedule getSchedule() {
-		if (instance == null) {
-			throw new IllegalStateException();
-		}
 		return instance.schedule;
 	}
 		
+	/**
+	 * Get the tracker that is currently running.
+	 */
+	public static TrackEnties getTracker() {
+		return instance.tracker;
+	}
+	
 	/**
 	 * Initialize the model by loading the initial chemicals in the correct ratio.
 	 */
 	private void initializeModel() throws IOException {
 		// Create the initial compounds in the model
-		List<ChemicalDto> chemicals = Parser.parseChemicals(properties.getChemicalsFileName());
+		List<ChemicalDto> chemicals = Parser.parseChemicals(SimulationProperties.getInstance().getChemicalsFileName());
 										
 		// Find the scaling for the chemicals
 		chemicals = findIntitalCount(chemicals);
@@ -188,6 +205,9 @@ public class ChemSim implements Simulation {
 		System.out.println("\nMax Memory:         " + Runtime.getRuntime().maxMemory() + "b");
 		System.out.println("Molecule Size:      " + size + "b");
 		System.out.println("Max Molecule Count: " + maxMolecules + " (" + size * maxMolecules + "b)");
+		if (SimulationProperties.getInstance().getMoleculeLimit() != SimulationProperties.NO_LIMIT) {
+			System.out.println("WARNING: Molecule count limited by configuration");
+		}
 		System.out.println("Reactor Dimensions: " + container.x + ", " + container.x + ", " + container.x);
 	}
 	

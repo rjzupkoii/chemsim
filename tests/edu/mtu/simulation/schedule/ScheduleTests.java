@@ -51,8 +51,11 @@ public class ScheduleTests implements Simulation {
 	public void start(int timeSteps) { }
 	
 	@Override
+	public void step() { }
+	
+	@Override
 	public void finish(boolean terminated) {
 		System.out.println("Completed: " + schedule.getTimeStep());
 		Assert.assertEquals(timeSteps, schedule.getTimeStep());
-	}
+	}	
 }

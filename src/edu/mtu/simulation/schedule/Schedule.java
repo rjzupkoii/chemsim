@@ -83,7 +83,7 @@ public class Schedule {
 		// Set the current time step
 		timeStep = 0;
 		
-		Node previous = last;
+		Node previous = last;		
 		while (!stop) {
 			Node node = next();
 			
@@ -100,6 +100,7 @@ public class Schedule {
 			
 			// If this is the marker, signal the that a time step has been completed
 			if (node == last) {
+				simulation.step();
 				timeStep++;
 				if (timeStep % 10 == 0) {
 					System.out.println(timeStep + " of " + runTill);

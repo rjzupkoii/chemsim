@@ -1,6 +1,7 @@
 package edu.mtu.Reactor;
 
 import edu.mtu.compound.Molecule;
+import edu.mtu.simulation.SimulationProperties;
 import net.sourceforge.sizeof.SizeOf;
 import sim.field.grid.SparseGrid3D;
 import sim.util.Bag;
@@ -85,6 +86,11 @@ public class Reactor {
 			// will exist in the sparse matrix and the schedule as well
 			moleculeSize = SizeOf.deepSizeOf(new Molecule("CH3COCH2OH")) * 3;
 			moleculeCount = (long) ((heapSize * MemoryOverhead) / moleculeSize);
+			
+			// Check to see if a molecule limit was enforced
+			if (SimulationProperties.getInstance().getMoleculeLimit() != SimulationProperties.NO_LIMIT) {
+				moleculeCount = SimulationProperties.getInstance().getMoleculeLimit();
+			}
 			
 			// Use the maximum molecule count to estimate a size for the reactor
 			int dimension = (int)(Math.cbrt(moleculeCount) * 2);

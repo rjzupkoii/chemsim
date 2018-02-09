@@ -16,6 +16,11 @@ public interface Simulation {
 	public void start(int timeSteps);
 	
 	/**
+	 * Invoked when one time step has been completed.
+	 */
+	public void step();
+	
+	/**
 	 * Invoked when the scheduler has been stopped.
 	 * 
 	 * @param terminated True when the schedule was terminated during a time step, false otherwise.

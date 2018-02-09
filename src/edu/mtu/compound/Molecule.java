@@ -29,6 +29,7 @@ public class Molecule extends Steppable{
 		} else {
 			// Otherwise, apply the movement
 			reactor.setLocation(this, location);
+			ChemSim.getTracker().update(formula, 1);
 		}		
 	}
 		
