@@ -17,8 +17,11 @@ public interface Simulation {
 	
 	/**
 	 * Invoked when one time step has been completed.
+	 * 
+	 * @param count The current time step.
+	 * @param total The total time steps to be completed.
 	 */
-	public void step();
+	public void step(int count, int total);
 	
 	/**
 	 * Invoked when the scheduler has been stopped.

@@ -51,7 +51,7 @@ public class ScheduleTests implements Simulation {
 	public void start(int timeSteps) { }
 	
 	@Override
-	public void step() { }
+	public void step(int count, int total) { }
 	
 	@Override
 	public void finish(boolean terminated) {

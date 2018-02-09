@@ -50,20 +50,12 @@ public class Schedule {
 		last.next = node;
 		count++;
 	}
-	
-	/**
-	 * Move the current node in the buffer to the next node and return it.
-	 */
-	public Node next() {
-		current = current.next;
-		return current;
-	}
-	
+		
 	/**
 	 * Remove the node indicated from the schedule.
 	 */
 	public void remove(Node node) {
-		((Steppable)node).deleted = true;		
+		node.deleted = true;		
 		count--;
 	}
 	
@@ -85,37 +77,29 @@ public class Schedule {
 		
 		Node previous = last;		
 		while (!stop) {
-			Node node = next();
+			current = current.next;
 			
 			// If this is a steppable, then clear it if it has been deleted, otherwise do the action
-			if (node instanceof Steppable) {
-				Steppable steppable = (Steppable)node;
-				if (steppable.deleted) {
-					previous.next = steppable.next;
+			if (current instanceof Steppable) {
+				if (current.deleted) {
+					previous.next = current.next;
 					continue;
 				}
-				steppable.doAction();
-			}
-			previous = node;
-			
-			// If this is the marker, signal the that a time step has been completed
-			if (node == last) {
-				simulation.step();
-				timeStep++;
-				if (timeStep % 10 == 0) {
-					System.out.println(timeStep + " of " + runTill);
-				}				
-				if (timeStep == runTill) {
-					stopping = true;
-				}
+				((Steppable)current).doAction();
+				previous = current;
+				continue;
 			}
 			
-			// Check to see if we need to stop
-			if (stopping || stop) {
-				simulation.finish(stop);
+			// If we are here then this must have been the end of time step marker
+			timeStep++;
+			simulation.step(timeStep, runTill);
+			if (timeStep == runTill || stopping) {
 				stop = true;
 			}
 		}
+		
+		// Perform clean-up operations
+		simulation.finish(stop);
 	}
 	
 	/**

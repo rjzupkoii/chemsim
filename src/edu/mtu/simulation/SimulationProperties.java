@@ -15,7 +15,7 @@ public class SimulationProperties {
 	
 	// Limit to the number of molecules in the model, -1 means no limit
 	//private long moleculeLimit = NO_LIMIT;
-	private long moleculeLimit = 100000;
+	private long moleculeLimit = 250000;
 				
 	// Default paths to experiments
 	private String chemicalsFileName = "experiment/chemicals.csv";

@@ -86,8 +86,11 @@ public class ChemSim implements Simulation {
 	 * Note that one time step has been completed.
 	 */
 	@Override
-	public void step() {
+	public void step(int count, int total) {
 		tracker.reset();
+		if (count % 10 == 0) {
+			System.out.println(count + " of " + total);
+		}
 	}
 	
 	/**
