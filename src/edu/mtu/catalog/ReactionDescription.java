@@ -2,7 +2,6 @@ package edu.mtu.catalog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 

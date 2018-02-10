@@ -62,7 +62,9 @@ public class Reactor {
 	 */
 	public Molecule[] getMolecules(Int3D location) {
 		Bag bag = grid.getObjectsAtLocation(location);
-		return (Molecule[])bag.toArray();
+		Molecule[] array = new Molecule[bag.numObjs];
+		bag.toArray(array);
+		return array;
 	}
 	
 	/**

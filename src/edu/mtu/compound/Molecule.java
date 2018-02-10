@@ -88,7 +88,6 @@ public class Molecule extends Steppable{
 	 *  @return True if something happened, false otherwise.
 	 */
 	private boolean react(Int3D location) {
-		// TODO Write this method
-		return false;
+		return Reaction.getInstance().react(this);
 	}
 }

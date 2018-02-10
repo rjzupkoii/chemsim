@@ -15,4 +15,10 @@ Additionally, the following Eclipse plug-ins are recommended for developers:
 
 - ObjectAid UML Explorer for Eclipse (1.1.11)
 
+## Execution
+
+The simulation makes use of premain instrumentation and needs to be launched with the following parameters:
+
+  -javaagent:lib/SizeOf.jar 
+
 # Branches

@@ -82,28 +82,29 @@ public class Reaction {
 	 * Have the chemical species indicated react with anything located here.
 	 * 
 	 * @param species of chemical for the reaction.
+	 * @return True if a reaction occured, false otherwise.
 	 */
-	public void react(Molecule molecule) {
+	public boolean react(Molecule molecule) {
 		// Perform any relevant dispropriation reactions
 		if (molecule instanceof DisproportionatingMolecule) {
-			disproportionate((DisproportionatingMolecule)molecule);
-			return;
+			 disproportionate((DisproportionatingMolecule)molecule);
+			 return true;
 		}
 		
 		// First, see if there are any bimolecular reactions to take place
-		if (bimolecularReaction(molecule)) {
-			return;
+		boolean result = bimolecularReaction(molecule);
+		if (result) {
+			return result;
 		}
 		
 		// Second, see if unimolecular decay needs to take place
-		if (unimolecularDecay(molecule)) {
-			return;
+		result = unimolecularDecay(molecule);
+		if (result) {
+			return result;
 		}
 		
 		// Third, see if photolysis needs to take place
-		if (photolysis(molecule)) {
-			return;
-		}
+		return photolysis(molecule);
 	}
 	
 	/**
@@ -147,7 +148,11 @@ public class Reaction {
 			return false;
 		}
 		
-		// TODO Do the odds of the reaction here
+		// Check to see if the reaction occurred based upon decay rates
+		double decay = ChemSim.getProperties().getHydrogenPeroxideDecay();
+		if (ChemSim.getInstance().random.nextDouble() > decay) {
+			return false;
+		}
 		
 		// Add the products at this location
 		Reactor reactor = Reactor.getInstance();
@@ -209,7 +214,7 @@ public class Reaction {
 	 */
 	private boolean unimolecularDecay(Molecule molecule) {
 		// Get the possible reactions for this species
-		List<ReactionDescription> reactions = ReactionRegistry.getInstance().getBiomolecularReaction(molecule);
+		List<ReactionDescription> reactions = ReactionRegistry.getInstance().getUnimolecularReaction(molecule);
 		if (reactions == null) {
 			return false;
 		}

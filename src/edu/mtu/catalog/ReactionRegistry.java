@@ -59,6 +59,9 @@ public class ReactionRegistry {
 	 */
 	public void addPhotolysisReaction(ReactionDescription reaction) throws InvalidActivityException {
 		String reactant = reaction.getReactants().get(0);
+		if (reactant.toUpperCase().equals("UV")) {
+			reactant = reaction.getReactants().get(1);
+		}
 		if (photolysis.containsKey(reactant)) {
 			throw new InvalidActivityException("Reaction registry already contains photolysis products for " + reactant);
 		}
@@ -148,19 +151,38 @@ public class ReactionRegistry {
 	public void load(String fileName) throws IOException {
 		List<ReactionDescription> reactions = Parser.parseReactions(fileName);
 		for (ReactionDescription reaction : reactions) {
-			// Check for a unimolecular reaction
+			// TODO Make this optional
+			// Note what we are currently loading
+			StringBuilder message = new StringBuilder("Loading ");
+			for (int ndx = 0; ndx < reaction.getReactants().size(); ndx++) {
+				message.append(reaction.getReactants().get(ndx));
+				if (ndx %2 == 0 && ndx != reaction.getReactants().size() - 1) {
+					message.append(" + ");
+				}
+			}
+			message.append(" -> ");
+			for (int ndx = 0; ndx < reaction.getProducts().size(); ndx++) {
+				message.append(reaction.getProducts().get(ndx));
+				if (ndx %2 == 0 && ndx != reaction.getProducts().size() - 1) {
+					message.append(" + ");
+				}
+			}
+						
 			if (reaction.getReactants().size() == 1) {
+				// This is a unimolecular reaction
 				addUnimolecularReaction(reaction);
-				continue;
-			}
-			
-			// Is this a photolysis reaction?
-			if (reaction.getReactants().get(1).toUpperCase().equals("UV")) {
+				message.append(" (unimolecular)");
+			} else if (reaction.getReactants().contains("UV")) {
+				// This is a photolysis reaction
 				addPhotolysisReaction(reaction);
+				message.append(" (photolysis)");
+			} else {
+				// Must be a bimolecular reaction
+				addBimolecularReaction(reaction);
+				message.append(" (bimolecular)");
 			}
 			
-			// Must be a bimolecular reaction
-			addBimolecularReaction(reaction);
+			System.out.println(message.toString());
 		}
 	}
 	

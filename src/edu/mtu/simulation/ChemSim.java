@@ -50,16 +50,18 @@ public class ChemSim implements Simulation {
 		try {
 			// Note the properties
 			SimulationProperties simulation = SimulationProperties.getInstance();
+
+			// Initialize the model
+			random = new MersenneTwisterFast(seed);
+			Reactor.getInstance().initalize();
+			printHeader();
 			
 			// Import the reactions into the model
 			ReactionRegistry instance = ReactionRegistry.getInstance();
 			instance.clear();
 			instance.load(simulation.getReactionsFileName());
-						
-			// Initialize the model
-			random = new MersenneTwisterFast(seed);
-			Reactor.getInstance().initalize();
-			printHeader();
+			
+			// Load the compounds into the model
 			initializeModel();		
 			
 			// Initialize the tracker
@@ -229,7 +231,7 @@ public class ChemSim implements Simulation {
 		instance.initialize(seed);
 				
 		// Run the simulation and exit
-		instance.start(100);
+		instance.start(500);
 		System.exit(0);
 	}
 }
