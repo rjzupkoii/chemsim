@@ -70,6 +70,16 @@ public class TrackEnties {
 	}
 	
 	/**
+	 * Get the count of molecules for the given formula.
+	 */
+	public long getCount(String formula) {
+		if (counts.containsKey(formula)) {
+			return counts.get(formula);
+		}
+		return 0;		
+	}
+	
+	/**
 	 * Prepare to start tracking entities.
 	 */
 	private void prepare() {

@@ -16,6 +16,9 @@ public class ModelProperities {
 			
 	// Reactor volume in liters
 	private double reactorVolume;
+	
+	// How intense the UV is - drives the hydrogen peroxide decay rate
+	private double uvIntensity = 0.025;
 
 	public int getFastPathway() {
 		return fastPathway;
@@ -40,6 +43,10 @@ public class ModelProperities {
 		return slowPathway;
 	}
 	
+	public double getUvIntensity() {
+		return uvIntensity;
+	}
+	
 	public void setFastPathway(int value) {
 		fastPathway = value;
 	}
@@ -58,5 +65,9 @@ public class ModelProperities {
 	
 	public void setSlowPathway(int value) {
 		slowPathway = value;
+	}
+	
+	public void setUvIntensity(double value) {
+		this.uvIntensity = value;
 	}
 }

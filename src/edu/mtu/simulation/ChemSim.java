@@ -64,9 +64,15 @@ public class ChemSim implements Simulation {
 			// Load the compounds into the model
 			initializeModel();		
 			
+			// Set they hydrogen peroxide decay
+			double intensity = properties.getUvIntensity();
+			long count = 0;		// TODO get count
+			long value = Math.round(count * intensity);
+			// TODO Note starting decay quantity
+						
 			// Initialize the tracker
 			String fileName = simulation.getResultsFileName();
-			tracker = new TrackEnties(fileName, simulation.getOverWriteResults());	
+			tracker = new TrackEnties(fileName, simulation.getOverWriteResults());
 			
 		} catch (Exception ex) {
 			// We can't recover from errors here
@@ -89,6 +95,13 @@ public class ChemSim implements Simulation {
 	 */
 	@Override
 	public void step(int count, int total) {
+		// Update the decay
+		if (count != 0) {
+			long quantity = 0;	// TODO get quantity
+			properties.setHydrogenPeroxideDecay(quantity / tracker.getCount("H2O2"));
+		}
+		
+		// Reset the tracker and note the step
 		tracker.reset();
 		if (count % 10 == 0) {
 			System.out.println(count + " of " + total);
