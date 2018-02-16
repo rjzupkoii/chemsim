@@ -10,25 +10,28 @@ public class ModelProperities {
 	private int fastPathway = 1;
 	private int mediumPathway = 2;
 	private int slowPathway = 3;	
-	
-	// Default for how fast hydrogen peroxide decays into hydroxyl radicals for the reactor
-	private double hydrogenPeroxideDecay = 0.15;		// TODO Fix this, again. 
-			
+		
 	// Reactor volume in liters
 	private double reactorVolume;
 	
 	// How intense the UV is - drives the hydrogen peroxide decay rate
 	private double uvIntensity = 0.025;
 
+	// Values needed to ensure hydrogen peroxide exhibits a linear decay based upon the UV intensity
+	private double hydrogenPeroxideDecay = 0;
+	private long hydrogenPeroxideDecayQuantity = 0;
+
+	
 	public int getFastPathway() {
 		return fastPathway;
 	}
 	
-	/**
-	 * H2O2 + UV -> HO* decay in mol/sec
-	 */
 	public double getHydrogenPeroxideDecay() {
 		return hydrogenPeroxideDecay;
+	}
+	
+	public long getHydrogenPeroxideDecayQuantity() {
+		return hydrogenPeroxideDecayQuantity;
 	}
 	
 	public int getMediumPathway() {
@@ -53,6 +56,10 @@ public class ModelProperities {
 			
 	public void setHydrogenPeroxideDecay(double value) {
 		hydrogenPeroxideDecay = value;
+	}
+	
+	public void setHydrogenPeroxideDecayQuantity(long value) {
+		hydrogenPeroxideDecayQuantity = value;
 	}
 			
 	public void setMediumPathway(int value) {

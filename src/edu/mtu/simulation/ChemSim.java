@@ -63,13 +63,7 @@ public class ChemSim implements Simulation {
 			
 			// Load the compounds into the model
 			initializeModel();		
-			
-			// Set they hydrogen peroxide decay
-			double intensity = properties.getUvIntensity();
-			long count = 0;		// TODO get count
-			long value = Math.round(count * intensity);
-			// TODO Note starting decay quantity
-						
+								
 			// Initialize the tracker
 			String fileName = simulation.getResultsFileName();
 			tracker = new TrackEnties(fileName, simulation.getOverWriteResults());
@@ -96,14 +90,27 @@ public class ChemSim implements Simulation {
 	@Override
 	public void step(int count, int total) {
 		// Update the decay
-		if (count != 0) {
-			long quantity = 0;	// TODO get quantity
-			properties.setHydrogenPeroxideDecay(quantity / tracker.getCount("H2O2"));
+		long hydrogenPeroxide = tracker.getCount("H2O2");
+		if (hydrogenPeroxide != 0) {
+			properties.setHydrogenPeroxideDecay((double)properties.getHydrogenPeroxideDecayQuantity() / hydrogenPeroxide);
+		} else {
+			properties.setHydrogenPeroxideDecay(0);
 		}
 		
+		// Check to see if we can terminate
+		if (hydrogenPeroxide == 0 && tracker.getCount("HO*") == 0) {
+			System.out.println("Hydroxyl Radical source exhausted, terminating...");
+			schedule.stop();
+		}
+		if (tracker.getCount("CH3COCH3") == 0) {
+			System.out.println("Acetone source exhasusted, termianting...");
+			schedule.stop();
+		}		
+		
 		// Reset the tracker and note the step
-		tracker.reset();
-		if (count % 10 == 0) {
+		boolean flush = (count % 10 == 0);
+		tracker.reset(flush);
+		if (flush) {
 			System.out.println(count + " of " + total);
 		}
 	}
@@ -176,6 +183,17 @@ public class ChemSim implements Simulation {
 		Int3D container = reactor.getContainer();
 		for (ChemicalDto chemical : chemicals) {
 			System.out.println("Generating " + chemical.count * multiplier + " molecules of " + chemical.formula);
+			
+			// TODO Is there a better place to do this?
+			if (chemical.formula.equals("H2O2")) {
+				// Hydrogen peroxide is a linear decay, or f(x) = C - r * t 
+				// this means we need to determine the odds that any individual 
+				// hydrogen peroxide agent will be removed each time step based upon
+				// the new population which requires us knowing the initial decay
+				double intensity = properties.getUvIntensity();
+				properties.setHydrogenPeroxideDecayQuantity(Math.round(chemical.count * multiplier * intensity));
+			}
+			
 			for (int ndx = 0; ndx < chemical.count * multiplier; ndx++) {
 				Int3D location = new Int3D(random.nextInt(container.x), random.nextInt(container.y), random.nextInt(container.z));
 				Molecule molecule = new Molecule(chemical.formula);

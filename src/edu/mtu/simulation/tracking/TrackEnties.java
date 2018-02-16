@@ -107,13 +107,16 @@ public class TrackEnties {
 	/**
 	 * Write the contents to the CSV file and set the counts to zero.
 	 */
-	public void reset() {
+	public void reset(boolean flush) {
 		try {
 			for (String entity : entities) {
 				writer.write(counts.get(entity));
 				counts.put(entity, 0L);
 			}
 			writer.newline();
+			if (flush) {
+				writer.flush();
+			}
 		} catch (IOException ex) {
 			// Since we don't expect this to happen and don't have a means of recovering
 			// treat this as a fatal error
