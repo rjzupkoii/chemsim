@@ -7,11 +7,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import ec.util.MersenneTwisterFast;
-import edu.mtu.Reactor.Reactor;
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.compound.Molecule;
 import edu.mtu.parser.ChemicalDto;
 import edu.mtu.parser.Parser;
+import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.schedule.Schedule;
 import edu.mtu.simulation.schedule.Simulation;
 import edu.mtu.simulation.tracking.TrackEnties;
@@ -51,18 +51,21 @@ public class ChemSim implements Simulation {
 			// Note the properties
 			SimulationProperties simulation = SimulationProperties.getInstance();
 
-			// Initialize the model
-			random = new MersenneTwisterFast(seed);
-			Reactor.getInstance().initalize();
-			printHeader();
-			
 			// Import the reactions into the model
 			ReactionRegistry instance = ReactionRegistry.getInstance();
 			instance.clear();
 			instance.load(simulation.getReactionsFileName());
 			
+			// Load the list of compounds that will be used in the model
+			List<ChemicalDto> compounds = Parser.parseChemicals(SimulationProperties.getInstance().getChemicalsFileName());
+			
+			// Initialize the model
+			random = new MersenneTwisterFast(seed);
+			Reactor.getInstance().initalize(compounds);
+			printHeader();
+						
 			// Load the compounds into the model
-			initializeModel();		
+			initializeModel(compounds);		
 								
 			// Initialize the tracker
 			String fileName = simulation.getResultsFileName();
@@ -164,9 +167,7 @@ public class ChemSim implements Simulation {
 	/**
 	 * Initialize the model by loading the initial chemicals in the correct ratio.
 	 */
-	private void initializeModel() throws IOException {
-		// Create the initial compounds in the model
-		List<ChemicalDto> chemicals = Parser.parseChemicals(SimulationProperties.getInstance().getChemicalsFileName());
+	private void initializeModel(List<ChemicalDto> chemicals) throws IOException {
 										
 		// Find the scaling for the chemicals
 		chemicals = findIntitalCount(chemicals);

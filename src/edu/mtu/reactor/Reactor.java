@@ -1,6 +1,9 @@
-package edu.mtu.Reactor;
+package edu.mtu.reactor;
+
+import java.util.List;
 
 import edu.mtu.compound.Molecule;
+import edu.mtu.parser.ChemicalDto;
 import edu.mtu.simulation.SimulationProperties;
 import net.sourceforge.sizeof.SizeOf;
 import sim.field.grid.SparseGrid3D;
@@ -17,6 +20,7 @@ import sim.util.Int3D;
  */
 public class Reactor {
 	
+	public final static double AvogadrosNumber = 6.02214085774E23;
 	public final static double MemoryOverhead = 0.9;
 	
 	private static Reactor instance = new Reactor();
@@ -37,6 +41,20 @@ public class Reactor {
 	 */
 	public static Reactor getInstance() { 
 		return instance;
+	}
+	
+	/**
+	 * Calculate the dimensions (assuming cubic) of the reactor based upon the list of compounds provided. 
+	 * @param compounds parsed out when the experimental inputs are loaded.
+	 * @return The dimensions a long a single axis in nanometers (nm).
+	 */
+	public static int calculateSize(List<ChemicalDto> compounds, long molecules) {
+		double count = 0;
+		for (ChemicalDto compound : compounds) {
+			count += compound.mols;
+		}
+		double result = Math.cbrt((Math.pow(10.0, 24.0) * (double)molecules) / (count * AvogadrosNumber));
+		return (int)Math.ceil(result);
 	}
 	
 	/**
@@ -76,8 +94,10 @@ public class Reactor {
 			
 	/**
 	 * Initialize the reactor with the given dimensions.
+	 * 
+	 * @param compounds a list of compounds that are going to be fed into the reactor.
 	 */
-	public void initalize() {
+	public void initalize(List<ChemicalDto> compounds) {
 		try {
 			// Start by determining how much space we have to work with, note
 			// that this is based upon free memory to account for program over
@@ -95,7 +115,7 @@ public class Reactor {
 			}
 			
 			// Use the maximum molecule count to estimate a size for the reactor
-			int dimension = (int)(Math.cbrt(moleculeCount) * 2);
+			int dimension = calculateSize(compounds, moleculeCount);
 			container = new Int3D(dimension, dimension, dimension);
 			grid = new SparseGrid3D(dimension, dimension, dimension);
 			

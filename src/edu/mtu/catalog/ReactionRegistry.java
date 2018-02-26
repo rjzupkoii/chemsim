@@ -149,7 +149,7 @@ public class ReactionRegistry {
 	 * @param fileName The name and path of the file to be loaded.
 	 */
 	public void load(String fileName) throws IOException {
-		List<ReactionDescription> reactions = Parser.parseReactions(fileName);
+		List<ReactionDescription> reactions = Parser.parseReactions(fileName); 
 		for (ReactionDescription reaction : reactions) {
 			// TODO Make this optional
 			// Note what we are currently loading
