@@ -1,6 +1,7 @@
 package edu.mtu.compound;
 
 import ec.util.MersenneTwisterFast;
+import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;
 import edu.mtu.simulation.schedule.Steppable;
@@ -19,6 +20,14 @@ public class Molecule extends Steppable{
 	
 	@Override
 	public void doAction() {
+		// Check to see if any reactants exist for us, if they don't report our
+		// existence and then disappear
+		if (ReactionRegistry.getInstance().getProducts().contains(formula)) {
+			ChemSim.getTracker().update(formula, 1);
+			dispose();
+			return;
+		}
+		
 		// Attempt to move this molecule
 		Reactor reactor = Reactor.getInstance();
 		Int3D location = move(reactor.getLocation(this), reactor.getContainer());

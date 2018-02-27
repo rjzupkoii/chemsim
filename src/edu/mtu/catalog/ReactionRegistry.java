@@ -19,6 +19,7 @@ import edu.mtu.parser.Parser;
 public class ReactionRegistry {
 
 	private static ReactionRegistry instance = new ReactionRegistry();
+	private List<String> products;
 	
 	// Photolysis is [Reactant] + UV -> [Product] + ... + [Product] 
 	private Map<String, List<String>> photolysis = new HashMap<String, List<String>>();
@@ -90,6 +91,7 @@ public class ReactionRegistry {
 	 * Clear the current contents of the registry.
 	 */
 	public void clear() {
+		products = null;
 		bimolecular.clear();
 		photolysis.clear();
 		unimolecular.clear();
@@ -104,7 +106,7 @@ public class ReactionRegistry {
 	
 	/**
 	 * Get a list of all the entities in the registry.
-	 * @return
+	 * @return A list of entities in the registry.
 	 */
 	public List<String> getEntityList() {
 		HashSet<String> entities = new HashSet<String>();
@@ -120,6 +122,38 @@ public class ReactionRegistry {
 		entities.addAll(extractEntities(bimolecular));
 		
 		return new ArrayList<String>(entities);
+	}
+	
+	/**
+	 * Get a list of all of the entities in the registry that do not react with anything.
+	 * @return A list of all the non-reactive entities in the registry.
+	 */
+	public List<String> getProducts() {
+		// Has the work already been done?
+		if (products != null) {
+			return products;
+		}
+		
+		// Start by getting a list of everything
+		products = getEntityList();
+		
+		// Remove ones that are reactants
+		for (String compound : photolysis.keySet()) {
+			products.remove(compound);
+		}
+		for (String compound : unimolecular.keySet()) {
+			products.remove(compound);
+		}
+		for (String key : bimolecular.keySet()) {
+			for (ReactionDescription reaction : (List<ReactionDescription>)bimolecular.get(key)) {
+				for (String compound : reaction.getReactants()) {
+					products.remove(compound);
+				}
+			}
+		}
+		
+		// Return the results
+		return products;		
 	}
 		
 	/**

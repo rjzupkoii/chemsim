@@ -29,15 +29,7 @@ public class Reaction {
 	public static Reaction getInstance() {
 		return instance;
 	}
-	
-	/**
-	 * Calculate what the per cell decay quantity should be.
-	 */
-	public static double calculateDecayQuantity(int cells, double volume, double avagadroNumber, double mols) {
-		double decay = (mols * volume) / Math.pow(cells, 3);
-		return decay * avagadroNumber;
-	}
-		
+			
 	/**
 	 * Have the chemical species disproportionate according to its reaction rate.
 	 * 

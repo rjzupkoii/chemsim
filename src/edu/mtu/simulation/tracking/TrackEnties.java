@@ -18,6 +18,7 @@ public class TrackEnties {
 
 	private BufferedCsvWriter writer; 
 	private List<String> entities;
+	private List<String> products;
 	private Map<String, Long> counts;
 		
 	/**
@@ -89,6 +90,7 @@ public class TrackEnties {
 			System.err.println("No entities were found.");
 			System.exit(-1);
 		}
+		products = ReactionRegistry.getInstance().getProducts();
 		
 		// Remove flag values that are not tracked from the list
 		int index = entities.indexOf("UV");
@@ -111,7 +113,10 @@ public class TrackEnties {
 		try {
 			for (String entity : entities) {
 				writer.write(counts.get(entity));
-				counts.put(entity, 0L);
+				// Clear the value if the entity is a reactant
+				if (!products.contains(entity)) {
+					counts.put(entity, 0L);
+				}
 			}
 			writer.newline();
 			if (flush) {
