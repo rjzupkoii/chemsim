@@ -48,10 +48,10 @@ public class ScheduleTests implements Simulation {
 	public void initialize(long seed) { }
 
 	@Override
-	public void start(int timeSteps) { }
+	public void start(long timeSteps) { }
 	
 	@Override
-	public void step(int count, int total) { }
+	public void step(long count, long total) { }
 	
 	@Override
 	public void finish(boolean terminated) {

@@ -11,16 +11,12 @@ public class ModelProperities {
 	private int mediumPathway = 2;
 	private int slowPathway = 3;	
 		
-	// Reactor volume in liters
-	private double reactorVolume;
+	// The expected duration of the model in time steps
+	private long timeSteps;
 	
-	// How intense the UV is - drives the hydrogen peroxide decay rate
-	private double uvIntensity = 0.025;
-
 	// Values needed to ensure hydrogen peroxide exhibits a linear decay based upon the UV intensity
 	private double hydrogenPeroxideDecay = 0;
 	private long hydrogenPeroxideDecayQuantity = 0;
-
 	
 	public int getFastPathway() {
 		return fastPathway;
@@ -37,19 +33,15 @@ public class ModelProperities {
 	public int getMediumPathway() {
 		return mediumPathway;
 	}
-
-	public double getReactorVolume() {
-		return reactorVolume;
-	}
 	
 	public int getSlowPathway() {
 		return slowPathway;
 	}
 	
-	public double getUvIntensity() {
-		return uvIntensity;
+	public long getTimeSteps() {
+		return timeSteps;
 	}
-	
+		
 	public void setFastPathway(int value) {
 		fastPathway = value;
 	}
@@ -65,16 +57,12 @@ public class ModelProperities {
 	public void setMediumPathway(int value) {
 		mediumPathway = value;
 	}
-
-	public void setReactorVolume(double value) {
-		reactorVolume = value;
-	}
 	
 	public void setSlowPathway(int value) {
 		slowPathway = value;
 	}
 	
-	public void setUvIntensity(double value) {
-		this.uvIntensity = value;
+	public void setTimeSteps(long value) {
+		timeSteps = value;
 	}
 }

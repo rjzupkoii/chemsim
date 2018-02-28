@@ -20,6 +20,15 @@ import sim.util.Int3D;
 
 public class ChemSim implements Simulation {
 				
+	// Padding to add to the time steps to act as a buffer
+	private static final long PADDING = 500;
+	
+	// Divisor for time steps to report on
+	private static final long REPORT = 100;
+	
+	// Scale the decay by the given time unit, 1 = sec, 60 = minute
+	private static final int SCALING = 60;
+	
 	// The properties for the simulation, managed by MASON
 	private ModelProperities properties;
 	
@@ -56,8 +65,11 @@ public class ChemSim implements Simulation {
 			instance.clear();
 			instance.load(simulation.getReactionsFileName());
 			
-			// Load the list of compounds that will be used in the model
-			List<ChemicalDto> compounds = Parser.parseChemicals(SimulationProperties.getInstance().getChemicalsFileName());
+			// Load the experimental parameters for the model
+			String fileName = SimulationProperties.getInstance().getChemicalsFileName();
+			double rate = Parser.parseRate(fileName);
+			double volume = Parser.parseVolume(fileName);
+			List<ChemicalDto> compounds = Parser.parseChemicals(fileName);
 			
 			// Initialize the model
 			random = new MersenneTwisterFast(seed);
@@ -65,10 +77,10 @@ public class ChemSim implements Simulation {
 			printHeader();
 						
 			// Load the compounds into the model
-			initializeModel(compounds);		
+			initializeModel(compounds, rate, volume);		
 								
 			// Initialize the tracker
-			String fileName = simulation.getResultsFileName();
+			fileName = simulation.getResultsFileName();
 			tracker = new TrackEnties(fileName, simulation.getOverWriteResults());
 			
 		} catch (Exception ex) {
@@ -82,7 +94,7 @@ public class ChemSim implements Simulation {
 	 * Start the simulation.
 	 */
 	@Override
-	public void start(int timeSteps) {
+	public void start(long timeSteps) {
 		System.out.println("\nStarting simulation...");
 		schedule.start(this, timeSteps);
 	}
@@ -91,7 +103,7 @@ public class ChemSim implements Simulation {
 	 * Note that one time step has been completed.
 	 */
 	@Override
-	public void step(int count, int total) {
+	public void step(long count, long total) {
 		// Update the decay
 		long hydrogenPeroxide = tracker.getCount("H2O2");
 		if (hydrogenPeroxide != 0) {
@@ -111,7 +123,7 @@ public class ChemSim implements Simulation {
 		}		
 		
 		// Reset the tracker and note the step
-		boolean flush = (count % 10 == 0);
+		boolean flush = (count % REPORT == 0);
 		tracker.reset(flush);
 		if (flush) {
 			System.out.println(count + " of " + total);
@@ -167,7 +179,7 @@ public class ChemSim implements Simulation {
 	/**
 	 * Initialize the model by loading the initial chemicals in the correct ratio.
 	 */
-	private void initializeModel(List<ChemicalDto> chemicals) throws IOException {
+	private void initializeModel(List<ChemicalDto> chemicals, double rate, double volume) throws IOException {
 										
 		// Find the scaling for the chemicals
 		chemicals = findIntitalCount(chemicals);
@@ -191,8 +203,12 @@ public class ChemSim implements Simulation {
 				// this means we need to determine the odds that any individual 
 				// hydrogen peroxide agent will be removed each time step based upon
 				// the new population which requires us knowing the initial decay
-				double intensity = properties.getUvIntensity();
-				properties.setHydrogenPeroxideDecayQuantity(Math.round(chemical.count * multiplier * intensity));
+				int decay = (int)Math.ceil(Math.abs((chemical.count * multiplier * rate * volume) / chemical.mols)) * SCALING;
+				properties.setHydrogenPeroxideDecayQuantity(decay);
+				
+				// Since we know the decay rate we can calculate the running time
+				long time = ((chemical.count * multiplier) / decay) + PADDING;
+				properties.setTimeSteps(time);
 			}
 			
 			for (int ndx = 0; ndx < chemical.count * multiplier; ndx++) {
@@ -201,7 +217,9 @@ public class ChemSim implements Simulation {
 				reactor.insert(molecule, location);
 				schedule.insert(molecule);
 			}
-		}	
+		}
+		System.out.println("Calculated decay rate of " + properties.getHydrogenPeroxideDecayQuantity());
+		System.out.println("Estimated running time of " + (properties.getTimeSteps() - PADDING) + " time steps, padded to " + properties.getTimeSteps());
 	}
 	
 	/**
@@ -245,7 +263,7 @@ public class ChemSim implements Simulation {
 		if (SimulationProperties.getInstance().getMoleculeLimit() != SimulationProperties.NO_LIMIT) {
 			System.out.println("WARNING: Molecule count limited by configuration");
 		}
-		System.out.println("Reactor Dimensions: " + container.x + ", " + container.x + ", " + container.x);
+		System.out.println("Reactor Dimensions (nm): " + container.x + ", " + container.x + ", " + container.x);
 	}
 	
 	/**
@@ -263,7 +281,12 @@ public class ChemSim implements Simulation {
 		instance.initialize(seed);
 				
 		// Run the simulation and exit
-		instance.start(500);
+		long timeSteps = ChemSim.getProperties().getTimeSteps();
+		if (timeSteps != 0) {
+			instance.start(timeSteps);
+		} else {
+			
+		}
 		System.exit(0);
 	}
 }

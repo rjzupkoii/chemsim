@@ -20,20 +20,87 @@ public class Parser {
 	 * @return A list of reactions.
 	 */
 	public static List<ChemicalDto> parseChemicals(String fileName) throws IOException {
-		// Open the file and discard the header
-		CSVReader reader = new CSVReader(new FileReader(fileName));
-		reader.readNext();
+		CSVReader reader = null;
 		
-		// Load the entries
-		String[] entries;
-		List<ChemicalDto> results = new ArrayList<ChemicalDto>();
-		while ((entries = reader.readNext()) != null) {
-			results.add(new ChemicalDto(entries[0], entries[1], Double.parseDouble(entries[2])));
+		try {
+			// Open the file, discard volume and rate
+			reader = new CSVReader(new FileReader(fileName));
+			reader.readNext();
+			reader.readNext();
+			
+			// Check to make sure we are on the chemicals header
+			String[] entries = reader.readNext();
+			if (!entries[0].toUpperCase().equals("NAME")) {
+				System.err.println("File provided does not contain the chemicals header on line three.");
+				throw new IOException("Invalid ChemSim chemicals file.");
+			}
+			
+			// Load the entries
+			List<ChemicalDto> results = new ArrayList<ChemicalDto>();
+			while ((entries = reader.readNext()) != null) {
+				results.add(new ChemicalDto(entries[0], entries[1], Double.parseDouble(entries[2])));
+			}
+			
+			// Return the results
+			return results;
+		} finally {
+			if (reader != null) reader.close();	
+		}		
+	}
+	
+	/**
+	 * Parse the reaction rate from the file indicated.
+	 * 
+	 * @param fileName The full path to the file.
+	 * @return The reaction rate (i.e., slope) from the file, assumed to be in mols/L
+	 */
+	public static double parseRate(String fileName) throws IOException {
+		CSVReader reader = null;
+		
+		try {
+			// Open the file, discard volume
+			reader = new CSVReader(new FileReader(fileName));
+			reader.readNext();
+			
+			// Second entry should be the rate
+			String[] entries = reader.readNext();
+			if (!entries[0].toUpperCase().equals("RATE")) {
+				System.err.println("File provided does not contain the rate on line two.");
+				throw new IOException("Invalid ChemSim chemicals file.");
+			}
+			
+			// Return the result
+			return Double.parseDouble(entries[1]);
+		} finally {
+			if (reader != null) reader.close();
 		}
-		
-		// Close and return
-		reader.close();
-		return results;
+	}
+	
+	/**
+	 * Parse the volume of the experiment from the file indicated.
+	 * 
+	 * @param fileName The full path to the file.
+	 * @return The value in the units from the file, assumed to be liters.
+	 */
+	public static double parseVolume(String fileName) throws IOException {
+		CSVReader reader = null;
+
+		try {
+			// Open the file
+			reader = new CSVReader(new FileReader(fileName));
+
+			// First entry should be the volume
+			String[] entries = reader.readNext();
+			if (!entries[0].toUpperCase().equals("VOLUME")) {
+				System.err.println("File provided does not contain the volume on line one.");
+				throw new IOException("Invalid ChemSim chemicals file.");
+			}
+			
+			// Return the result
+			return Double.parseDouble(entries[1]);
+		} finally {
+			if (reader != null)	reader.close();
+		}
 	}
 	
 	/**

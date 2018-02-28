@@ -13,7 +13,7 @@ public interface Simulation {
 	/**
 	 * Start the simulation, run for the given number of time steps.
 	 */
-	public void start(int timeSteps);
+	public void start(long timeSteps);
 	
 	/**
 	 * Invoked when one time step has been completed.
@@ -21,7 +21,7 @@ public interface Simulation {
 	 * @param count The current time step.
 	 * @param total The total time steps to be completed.
 	 */
-	public void step(int count, int total);
+	public void step(long count, long total);
 	
 	/**
 	 * Invoked when the scheduler has been stopped.

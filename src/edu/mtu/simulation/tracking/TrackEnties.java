@@ -1,14 +1,13 @@
 package edu.mtu.simulation.tracking;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import edu.mtu.catalog.ReactionRegistry;
-import edu.mtu.simulation.ChemSim;
-import edu.mtu.simulation.ModelProperities;
 
 /**
  * This steppable provides a means of tracking the count of chemical entities 
@@ -30,24 +29,10 @@ public class TrackEnties {
 			prepare();
 			writer = new BufferedCsvWriter(fileName, overwrite);
 			
-			// Note some values
-			ModelProperities properties = ChemSim.getProperties();
-					
-			// Note the experimental conditions
-			writer.write("Reactor Volume");
-			writer.write(properties.getReactorVolume());
+			// Note the start time
+			writer.write(LocalDateTime.now().toString());
 			writer.newline();
-			
-			// Note formulaic properties
-			writer.write("H2O2 Decay, mol/L*sec");
-			writer.write(properties.getHydrogenPeroxideDecay());
-			writer.newline();
-			
-			// Note the calculated values
-			writer.write("H2O2 Decay, entities/L*sec");
-			writer.write(properties.getHydrogenPeroxideDecay());
-			writer.newline();
-			
+						
 			// Write the names of the entities out
 			writer.write(entities);
 			writer.flush();

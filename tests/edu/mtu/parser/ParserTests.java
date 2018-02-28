@@ -60,6 +60,24 @@ public class ParserTests {
 	}
 	
 	/**
+	 * Test to make sure the rate is loaded correctly.
+	 */
+	@Test
+	public void parseRateTest() throws IOException {
+		double result = Parser.parseRate(chemicalsFileName);
+		Assert.assertEquals(-2.987E-7, result, epsilon);
+	}
+	
+	/**
+	 * Test to make sure the volume is loaded correctly.
+	 */
+	@Test
+	public void parseVolumeTest() throws IOException {
+		double result = Parser.parseVolume(chemicalsFileName);
+		Assert.assertEquals(1.8d, result, epsilon);
+	}
+	
+	/**
 	 * Test to make sure we can parse reaction files.
 	 */
 	@Test
