@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence-diagram version="1.1.14" icons="true">  
+  <object id="1" language="java" name="edu.mtu.simulation.ChemSim" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/simulation/ChemSim.java" binary="false" label="chemSim" type="class" autoSize="true">    
+    <position height="-1" width="-1" x="214" y="0"/>    
+    <execution id="2">      
+      <position height="668" width="0" x="0" y="91"/>    
+    </execution>    
+    <execution id="4">      
+      <position height="21" width="0" x="0" y="133"/>    
+    </execution>    
+    <execution id="6">      
+      <position height="545" width="0" x="0" y="193"/>    
+    </execution>  
+  </object>  
+  <object id="9" language="java" name="edu.mtu.simulation.schedule.Schedule" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/simulation/schedule/Schedule.java" binary="false" label="schedule" type="class" 
+    autoSize="true">    
+    <position height="-1" width="-1" x="239" y="0"/>    
+    <execution id="8">      
+      <position height="509" width="0" x="0" y="208"/>    
+    </execution>    
+    <execution id="11">      
+      <position height="446" width="0" x="0" y="250"/>    
+    </execution>  
+  </object>  
+  <object id="14" language="java" name="edu.mtu.compound.Molecule" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/compound/Molecule.java" binary="false" label="molecule" type="class" autoSize="true">    
+    <position height="-1" width="-1" x="630" y="0"/>    
+    <execution id="13">      
+      <position height="410" width="0" x="0" y="265"/>    
+    </execution>    
+    <execution id="16">      
+      <position height="347" width="0" x="0" y="307"/>    
+    </execution>    
+    <execution id="18">      
+      <position height="21" width="0" x="0" y="357"/>    
+    </execution>    
+    <execution id="20">      
+      <position height="116" width="0" x="0" y="418"/>    
+    </execution>  
+  </object>  
+  <object id="25" language="java" name="edu.mtu.compound.Reaction" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/compound/Reaction.java" binary="false" label="reaction" type="class" autoSize="true">    
+    <position height="-1" width="-1" x="607" y="0"/>    
+    <execution id="24">      
+      <position height="84" width="0" x="0" y="429"/>    
+    </execution>    
+    <execution id="27">      
+      <position height="21" width="0" x="0" y="471"/>    
+    </execution>  
+  </object>  
+  <object id="28" language="java" name="edu.mtu.simulation.tracking.TrackEnties" project="ChemSim" 
+    file="/ChemSim/src/edu/mtu/simulation/tracking/TrackEnties.java" binary="false" label="trackEnties" type="class" 
+    autoSize="true">    
+    <position height="-1" width="-1" x="777" y="0"/>    
+    <execution id="22">      
+      <position height="84" width="0" x="0" y="549"/>    
+    </execution>    
+    <execution id="30">      
+      <position height="21" width="0" x="0" y="591"/>    
+    </execution>  
+  </object>  
+  <message id="3" operation="initialize(long):void" asynchronous="false">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="4"/>  
+  </message>  
+  <message id="5" operation="start(long):void" asynchronous="false">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="6"/>  
+  </message>  
+  <message id="7" asynchronous="false">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="8"/>  
+  </message>  
+  <message id="10" operation="start(edu.mtu.simulation.schedule.Simulation,long):void" asynchronous="false">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="11"/>  
+  </message>  
+  <message id="12" asynchronous="false">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="13"/>  
+  </message>  
+  <message id="15" operation="doAction():void" asynchronous="false">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="16"/>  
+  </message>  
+  <message id="17" operation="move(sim.util.Int3D,sim.util.Int3D):sim.util.Int3D" asynchronous="false">    
+    <end type="SOURCE" refId="16"/>    
+    <end type="TARGET" refId="18"/>  
+  </message>  
+  <message id="19" operation="react(sim.util.Int3D):boolean" asynchronous="false">    
+    <end type="SOURCE" refId="16"/>    
+    <end type="TARGET" refId="20"/>  
+  </message>  
+  <message id="21" asynchronous="false">    
+    <end type="SOURCE" refId="16"/>    
+    <end type="TARGET" refId="22"/>  
+  </message>  
+  <message id="23" asynchronous="false">    
+    <end type="SOURCE" refId="20"/>    
+    <end type="TARGET" refId="24"/>  
+  </message>  
+  <message id="26" operation="react(edu.mtu.compound.Molecule):boolean" asynchronous="false">    
+    <end type="SOURCE" refId="24"/>    
+    <end type="TARGET" refId="27"/>  
+  </message>  
+  <message id="29" operation="update(java.lang.String,int):void" asynchronous="false">    
+    <end type="SOURCE" refId="22"/>    
+    <end type="TARGET" refId="30"/>  
+  </message>
+</sequence-diagram>
