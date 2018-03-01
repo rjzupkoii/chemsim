@@ -1,5 +1,6 @@
 package edu.mtu.simulation;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -15,6 +16,7 @@ import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.schedule.Schedule;
 import edu.mtu.simulation.schedule.Simulation;
 import edu.mtu.simulation.tracking.TrackEnties;
+import edu.mtu.system.EchoStream;
 import net.sourceforge.sizeof.SizeOf;
 import sim.util.Int3D;
 
@@ -271,6 +273,11 @@ public class ChemSim implements Simulation {
 	 */
 	public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, IOException {
 				
+		// Echo to the console file
+		FileOutputStream out = new FileOutputStream("console.txt");
+		EchoStream echo = new EchoStream(out);
+		System.setOut(echo);
+		
 		// Configure SizeOf, note that the program MUST be invoked with -javaagent:lib/SizeOf.jar
 		SizeOf.skipStaticField(true);
 		SizeOf.setMinSizeToLog(10);
