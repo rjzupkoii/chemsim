@@ -73,6 +73,10 @@ public class ChemSim implements Simulation {
 			double volume = Parser.parseVolume(fileName);
 			List<ChemicalDto> compounds = Parser.parseChemicals(fileName);
 			
+			// Initialize the tracker
+			fileName = simulation.getResultsFileName();
+			tracker = new TrackEnties(fileName, simulation.getOverWriteResults());
+			
 			// Initialize the model
 			random = new MersenneTwisterFast(seed);
 			Reactor.getInstance().initalize(compounds);
@@ -80,11 +84,7 @@ public class ChemSim implements Simulation {
 						
 			// Load the compounds into the model
 			initializeModel(compounds, rate, volume);		
-								
-			// Initialize the tracker
-			fileName = simulation.getResultsFileName();
-			tracker = new TrackEnties(fileName, simulation.getOverWriteResults());
-			
+											
 		} catch (Exception ex) {
 			// We can't recover from errors here
 			ex.printStackTrace();
@@ -197,7 +197,8 @@ public class ChemSim implements Simulation {
 		// Add the chemicals to the model
 		Int3D container = reactor.getContainer();
 		for (ChemicalDto chemical : chemicals) {
-			System.out.println("Generating " + chemical.count * multiplier + " molecules of " + chemical.formula);
+			long count = chemical.count * multiplier;			
+			System.out.println("Generating " + count + " molecules of " + chemical.formula);
 			
 			// TODO Is there a better place to do this?
 			if (chemical.formula.equals("H2O2")) {
@@ -205,7 +206,7 @@ public class ChemSim implements Simulation {
 				// this means we need to determine the odds that any individual 
 				// hydrogen peroxide agent will be removed each time step based upon
 				// the new population which requires us knowing the initial decay
-				int decay = (int)Math.ceil(Math.abs((chemical.count * multiplier * rate * volume) / chemical.mols)) * SCALING;
+				int decay = (int)Math.ceil(Math.abs((count * rate * volume) / chemical.mols)) * SCALING;
 				properties.setHydrogenPeroxideDecayQuantity(decay);
 				
 				// Since we know the decay rate we can calculate the running time
@@ -213,12 +214,15 @@ public class ChemSim implements Simulation {
 				properties.setTimeSteps(time);
 			}
 			
-			for (int ndx = 0; ndx < chemical.count * multiplier; ndx++) {
+			for (int ndx = 0; ndx < count; ndx++) {
 				Int3D location = new Int3D(random.nextInt(container.x), random.nextInt(container.y), random.nextInt(container.z));
 				Molecule molecule = new Molecule(chemical.formula);
 				reactor.insert(molecule, location);
 				schedule.insert(molecule);
 			}
+			
+			// Set the baseline quantity
+			tracker.update(chemical.formula, count);
 		}
 		System.out.println("Calculated decay rate of " + properties.getHydrogenPeroxideDecayQuantity());
 		System.out.println("Estimated running time of " + (properties.getTimeSteps() - PADDING) + " time steps, padded to " + properties.getTimeSteps());

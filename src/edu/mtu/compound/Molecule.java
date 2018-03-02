@@ -20,11 +20,9 @@ public class Molecule extends Steppable{
 	
 	@Override
 	public void doAction() {
-		// Check to see if any reactants exist for us, if they don't report our
-		// existence and then disappear
+		// Check to see if any reactants exist for us, if they don't then disappear
 		if (ReactionRegistry.getInstance().getProducts().contains(formula)) {
-			ChemSim.getTracker().update(formula, 1);
-			dispose();
+			dispose(false);
 			return;
 		}
 		
@@ -38,7 +36,6 @@ public class Molecule extends Steppable{
 		} else {
 			// Otherwise, apply the movement
 			reactor.setLocation(this, location);
-			ChemSim.getTracker().update(formula, 1);
 		}		
 	}
 		
@@ -46,6 +43,18 @@ public class Molecule extends Steppable{
 	 * Dispose of this molecule.
 	 */
 	public void dispose() {
+		dispose(true);
+	}
+	
+	/**
+	 * Dispose of this molecule.
+	 * 
+	 * @param update True if the count should be decremented, false otherwise.
+	 */
+	private void dispose(boolean update) {
+		if (update) {
+			ChemSim.getTracker().update(formula, -1);
+		}
 		Reactor.getInstance().remove(this);
 		ChemSim.getSchedule().remove(this);
 	}
