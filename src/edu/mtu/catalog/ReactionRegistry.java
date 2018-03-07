@@ -51,7 +51,9 @@ public class ReactionRegistry {
 			if (!bimolecular.containsKey(reactant)) {
 				bimolecular.put(reactant, new ArrayList<ReactionDescription>());
 			}
-			((ArrayList<ReactionDescription>)bimolecular.get(reactant)).add(reaction);
+			if (!((ArrayList<ReactionDescription>)bimolecular.get(reactant)).contains(reaction)) {
+				((ArrayList<ReactionDescription>)bimolecular.get(reactant)).add(reaction);
+			}
 		}
 	}
 	
@@ -185,38 +187,24 @@ public class ReactionRegistry {
 	public void load(String fileName) throws IOException {
 		List<ReactionDescription> reactions = Parser.parseReactions(fileName); 
 		for (ReactionDescription reaction : reactions) {
-			// TODO Make this optional
 			// Note what we are currently loading
-			StringBuilder message = new StringBuilder("Loading ");
-			for (int ndx = 0; ndx < reaction.getReactants().size(); ndx++) {
-				message.append(reaction.getReactants().get(ndx));
-				if (ndx %2 == 0 && ndx != reaction.getReactants().size() - 1) {
-					message.append(" + ");
-				}
-			}
-			message.append(" -> ");
-			for (int ndx = 0; ndx < reaction.getProducts().size(); ndx++) {
-				message.append(reaction.getProducts().get(ndx));
-				if (ndx %2 == 0 && ndx != reaction.getProducts().size() - 1) {
-					message.append(" + ");
-				}
-			}
-						
+			String message = "Loading " + reaction.toString();						
 			if (reaction.getReactants().size() == 1) {
 				// This is a unimolecular reaction
 				addUnimolecularReaction(reaction);
-				message.append(" (unimolecular)");
+				message += " (unimolecular)";
 			} else if (reaction.getReactants().contains("UV")) {
 				// This is a photolysis reaction
 				addPhotolysisReaction(reaction);
-				message.append(" (photolysis)");
+				message += " (photolysis)";
 			} else {
 				// Must be a bimolecular reaction
 				addBimolecularReaction(reaction);
-				message.append(" (bimolecular)");
+				message += " (bimolecular)";
 			}
 			
-			System.out.println(message.toString());
+			// TODO Make this optional
+			System.out.println(message);
 		}
 	}
 	

@@ -2,7 +2,6 @@ package edu.mtu.catalog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 import edu.mtu.compound.Molecule;
@@ -11,9 +10,7 @@ import edu.mtu.compound.Molecule;
  * This class represents a single chemical equation.
  */
 public class ReactionDescription {
-	
-	private HashMap<Integer, String> dictionary = new HashMap<Integer, String>(); 
-	
+		
 	private List<String> products = new ArrayList<String>();
 	private List<String> reactants = new ArrayList<String>();
 	
@@ -53,14 +50,7 @@ public class ReactionDescription {
 		boolean partTwo = two.getFormula().equals(reactants.get(1));
 		return partOne && partTwo;
 	}
-	
-	/**
-	 * Get the formula that maps to the given hash.
-	 */
-	public String getFormula(int hash) {
-		return dictionary.get(hash);
-	}
-	
+		
 	/**
 	 * Get the products of this equation.
 	 */
@@ -97,5 +87,47 @@ public class ReactionDescription {
 	 */
 	public void setReactionRate(double value) {
 		reactionRate = value;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		// Same object as this is true
+		if (obj == this) {
+			return true;
+		}
+		
+		// Make sure the object is this class
+		if (!(obj instanceof ReactionDescription)) {
+			return false;
+		}
+		
+		// Cast and compare the data
+		ReactionDescription rd = (ReactionDescription)obj;
+		if (!Arrays.equals(this.products.toArray(), rd.products.toArray())) {
+			return false;
+		}
+		if (!Arrays.equals(this.reactants.toArray(), rd.reactants.toArray())) {
+			return false;
+		}
+		return (reactionRate == rd.reactionRate);
+	}
+	
+	@Override
+	public String toString() {
+		String message = "";
+		for (int ndx = 0; ndx < reactants.size(); ndx++) {
+			message += reactants.get(ndx);
+			if (ndx %2 == 0 && ndx != reactants.size() - 1) {
+				message += " + ";
+			}
+		}
+		message += " -> ";
+		for (int ndx = 0; ndx < products.size(); ndx++) {
+			message += products.get(ndx);
+			if (ndx %2 == 0 && ndx != products.size() - 1) {
+				message += " + ";
+			}
+		}
+		return message;
 	}
 }

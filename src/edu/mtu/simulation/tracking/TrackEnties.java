@@ -49,10 +49,6 @@ public class TrackEnties extends Tracker {
 		try {
 			for (String entity : entities) {
 				writer.write(counts.get(entity));
-				// Clear the value if the entity is a reactant
-				if (!products.contains(entity)) {
-					counts.put(entity, 0L);
-				}
 			}
 			writer.newline();
 			if (flush) {
@@ -70,7 +66,7 @@ public class TrackEnties extends Tracker {
 	/**
 	 * Update the total for the given entity by the given count. 
 	 */
-	public void update(String formula, int count) {
+	public void update(String formula, long count) {
 		long value = counts.get(formula);
 		counts.put(formula, value + count);
 	}

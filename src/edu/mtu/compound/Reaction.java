@@ -57,9 +57,7 @@ public class Reaction {
 			Reactor reactor = Reactor.getInstance();
 			Int3D location = reactor.getLocation(molecule);
 			for (String product : reaction.getProducts()) {			
-				Molecule entity = new Molecule(product);
-				ChemSim.getSchedule().insert(entity);
-				reactor.insert(entity, location);
+				create(product, location);
 			}
 		}
 		
@@ -84,19 +82,27 @@ public class Reaction {
 		}
 		
 		// First, see if there are any bimolecular reactions to take place
-		boolean result = bimolecularReaction(molecule);
-		if (result) {
-			return result;
+		if (bimolecularReaction(molecule)) {
+			return true;
 		}
 		
 		// Second, see if unimolecular decay needs to take place
-		result = unimolecularDecay(molecule);
-		if (result) {
-			return result;
+		if (unimolecularDecay(molecule)) {
+			return true;
 		}
 		
 		// Third, see if photolysis needs to take place
 		return photolysis(molecule);
+	}
+	
+	/**
+	 * Create a molecule of the given type at the given location.
+	 */
+	private void create(String formula, Int3D location) {
+		Molecule entity = new Molecule(formula);
+		ChemSim.getSchedule().insert(entity);
+		ChemSim.getTracker().update(formula, 1);
+		Reactor.getInstance().insert(entity, location);
 	}
 	
 	/**
@@ -150,9 +156,7 @@ public class Reaction {
 		Reactor reactor = Reactor.getInstance();
 		Int3D location = reactor.getLocation(molecule);
 		for (String product : products) {
-			Molecule entity = new Molecule(product);
-			ChemSim.getSchedule().insert(entity);
-			reactor.insert(entity, location);
+			create(product, location);
 		}
 		
 		// Note that a reaction occurred, molecule will dispose of itself
@@ -183,12 +187,11 @@ public class Reaction {
 			Molecule product = DisproportionatingMolecule.create(molecule, reactant, reactions);
 			schedule.insert(product);
 			reactor.insert(product, location);
+			ChemSim.getTracker().update(product.getFormula(), 1);
 		} else {
 			// A standard reaction is occurring
 			for (String product : matched.get(0).getProducts()) {
-				Molecule entity = new Molecule(product);
-				ChemSim.getSchedule().insert(entity);
-				reactor.insert(entity, location);
+				create(product, location);
 			}
 		}
 		
