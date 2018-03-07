@@ -23,7 +23,7 @@ import sim.util.Int3D;
 
 public class ChemSim implements Simulation {
 				
-	private static final boolean CENSUS = true;
+	private static final boolean CENSUS = false;
 	
 	// Padding to add to the time steps to act as a buffer
 	private static final long PADDING = 500;
@@ -76,15 +76,7 @@ public class ChemSim implements Simulation {
 			double rate = Parser.parseRate(fileName);
 			double volume = Parser.parseVolume(fileName);
 			List<ChemicalDto> compounds = Parser.parseChemicals(fileName);
-						
-			// Initialize the model
-			random = new MersenneTwisterFast(seed);
-			Reactor.getInstance().initalize(compounds);
-			printHeader();
-						
-			// Load the compounds into the model
-			initializeModel(compounds, rate, volume);		
-								
+
 			// Initialize the tracker(s)
 			fileName = simulation.getResultsFileName();
 			tracker = new TrackEnties(fileName, simulation.getOverWriteResults());
@@ -92,6 +84,14 @@ public class ChemSim implements Simulation {
 				System.out.println("WARNING: counducting census of molecules, model will run slow.");
 				census = new CensusTracking("census.csv", simulation.getOverWriteResults());
 			}
+			
+			// Initialize the model
+			random = new MersenneTwisterFast(seed);
+			Reactor.getInstance().initalize(compounds);
+			printHeader();
+			
+			// Load the compounds into the model
+			initializeModel(compounds, rate, volume);		
 		} catch (Exception ex) {
 			// We can't recover from errors here
 			ex.printStackTrace();
