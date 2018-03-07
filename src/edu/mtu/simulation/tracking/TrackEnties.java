@@ -1,58 +1,21 @@
 package edu.mtu.simulation.tracking;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import edu.mtu.catalog.ReactionRegistry;
-
 /**
- * This steppable provides a means of tracking the count of chemical entities 
- * that exist in the model.
+ * This class provides counts the entities that are in the model based upon the 
+ * count at model initialization and when they are added to the model.
  */
-public class TrackEnties {
-
-	private BufferedCsvWriter writer; 
-	private List<String> entities;
-	private List<String> products;
+public class TrackEnties extends Tracker {
 	private Map<String, Long> counts;
-		
+	
 	/**
 	 * Constructor, prepare the list of entities.
 	 */
-	public TrackEnties(String fileName, boolean overwrite) {				
-		try {
-			// Prepare the tracking file
-			prepare();
-			writer = new BufferedCsvWriter(fileName, overwrite);
-			
-			// Note the start time
-			writer.write(LocalDateTime.now().toString());
-			writer.newline();
-						
-			// Write the names of the entities out
-			writer.write(entities);
-			writer.flush();
-		} catch (IOException ex) {
-			System.err.println(ex);
-			System.err.println("Unable to create the tracking file at, " + fileName);
-			System.exit(-1);
-		}
-	} 
-	
-	/**
-	 * Finalize any work being done.
-	 */
-	public void complete() {
-		try {
-			writer.flush();
-			writer.close();
-		} catch (IOException ex) {
-			// Wrapping up, do nothing
-		}
+	public TrackEnties(String fileName, boolean overwrite) {
+		super(fileName, overwrite);
 	}
 	
 	/**
@@ -68,22 +31,10 @@ public class TrackEnties {
 	/**
 	 * Prepare to start tracking entities.
 	 */
-	private void prepare() {
-		// Note the entities that may will appear in the model over the entire run
-		entities = ReactionRegistry.getInstance().getEntityList();
-		if (entities.size() == 0) {
-			System.err.println("No entities were found.");
-			System.exit(-1);
-		}
-		products = ReactionRegistry.getInstance().getProducts();
-		
-		// Remove flag values that are not tracked from the list
-		int index = entities.indexOf("UV");
-		if (index != -1) {
-			entities.remove(index);
-		}
-		Collections.sort(entities);
-		
+	@Override
+	protected void prepare() {
+		super.prepare();
+				
 		// Prepare the counts
 		counts = new HashMap<String, Long>();
 		for (String entity : entities) {

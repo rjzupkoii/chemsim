@@ -15,6 +15,7 @@ import edu.mtu.parser.Parser;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.schedule.Schedule;
 import edu.mtu.simulation.schedule.Simulation;
+import edu.mtu.simulation.tracking.CensusTracking;
 import edu.mtu.simulation.tracking.TrackEnties;
 import edu.mtu.system.EchoStream;
 import net.sourceforge.sizeof.SizeOf;
@@ -22,6 +23,8 @@ import sim.util.Int3D;
 
 public class ChemSim implements Simulation {
 				
+	private static final boolean CENSUS = true;
+	
 	// Padding to add to the time steps to act as a buffer
 	private static final long PADDING = 500;
 	
@@ -40,7 +43,8 @@ public class ChemSim implements Simulation {
 	private Schedule schedule = new Schedule();
 	
 	// Entity count tracker for the simulation
-	private TrackEnties tracker;
+	private CensusTracking census;
+	private TrackEnties tracker;	
 	
 	/**
 	 * Random number generator that is tied to the simulation. 
@@ -81,9 +85,13 @@ public class ChemSim implements Simulation {
 			// Load the compounds into the model
 			initializeModel(compounds, rate, volume);		
 								
-			// Initialize the tracker
+			// Initialize the tracker(s)
 			fileName = simulation.getResultsFileName();
 			tracker = new TrackEnties(fileName, simulation.getOverWriteResults());
+			if (CENSUS) {
+				System.out.println("WARNING: counducting census of molecules, model will run slow.");
+				census = new CensusTracking("census.csv", simulation.getOverWriteResults());
+			}
 			
 		} catch (Exception ex) {
 			// We can't recover from errors here
@@ -124,6 +132,11 @@ public class ChemSim implements Simulation {
 			schedule.stop();
 		}		
 		
+		// Update the census if need be
+		if (census != null) {
+			census.count();
+		}
+		
 		// Reset the tracker and note the step
 		boolean flush = (count % REPORT == 0);
 		tracker.reset(flush);
@@ -137,9 +150,11 @@ public class ChemSim implements Simulation {
 	 */
 	@Override
 	public void finish(boolean terminated) {
-		if (tracker != null) {
-			tracker.complete();
+		if (census != null) {
+			census.complete();
+			System.out.print("\nCensus results written to: census.csv");
 		}
+		tracker.complete();		
 		System.out.println("\nSimulation results written to: " + SimulationProperties.getInstance().getResultsFileName());
 		System.out.println("\n" + LocalDateTime.now());
 	}

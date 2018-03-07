@@ -76,6 +76,16 @@ public class Reactor {
 	}
 	
 	/**
+	 * Returns all molecules present in the reactor.
+	 */
+	public Molecule[] getMolecules() {
+		Bag bag = grid.getAllObjects();
+		Molecule[] array = new Molecule[bag.numObjs];
+		bag.toArray(array);
+		return array;
+	}
+	
+	/**
 	 * Get the molecules at the given location in the reactor.
 	 */
 	public Molecule[] getMolecules(Int3D location) {
