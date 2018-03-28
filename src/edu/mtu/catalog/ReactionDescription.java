@@ -114,20 +114,21 @@ public class ReactionDescription {
 	
 	@Override
 	public String toString() {
-		String message = "";
+		StringBuilder message = new StringBuilder();
 		for (int ndx = 0; ndx < reactants.size(); ndx++) {
-			message += reactants.get(ndx);
-			if (ndx %2 == 0 && ndx != reactants.size() - 1) {
-				message += " + ";
+			message.append(reactants.get(ndx));
+			if ((ndx + 1) != reactants.size()) {
+				message.append(" + ");
 			}
 		}
-		message += " -> ";
+		message.append(" -> ");
 		for (int ndx = 0; ndx < products.size(); ndx++) {
-			message += products.get(ndx);
-			if (ndx %2 == 0 && ndx != products.size() - 1) {
-				message += " + ";
+			message.append(products.get(ndx));
+			if ((ndx + 1) != products.size()) {
+				message.append(" + ");
 			}
 		}
-		return message;
+		return message.toString();
 	}
 }
+ 
