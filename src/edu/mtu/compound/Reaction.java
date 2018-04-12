@@ -16,6 +16,9 @@ import sim.util.Int3D;
  */
 public class Reaction {
 	
+	// TODO Find a better place to put this
+	private static final String[] disolved = { "O2", "H2O" };
+	
 	private static Reaction instance = new Reaction();
 		
 	/**
@@ -125,6 +128,13 @@ public class Reaction {
 									
 			// Process the reactants and press on if a match is not found
 			if (process(molecule, reactant, reactions)) {
+				return true;
+			}
+		}
+		
+		// Check to see if there are any dissolved molecule we should be aware of
+		for (String reactant : disolved) {
+			if (process(molecule, new DissolvedMolecule(reactant), reactions)) {
 				return true;
 			}
 		}

@@ -47,7 +47,7 @@ public class ReactionDescription {
 	 */
 	public boolean checkReactants(Molecule one, Molecule two) {
 		boolean partOne = one.getFormula().equals(reactants.get(0));
-		boolean partTwo = two.getFormula().equals(reactants.get(1));
+		boolean partTwo = (two != null) ? two.getFormula().equals(reactants.get(1)) : reactants.size() == 1;
 		return partOne && partTwo;
 	}
 		

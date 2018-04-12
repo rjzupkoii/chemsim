@@ -9,8 +9,6 @@ import edu.mtu.catalog.ReactionDescription;
  */
 public class DisproportionatingMolecule extends Molecule {
 
-	// TODO Refactor this class to be unique within the cell
-	
 	private int age = 0;
 	private List<ReactionDescription> reactions;
 	

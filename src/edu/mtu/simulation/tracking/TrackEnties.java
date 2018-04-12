@@ -67,7 +67,9 @@ public class TrackEnties extends Tracker {
 	 * Update the total for the given entity by the given count. 
 	 */
 	public void update(String formula, long count) {
-		long value = counts.get(formula);
-		counts.put(formula, value + count);
+		if (counts.containsKey(formula)) {
+			long value = counts.get(formula);
+			counts.put(formula, value + count);
+		}
 	}
 }
