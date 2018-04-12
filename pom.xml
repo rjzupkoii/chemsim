@@ -24,7 +24,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>edu.mtu.simulation.ChemSim</mainClass>
+							<mainClass>edu.mtu.simulation.Launcher</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

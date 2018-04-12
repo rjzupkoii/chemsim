@@ -1,6 +1,5 @@
 package edu.mtu.simulation;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -17,8 +16,6 @@ import edu.mtu.simulation.schedule.Schedule;
 import edu.mtu.simulation.schedule.Simulation;
 import edu.mtu.simulation.tracking.CensusTracking;
 import edu.mtu.simulation.tracking.TrackEnties;
-import edu.mtu.system.EchoStream;
-import net.sourceforge.sizeof.SizeOf;
 import sim.util.Int3D;
 
 public class ChemSim implements Simulation {
@@ -284,34 +281,5 @@ public class ChemSim implements Simulation {
 			System.out.println("WARNING: Molecule count limited by configuration");
 		}
 		System.out.println("Reactor Dimensions (nm): " + container.x + ", " + container.x + ", " + container.x);
-	}
-	
-	/**
-	 * Main entry point for non-UI model.
-	 */
-	public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, IOException {
-				
-		// Echo to the console file
-		FileOutputStream out = new FileOutputStream("console.txt");
-		EchoStream echo = new EchoStream(out);
-		System.setOut(echo);
-		
-		// Configure SizeOf, note that the program MUST be invoked with -javaagent:lib/SizeOf.jar
-		SizeOf.skipStaticField(true);
-		SizeOf.setMinSizeToLog(10);
-		
-		// Initialize the simulation
-		long seed = System.currentTimeMillis();
-		ChemSim instance = ChemSim.getInstance();
-		instance.initialize(seed);
-				
-		// Run the simulation and exit
-		long timeSteps = ChemSim.getProperties().getTimeSteps();
-		if (timeSteps != 0) {
-			instance.start(timeSteps);
-		} else {
-			
-		}
-		System.exit(0);
 	}
 }

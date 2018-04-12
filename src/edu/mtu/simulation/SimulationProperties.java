@@ -18,12 +18,11 @@ public class SimulationProperties {
 	private long moleculeLimit = 1000000;
 				
 	// Default paths to experiments
-	private String chemicalsFileName = "experiment/chemicals.csv";
-	//private String reactionsFileName = "experiment/reactions.csv";
-	private String reactionsFileName = "experiment/simple.csv";
+	private String chemicalsFileName = "";
+	private String reactionsFileName = "";
 	
-	// Path to where the simulation results should be
-	private String resultsFileName = "results.csv";
+	// Location of results
+	private String resultsFileName = "data/results%s.csv";
 	
 	private static SimulationProperties instance = new SimulationProperties();
 	
