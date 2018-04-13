@@ -126,6 +126,11 @@ public class Parser {
 		
 		List<ReactionDescription> results = new ArrayList<ReactionDescription>();
 		while ((enteries = reader.readNext()) != null) {
+			// Check to see if the line is commented out
+			if (enteries[0].startsWith("#")) {
+				continue;
+			}
+			
 			// Process the reactants
 			List<String> reactant = new ArrayList<String>();
 			for (int ndx = 0; ndx < reactants; ndx++) {
