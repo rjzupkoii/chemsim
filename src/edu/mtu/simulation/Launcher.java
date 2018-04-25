@@ -66,6 +66,7 @@ public final class Launcher {
 		}
 		
 		// Apply the settings
+		properties.setMolarFileName(String.format(properties.getMolarFileName(), iteration));
 		properties.setResultsFileName(String.format(properties.getResultsFileName(), iteration));
 	}
 }

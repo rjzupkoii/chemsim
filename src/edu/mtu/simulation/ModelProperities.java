@@ -18,6 +18,9 @@ public class ModelProperities {
 	private double hydrogenPeroxideDecay = 0;
 	private long hydrogenPeroxideDecayQuantity = 0;
 	
+	// Scalar needed to convert molecules to molar values
+	private double moleculeToMol = 0;
+	
 	public int getFastPathway() {
 		return fastPathway;
 	}
@@ -32,6 +35,10 @@ public class ModelProperities {
 	
 	public int getMediumPathway() {
 		return mediumPathway;
+	}
+	
+	public double getMoleculeToMol() {
+		return moleculeToMol;
 	}
 	
 	public int getSlowPathway() {
@@ -56,6 +63,10 @@ public class ModelProperities {
 			
 	public void setMediumPathway(int value) {
 		mediumPathway = value;
+	}
+	
+	public void setMoleculeToMol(double value) {
+		moleculeToMol = value;
 	}
 	
 	public void setSlowPathway(int value) {

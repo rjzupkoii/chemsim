@@ -31,12 +31,11 @@ public class ChemSim implements Simulation {
 	// Scale the decay by the given time unit, 1 = sec, 60 = minute
 	private static final int SCALING = 60;
 	
-	// The properties for the simulation, managed by MASON
+	// The properties for the simulation
 	private ModelProperities properties;
 	
-	// Singleton instance of the simulation
+	// Singleton instance of the simulation and schedule
 	private static ChemSim instance = new ChemSim();
-	
 	private Schedule schedule = new Schedule();
 	
 	// Entity count tracker for the simulation
@@ -199,16 +198,17 @@ public class ChemSim implements Simulation {
 	 * Initialize the model by loading the initial chemicals in the correct ratio.
 	 */
 	private void initializeModel(List<ChemicalDto> chemicals, double rate, double volume) throws IOException {
-										
+		
+		Reactor reactor = Reactor.getInstance();
+		
 		// Find the scaling for the chemicals
-		findIntitalCount(chemicals);
+		double scaling = findIntitalCount(chemicals);
 		
 		// Calculate out the multiplier
 		long total = 0;
 		for (ChemicalDto entry : chemicals) {
 			total += entry.count;
 		}
-		Reactor reactor = Reactor.getInstance();
 		long multiplier = reactor.getMaximumMolecules() / total;
 		
 		// Add the chemicals to the model
@@ -241,14 +241,20 @@ public class ChemSim implements Simulation {
 			// Set the baseline quantity
 			tracker.update(chemical.formula, count);
 		}
+		
+		// Find the scaling factor to go from molecules back to mols
+		scaling *= multiplier;
+		properties.setMoleculeToMol(scaling);
+		
+		System.out.println("Molecule to mol scalar: " + scaling);		
 		System.out.println("Calculated decay rate of " + properties.getHydrogenPeroxideDecayQuantity());
 		System.out.println("Estimated running time of " + (properties.getTimeSteps() - PADDING) + " time steps, padded to " + properties.getTimeSteps());
 	}
 	
 	/**
-	 * Find the proportions for the chemicals input.
+	 * Find the proportions for the chemicals input, return the scaling applied
 	 */
-	private void findIntitalCount(List<ChemicalDto> input) {
+	private double findIntitalCount(List<ChemicalDto> input) {
 		// Find the smallest entry
 		double smallest = Double.MAX_VALUE;
 		for (ChemicalDto entry : input) {
@@ -262,14 +268,12 @@ public class ChemSim implements Simulation {
 		String value = format.format(smallest);
 		int exponent = Integer.parseInt(value.substring(value.indexOf("E") + 1));
 		
-		// TODO Add support to scale negative or positive values
-		exponent = Math.abs(exponent) + 1;
+		// Apply scaling to the adjusted molar values
+		double scaling = Math.pow(10, Math.abs(exponent) + 1);		
 		for (int ndx = 0; ndx < input.size(); ndx++) {
-			input.get(ndx).count = (long)(input.get(ndx).mols * Math.pow(10, exponent)); 
+			input.get(ndx).count = (long)(input.get(ndx).mols * scaling); 
 		}
-		
-		// TODO Note the scaling here
-		double scaling = Math.pow(10, exponent);
+		return scaling;
 	} 
 
 	/**

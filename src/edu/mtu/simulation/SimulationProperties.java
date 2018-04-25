@@ -23,6 +23,7 @@ public class SimulationProperties {
 	
 	// Location of results
 	private String resultsFileName = "data/results%s.csv";
+	private String molarFileName = "data/molarConcentration-%s.csv";
 	
 	private static SimulationProperties instance = new SimulationProperties();
 	
@@ -40,6 +41,10 @@ public class SimulationProperties {
 	
 	public String getChemicalsFileName() {
 		return chemicalsFileName;
+	}
+	
+	public String getMolarFileName() {
+		return molarFileName;
 	}
 	
 	public long getMoleculeLimit() {
@@ -60,6 +65,10 @@ public class SimulationProperties {
 	
 	public void setChemicalsFileName(String value) {
 		chemicalsFileName = value;
+	}
+	
+	public void setMolarFileName(String value) {
+		molarFileName = value;
 	}
 	
 	public void setOverWriteResults(boolean value) {
