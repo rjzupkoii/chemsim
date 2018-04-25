@@ -2,6 +2,8 @@ package edu.mtu.simulation;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import edu.mtu.system.EchoStream;
 import net.sourceforge.sizeof.SizeOf;
@@ -13,7 +15,9 @@ public final class Launcher {
 	public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, IOException {
 
 		// Echo to the console file
-		FileOutputStream out = new FileOutputStream("console.txt");
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HHmmss.SSSZ");
+		String filename = String.format("console.%s.txt", formatter.format(new Date()));
+		FileOutputStream out = new FileOutputStream(filename);
 		EchoStream echo = new EchoStream(out);
 		System.setOut(echo);
 		
