@@ -149,9 +149,15 @@ public class ChemSim implements Simulation {
 		if (census != null) {
 			census.complete();
 			System.out.print("\nCensus results written to: census.csv");
-		}
-		tracker.complete();		
-		System.out.println("\nSimulation results written to: " + SimulationProperties.getInstance().getResultsFileName());
+		}		
+		
+		// TODO Update this to distinguish between molecules and molar counts
+		tracker.complete();
+		System.out.println("\nMolecule counts written to: " + SimulationProperties.getInstance().getResultsFileName());
+		
+		// TODO Add the code to convert the molecule counts to mols here
+		//System.out.println("Molar counts written to: " + );
+		
 		System.out.println("\n" + LocalDateTime.now());
 	}
 	
@@ -195,7 +201,7 @@ public class ChemSim implements Simulation {
 	private void initializeModel(List<ChemicalDto> chemicals, double rate, double volume) throws IOException {
 										
 		// Find the scaling for the chemicals
-		chemicals = findIntitalCount(chemicals);
+		findIntitalCount(chemicals);
 		
 		// Calculate out the multiplier
 		long total = 0;
@@ -242,7 +248,7 @@ public class ChemSim implements Simulation {
 	/**
 	 * Find the proportions for the chemicals input.
 	 */
-	private List<ChemicalDto> findIntitalCount(List<ChemicalDto> input) {
+	private void findIntitalCount(List<ChemicalDto> input) {
 		// Find the smallest entry
 		double smallest = Double.MAX_VALUE;
 		for (ChemicalDto entry : input) {
@@ -261,9 +267,9 @@ public class ChemSim implements Simulation {
 		for (int ndx = 0; ndx < input.size(); ndx++) {
 			input.get(ndx).count = (long)(input.get(ndx).mols * Math.pow(10, exponent)); 
 		}
-								
-		// Scale based upon the smallest entry
-		return input;
+		
+		// TODO Note the scaling here
+		double scaling = Math.pow(10, exponent);
 	} 
 
 	/**
