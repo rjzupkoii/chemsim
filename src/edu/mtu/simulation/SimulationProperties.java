@@ -23,7 +23,7 @@ public class SimulationProperties {
 	
 	// Location of results
 	private String resultsFileName = "data/results%s.csv";
-	private String molarFileName = "data/molarConcentration-%s.csv";
+	private String molarFileName = "data/molar%s.csv";
 	
 	private static SimulationProperties instance = new SimulationProperties();
 	

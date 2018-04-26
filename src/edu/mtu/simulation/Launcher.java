@@ -14,9 +14,12 @@ public final class Launcher {
 	 */
 	public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, IOException {
 
-		// Echo to the console file
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HHmmss.SSSZ");
-		String filename = String.format("console.%s.txt", formatter.format(new Date()));
+		// Echo to the console file 
+		String filename = "console.txt";
+		if (args.length > 0 && args[0].equals("-timestamp")) {
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HHmmss.SSSZ");
+			filename = String.format("console.%s.txt", formatter.format(new Date()));
+		}
 		FileOutputStream out = new FileOutputStream(filename);
 		EchoStream echo = new EchoStream(out);
 		System.setOut(echo);

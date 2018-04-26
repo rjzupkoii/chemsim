@@ -14,6 +14,15 @@ public class BufferedCsvWriter {
 	 * Open the file for writing.
 	 * 
 	 * @param fileName The file name and path.
+	 */
+	public BufferedCsvWriter(String fileName) throws IOException {
+		open(fileName, false);
+	}
+	
+	/**
+	 * Open the file for writing.
+	 * 
+	 * @param fileName The file name and path.
 	 * @param overwrite True if the file should be overwritten, false otherwise.
 	 */
 	public BufferedCsvWriter(String fileName, boolean overwrite) throws IOException {
@@ -95,6 +104,19 @@ public class BufferedCsvWriter {
 	 */
 	public void write(List<String> values) throws IOException {
 		for (String value : values) {
+			writer.write(value + ",");
+		}
+		writer.write(System.getProperty("line.separator"));
+	}
+
+	/**
+	 * Write the array of values to the file, finish with a new line.
+	 */
+	public void write(String[] values) throws IOException {
+		for (String value : values) {
+			if (value.isEmpty()) {
+				continue;
+			}
 			writer.write(value + ",");
 		}
 		writer.write(System.getProperty("line.separator"));

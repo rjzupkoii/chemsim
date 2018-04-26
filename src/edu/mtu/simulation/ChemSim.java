@@ -15,6 +15,7 @@ import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.schedule.Schedule;
 import edu.mtu.simulation.schedule.Simulation;
 import edu.mtu.simulation.tracking.CensusTracking;
+import edu.mtu.simulation.tracking.Converter;
 import edu.mtu.simulation.tracking.TrackEnties;
 import sim.util.Int3D;
 
@@ -150,12 +151,15 @@ public class ChemSim implements Simulation {
 			System.out.print("\nCensus results written to: census.csv");
 		}		
 		
-		// TODO Update this to distinguish between molecules and molar counts
+		// Write the tracked molecule counts
 		tracker.complete();
-		System.out.println("\nMolecule counts written to: " + SimulationProperties.getInstance().getResultsFileName());
+		String moleculear = SimulationProperties.getInstance().getResultsFileName();
+		System.out.println("\nMolecule counts written to: " + moleculear);
 		
-		// TODO Add the code to convert the molecule counts to mols here
-		//System.out.println("Molar counts written to: " + );
+		// Use the molecule counts to write out the molar counts
+		String mols = SimulationProperties.getInstance().getMolarFileName();
+		Converter.Convert(moleculear, mols, properties.getMoleculeToMol());
+		System.out.println("Molar counts written to: " + mols);
 		
 		System.out.println("\n" + LocalDateTime.now());
 	}
