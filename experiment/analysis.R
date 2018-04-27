@@ -85,12 +85,16 @@ analysis <- function(data, label, unit) {
 	plot(mean, type = 'l', xlab = 'Timestep, min', ylab = sprintf('%s, %s', label, unit))
 	lines(min, type='l', col='blue')
 	lines(max, type='l', col='red')
-	
+		
 	# Plot experimetnal data if present
 	if (!is.null(experimental)) {
 		x <- as.list(experimental[,'Min'])
 		y <- as.list(experimental[, label])
 		points(x, y, pch=16, col="red")
+		legend("right", legend = c("Mean", "Min", "Max", "Experimental"), 
+				col = c("black", "blue", "red", "red"), lty=c(1, 1, 1, NA), cex=0.8, pch = c(NA, NA, NA, 16))
+	} else {
+		legend("right", legend = c("Mean", "Min", "Max"), col = c("black", "blue", "red"), lty=1, cex=0.8)
 	}
 	dev.off()	
 }
