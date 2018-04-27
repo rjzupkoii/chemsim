@@ -2,8 +2,27 @@
 
 library(matrixStats)
 
+options(scipen=5)
+
+EXPERIMENTAL <- '../data/experimental.csv'
+
 OUTPUT_DIR <- '../results'
 OUTPUT_PATH <- '../results/%s.png'
+
+getExperimental <- function(label) {
+	# Load the data
+	df <- read.csv(EXPERIMENTAL, skip = 1, header = T)
+	
+	# Return if the data is not present
+	if (!(label %in% colnames(df))) {
+		return(NULL)
+	}
+	
+	# Extract only the relevent data
+	data <- cbind(df['Min'], df[label])
+	data <- na.omit(data)
+	return(data)
+}
 
 load <- function(path) {
 	data <- list()
@@ -28,7 +47,7 @@ load <- function(path) {
 	return(data)
 }
 
-process <- function(file) {
+process <- function(file, unit) {
 	raw <- load(file)
 	data <- list()
 	# Extract the data for each compound
@@ -42,22 +61,40 @@ process <- function(file) {
 	
 	# Plot the data 
 	for (compound in colnames(raw[[1]])) {
-		analysis(data[[compound]], compound)
+		analysis(data[[compound]], compound, unit)
 	}
 }
 
-analysis <- function(data, label) {
+analysis <- function(data, label, unit) {
+	# If we are working with mols, covert to mM and load the experimetnal data
+	experimental <- NULL;
+	if (unit == 'Mols') {
+		data <- (data * 1000) / 1.8
+		unit <- 'mM'
+		experimental <- getExperimental(label)
+	}
+	
+	# Find the stats
 	min <- rowMins(data)
 	mean <- rowMeans(data)
 	max <- rowMaxs(data)	
 	
+	# Plot the data
 	file = sprintf(OUTPUT_PATH, label)
 	png(file = file, width = 1024, height = 768)
-	plot(mean, type = 'l', xlab = 'Timestep', ylab = sprintf('Molecules %s', label))
+	plot(mean, type = 'l', xlab = 'Timestep, min', ylab = sprintf('%s, %s', label, unit))
 	lines(min, type='l', col='blue')
 	lines(max, type='l', col='red')
+	
+	# Plot experimetnal data if present
+	if (!is.null(experimental)) {
+		x <- as.list(experimental[,'Min'])
+		y <- as.list(experimental[, label])
+		points(x, y, pch=16, col="red")
+	}
 	dev.off()	
 }
 
 dir.create(OUTPUT_DIR, showWarnings = FALSE)
-process('../data/simple')
+#process('../data/simple/molecules', 'Molecules')
+process('../data/simple/mols', 'Mols')
