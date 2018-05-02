@@ -21,8 +21,15 @@ public class ModelProperities {
 	// Scalar needed to convert molecules to molar values
 	private double moleculeToMol = 0;
 	
+	// Decay model to use for the model, may be null
+	private DecayModel decayModel = null;
+	
 	public int getFastPathway() {
 		return fastPathway;
+	}
+	
+	public DecayModel getDecayModel() {
+		return decayModel;
 	}
 	
 	public double getHydrogenPeroxideDecay() {
@@ -47,6 +54,10 @@ public class ModelProperities {
 	
 	public long getTimeSteps() {
 		return timeSteps;
+	}
+	
+	public void setDecayModel(DecayModel value) {
+		decayModel = value;
 	}
 		
 	public void setFastPathway(int value) {

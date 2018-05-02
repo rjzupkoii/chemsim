@@ -1,4 +1,4 @@
-#!/usr/local/bin/rscript
+#!/usr/bin/rscript
 
 library(matrixStats)
 

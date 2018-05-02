@@ -30,7 +30,7 @@ public class ChemSim implements Simulation {
 	private static final long REPORT = 100;
 	
 	// Scale the decay by the given time unit, 1 = sec, 60 = minute
-	private static final int SCALING = 60;
+	public static final int SCALING = 60;
 	
 	// The properties for the simulation
 	private ModelProperities properties;
