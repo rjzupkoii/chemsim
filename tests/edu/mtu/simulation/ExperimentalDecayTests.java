@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 
-public class DecayModelTests {
+public class ExperimentalDecayTests {
 
 	private static Map<Integer, Map<String, DecayDto>> experimental = new HashMap<Integer, Map<String, DecayDto>>();
 	static {
@@ -46,8 +46,10 @@ public class DecayModelTests {
 	 */
 	@Test
 	public void prepareTest() throws IOException {
-		DecayModel model = new DecayModel();
-		model.prepare("tests/experiment.csv", 1.8);
+		ExperimentalDecay model = new ExperimentalDecay();
+		model.prepare("tests/experiment.csv");
+		
+		Assert.assertEquals(1.8, model.getVolume());
 		
 		Map<Integer, Map<String, DecayDto>> data = model.getData();	
 		Assert.assertEquals(experimental.size(), data.size());

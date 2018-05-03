@@ -19,6 +19,7 @@ public class SimulationProperties {
 				
 	// Default paths to experiments
 	private String chemicalsFileName = "";
+	private String experimentalDataFileName = "";
 	private String reactionsFileName = "";
 	
 	// Location of results
@@ -43,6 +44,10 @@ public class SimulationProperties {
 		return chemicalsFileName;
 	}
 	
+	public String getExperimentalDataFileName() {
+		return experimentalDataFileName;
+	}
+	
 	public String getMolarFileName() {
 		return molarFileName;
 	}
@@ -65,6 +70,10 @@ public class SimulationProperties {
 	
 	public void setChemicalsFileName(String value) {
 		chemicalsFileName = value;
+	}
+	
+	public void setExperimentalDataFileName(String value) {
+		experimentalDataFileName = value;
 	}
 	
 	public void setMolarFileName(String value) {

@@ -87,8 +87,10 @@ public class ChemSim implements Simulation {
 			Reactor.getInstance().initalize(compounds);
 			printHeader();
 			
-			// Load the compounds into the model
-			initializeModel(compounds, rate, volume);		
+			// Load the compounds and decay model
+			initializeModel(compounds, rate, volume);
+			initializeDecay();
+			
 		} catch (Exception ex) {
 			// We can't recover from errors here
 			ex.printStackTrace();
@@ -112,12 +114,13 @@ public class ChemSim implements Simulation {
 	public void step(long count, long total) {
 		// Update the decay
 		long hydrogenPeroxide = tracker.getCount("H2O2");
+		long decay = 0;
 		if (hydrogenPeroxide != 0) {
-			properties.setHydrogenPeroxideDecay((double)properties.getHydrogenPeroxideDecayQuantity() / hydrogenPeroxide);
-		} else {
-			properties.setHydrogenPeroxideDecay(0);
+			long quantity = properties.getDecayModel().getDecayQuantity(count, "H2O2", hydrogenPeroxide);	
+			decay = quantity / hydrogenPeroxide;
 		}
-		
+		properties.setHydrogenPeroxideDecay(decay);
+			
 		// Check to see if we can terminate
 		if (hydrogenPeroxide == 0 && tracker.getCount("HO*") == 0) {
 			System.out.println("Hydroxyl Radical source exhausted, terminating...");
@@ -199,12 +202,26 @@ public class ChemSim implements Simulation {
 	}
 	
 	/**
+	 * Initialize the model by loading the appropriate decay model.
+	 */
+	private void initializeDecay() throws IOException {
+		String fileName = SimulationProperties.getInstance().getExperimentalDataFileName();
+		
+		DecayModel decay = new ExperimentalDecay();
+		decay.prepare(fileName);
+		properties.setDecayModel(decay);
+		properties.setTimeSteps(decay.estimateRunningTime() + PADDING);
+		
+		System.out.println("Using experimental decay data.");
+		System.out.println("Estimated running time of " + (properties.getTimeSteps() - PADDING) + 
+				" time steps, padded to " + properties.getTimeSteps());
+	}
+	
+	/**
 	 * Initialize the model by loading the initial chemicals in the correct ratio.
 	 */
 	private void initializeModel(List<ChemicalDto> chemicals, double rate, double volume) throws IOException {
-		
-		Reactor reactor = Reactor.getInstance();
-		
+				
 		// Find the scaling for the chemicals
 		double scaling = findIntitalCount(chemicals);
 		
@@ -213,28 +230,14 @@ public class ChemSim implements Simulation {
 		for (ChemicalDto entry : chemicals) {
 			total += entry.count;
 		}
+		Reactor reactor = Reactor.getInstance();
 		long multiplier = reactor.getMaximumMolecules() / total;
 		
 		// Add the chemicals to the model
 		Int3D container = reactor.getContainer();
 		for (ChemicalDto chemical : chemicals) {
 			long count = chemical.count * multiplier;			
-			System.out.println("Generating " + count + " molecules of " + chemical.formula);
-			
-			// TODO Is there a better place to do this?
-			if (chemical.formula.equals("H2O2")) {
-				// Hydrogen peroxide is a linear decay, or f(x) = C - r * t 
-				// this means we need to determine the odds that any individual 
-				// hydrogen peroxide agent will be removed each time step based upon
-				// the new population which requires us knowing the initial decay
-				int decay = (int)Math.ceil(Math.abs((count * rate * volume) / chemical.mols)) * SCALING;
-				properties.setHydrogenPeroxideDecayQuantity(decay);
-				
-				// Since we know the decay rate we can calculate the running time
-				long time = ((chemical.count * multiplier) / decay) + PADDING;
-				properties.setTimeSteps(time);
-			}
-			
+			System.out.println("Generating " + count + " molecules of " + chemical.formula);			
 			for (int ndx = 0; ndx < count; ndx++) {
 				Int3D location = new Int3D(random.nextInt(container.x), random.nextInt(container.y), random.nextInt(container.z));
 				Molecule molecule = new Molecule(chemical.formula);
@@ -250,9 +253,7 @@ public class ChemSim implements Simulation {
 		scaling *= multiplier;
 		properties.setMoleculeToMol(scaling);
 		
-		System.out.println("Molecule to mol scalar: " + scaling);		
-		System.out.println("Calculated decay rate of " + properties.getHydrogenPeroxideDecayQuantity());
-		System.out.println("Estimated running time of " + (properties.getTimeSteps() - PADDING) + " time steps, padded to " + properties.getTimeSteps());
+		System.out.println("Molecule to mol scalar: " + scaling);
 	}
 	
 	/**

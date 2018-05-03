@@ -16,7 +16,6 @@ public class ModelProperities {
 	
 	// Values needed to ensure hydrogen peroxide exhibits a linear decay based upon the UV intensity
 	private double hydrogenPeroxideDecay = 0;
-	private long hydrogenPeroxideDecayQuantity = 0;
 	
 	// Scalar needed to convert molecules to molar values
 	private double moleculeToMol = 0;
@@ -34,10 +33,6 @@ public class ModelProperities {
 	
 	public double getHydrogenPeroxideDecay() {
 		return hydrogenPeroxideDecay;
-	}
-	
-	public long getHydrogenPeroxideDecayQuantity() {
-		return hydrogenPeroxideDecayQuantity;
 	}
 	
 	public int getMediumPathway() {
@@ -67,11 +62,7 @@ public class ModelProperities {
 	public void setHydrogenPeroxideDecay(double value) {
 		hydrogenPeroxideDecay = value;
 	}
-	
-	public void setHydrogenPeroxideDecayQuantity(long value) {
-		hydrogenPeroxideDecayQuantity = value;
-	}
-			
+				
 	public void setMediumPathway(int value) {
 		mediumPathway = value;
 	}
