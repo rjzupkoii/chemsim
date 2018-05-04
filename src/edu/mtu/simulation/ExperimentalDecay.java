@@ -116,13 +116,13 @@ public class ExperimentalDecay implements DecayModel {
 					DecayDto dto = new DecayDto();
 
 					// Calculate the mols, mols = value * volume * 1000
-					double concentration = Double.parseDouble(current[ndx]);
-					dto.mols = concentration * volume * 1000;
+					double concentration = Double.parseDouble(previous[ndx]);
+					dto.mols = concentration / 1000;
 					
 					// Calculate the slope, m = (y2 - y1) / (x2 - x1)
 					double rise = Double.parseDouble(current[0]) - Double.parseDouble(previous[0]);
-					double run = concentration - Double.parseDouble(previous[ndx]);
-					dto.slope = rise / run;
+					double run = Double.parseDouble(current[ndx]) - concentration;
+					dto.slope = run / rise;
 					
 					// Store the slope and mols for later calculation
 					data.get(time).put(header[ndx], dto);
