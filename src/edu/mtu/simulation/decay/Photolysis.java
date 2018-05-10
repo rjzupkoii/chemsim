@@ -1,4 +1,4 @@
-package edu.mtu.simulation;
+package edu.mtu.simulation.decay;
 
 import java.io.IOException;
 
@@ -11,13 +11,13 @@ public class Photolysis implements DecayModel {
 	private long quantity;
 	
 	@Override
-	public long estimateRunningTime() {
+	public int estimateRunningTime() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 	
 	@Override
-	public long getDecayQuantity(long timeStep, String compound, long moleclues) {
+	public long getDecayQuantity(int timeStep, String compound, long moleclues) {
 		// TODO Adjust this for multiple compounds
 		return quantity;
 	}

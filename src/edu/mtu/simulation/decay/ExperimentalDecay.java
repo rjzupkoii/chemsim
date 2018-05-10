@@ -1,4 +1,4 @@
-package edu.mtu.simulation;
+package edu.mtu.simulation.decay;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import au.com.bytecode.opencsv.CSVReader;
+import edu.mtu.simulation.ChemSim;
 
 /**
  * This class provides a model for photolysis based upon experimentally 
@@ -14,7 +15,7 @@ import au.com.bytecode.opencsv.CSVReader;
 public class ExperimentalDecay implements DecayModel {
 
 	private double volume;
-	private long maxTimeStep;
+	private int maxTimeStep;
 	private Map<String, Long> calculated;
 	private Map<Integer, Map<String, DecayDto>> data;
 	
@@ -23,7 +24,7 @@ public class ExperimentalDecay implements DecayModel {
 	 * 
 	 * @return The estimated number of time steps.
 	 */
-	public long estimateRunningTime() {
+	public int estimateRunningTime() {
 		return maxTimeStep;
 	}
 	
@@ -49,7 +50,7 @@ public class ExperimentalDecay implements DecayModel {
 	 * @param moleclues The current number of molecules.
 	 * @return The number of the molecules that should decay.
 	 */
-	public long getDecayQuantity(long timeStep, String compound, long moleclues) {
+	public long getDecayQuantity(int timeStep, String compound, long moleclues) {
 		// Return zero if there are no molecules
 		if (moleclues == 0) {
 			return 0;
@@ -64,11 +65,21 @@ public class ExperimentalDecay implements DecayModel {
 			DecayDto dto = data.get(timeStep).get(compound);
 						
 			// Calculate out the number of molecules, p_q  = (molecules * slope * volume) / mols
-			long count = (int)Math.ceil(Math.abs((moleclues * dto.slope * volume) / dto.mols)) * ChemSim.SCALING;
+			long count = (int)Math.ceil(Math.abs((moleclues * dto.slope * volume) / dto.mols));
 			calculated.put(compound, count);
 		}
 		
 		return calculated.get(compound);
+	}
+	
+	/**
+	 * Iterates though the compounds loaded and performs a calculation at time point zero.
+	 */
+	public void initialize() {
+		calculated = new HashMap<String, Long>();
+		for (String compound : data.get(0).keySet()) {
+			getDecayQuantity(0, compound, ChemSim.getTracker().getCount(compound));
+		}
 	}
 		
 	/**
@@ -92,6 +103,7 @@ public class ExperimentalDecay implements DecayModel {
 			volume = Double.parseDouble(entries[1]);
 			
 			// Second row should be the header, check that the columns look OK
+			// This also ensures that we can assume minutes for the time points
 			String[] header = reader.readNext();
 			if (!header[0].toUpperCase().equals("MIN")) {
 				System.err.println("File provided does not contain the experimental data header.");
@@ -116,13 +128,13 @@ public class ExperimentalDecay implements DecayModel {
 					DecayDto dto = new DecayDto();
 
 					// Calculate the mols, mols = value * volume * 1000
-					double concentration = Double.parseDouble(previous[ndx]);
-					dto.mols = concentration / 1000;
+					double concentration = (Double.parseDouble(current[ndx]) / 1000) * volume;
+					dto.mols = (Double.parseDouble(previous[ndx]) / 1000) * volume;
 					
 					// Calculate the slope, m = (y2 - y1) / (x2 - x1)
-					double rise = Double.parseDouble(current[0]) - Double.parseDouble(previous[0]);
-					double run = Double.parseDouble(current[ndx]) - concentration;
-					dto.slope = run / rise;
+					double rise = concentration - dto.mols;
+					double run = Double.parseDouble(current[0]) - Double.parseDouble(previous[0]);
+					dto.slope = rise / run;
 					
 					// Store the slope and mols for later calculation
 					data.get(time).put(header[ndx], dto);

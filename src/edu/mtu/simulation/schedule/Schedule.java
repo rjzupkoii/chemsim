@@ -64,7 +64,7 @@ public class Schedule {
 	 * @param simulation
 	 * @param runTill
 	 */
-	public void start(Simulation simulation, long runTill) {
+	public void start(Simulation simulation, int runTill) {
 		// Check to make sure a simulation was provided
 		if (simulation == null) {
 			throw new IllegalArgumentException("The simulation cannot be null");

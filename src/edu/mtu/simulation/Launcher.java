@@ -46,30 +46,68 @@ public final class Launcher {
 		instance.initialize(seed);
 				
 		// Run the simulation and exit
-		long timeSteps = ChemSim.getProperties().getTimeSteps();
+		int timeSteps = ChemSim.getProperties().getTimeSteps();
 		instance.start(timeSteps);
 	}
 
+	// TODO For now the experimental file is required, refactor the code
+	// TODO to drop into the linear decay model if it is not present
 	private static void ParseArguments(String[] args) {
+		boolean chemicals = false, reactions = false, experiment = false;
+		
 		SimulationProperties properties = SimulationProperties.getInstance();
 		String iteration = "";
 		
 		// Parse out the arguments
 		for (int ndx = 0; ndx < args.length; ndx+=2) {
-			if (args[ndx].equals("-chemicals")) {
+			switch(args[ndx]) {
+			case "-c":
+			case "--chemicals":
 				properties.setChemicalsFileName(args[ndx + 1]);
-			} else if (args[ndx].equals("-reactions")) {
+				chemicals = true;
+				break;
+			case "-e":
+			case "--experimental":
+				properties.setExperimentalDataFileName(args[ndx + 1]);
+				experiment = true;
+				break;
+			case "-r":
+			case "--reactions":
 				properties.setReactionsFileName(args[ndx + 1]);
-			} else if (args[ndx].equals("-run")) {
+				reactions = true;
+				break;
+			case "-n":
+			case "--run":
 				iteration = "-" + args[ndx + 1];
-			} else {
+				break;
+			default:
 				System.err.println("Unknown argument, " + args[ndx]);
-				System.exit(-1);
+				System.exit(-1);				
 			}
+		}
+		
+		// Make sure we have the parameters to run
+		if (!(chemicals && reactions && experiment)) {
+			printUsage();
+			System.exit(-1);
 		}
 		
 		// Apply the settings
 		properties.setMolarFileName(String.format(properties.getMolarFileName(), iteration));
 		properties.setResultsFileName(String.format(properties.getResultsFileName(), iteration));
+	}
+	
+	private static void printUsage() {
+		String format = "%-25s %s\n";
+		
+		System.err.println("Usage: [ChemSim] [Parameters]");
+		System.err.println("\nRequired:");
+		System.err.printf(format, "-c, --chemicals [file]", "CSV file with compounds present at start of experiment");
+		System.err.printf(format, "-e, --experimental [file]", "CSV file with the known experimental results for photolysis decay");
+		System.err.printf(format, "-r, --reactions [file]", "CSV file with reactions to be modeled");
+		System.err.println("\nOptional: ");
+		System.err.printf(format, "-n, --run [number]", "The run number to apply to results files");
+		System.err.println("\nNOTE:");
+		System.err.println("JAVAGENT initialization is required, -javaagent:lib/SizeOf.jar");
 	}
 }

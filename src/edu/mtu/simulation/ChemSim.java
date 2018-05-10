@@ -12,6 +12,7 @@ import edu.mtu.compound.Molecule;
 import edu.mtu.parser.ChemicalDto;
 import edu.mtu.parser.Parser;
 import edu.mtu.reactor.Reactor;
+import edu.mtu.simulation.decay.ExperimentalDecay;
 import edu.mtu.simulation.schedule.Schedule;
 import edu.mtu.simulation.schedule.Simulation;
 import edu.mtu.simulation.tracking.CensusTracking;
@@ -24,7 +25,7 @@ public class ChemSim implements Simulation {
 	private static final boolean CENSUS = false;
 	
 	// Padding to add to the time steps to act as a buffer
-	private static final long PADDING = 500;
+	private static final int PADDING = 500;
 	
 	// Divisor for time steps to report on
 	private static final long REPORT = 100;
@@ -70,8 +71,6 @@ public class ChemSim implements Simulation {
 			
 			// Load the experimental parameters for the model
 			String fileName = SimulationProperties.getInstance().getChemicalsFileName();
-			double rate = Parser.parseRate(fileName);
-			double volume = Parser.parseVolume(fileName);
 			List<ChemicalDto> compounds = Parser.parseChemicals(fileName);
 
 			// Initialize the tracker(s)
@@ -88,7 +87,7 @@ public class ChemSim implements Simulation {
 			printHeader();
 			
 			// Load the compounds and decay model
-			initializeModel(compounds, rate, volume);
+			initializeModel(compounds);
 			initializeDecay();
 			
 		} catch (Exception ex) {
@@ -102,7 +101,7 @@ public class ChemSim implements Simulation {
 	 * Start the simulation.
 	 */
 	@Override
-	public void start(long timeSteps) {
+	public void start(int timeSteps) {
 		System.out.println("\nStarting simulation...");
 		schedule.start(this, timeSteps);
 	}
@@ -111,13 +110,13 @@ public class ChemSim implements Simulation {
 	 * Note that one time step has been completed.
 	 */
 	@Override
-	public void step(long count, long total) {
+	public void step(int count, int total) {
 		// Update the decay
 		long hydrogenPeroxide = tracker.getCount("H2O2");
-		long decay = 0;
+		double decay = 0;
 		if (hydrogenPeroxide != 0) {
 			long quantity = properties.getDecayModel().getDecayQuantity(count, "H2O2", hydrogenPeroxide);	
-			decay = quantity / hydrogenPeroxide;
+			decay = (double)quantity / hydrogenPeroxide;
 		}
 		properties.setHydrogenPeroxideDecay(decay);
 			
@@ -204,11 +203,14 @@ public class ChemSim implements Simulation {
 	/**
 	 * Initialize the model by loading the appropriate decay model.
 	 */
+	// TODO Generalize this method to use linear decay if the experimental data is not present
 	private void initializeDecay() throws IOException {
 		String fileName = SimulationProperties.getInstance().getExperimentalDataFileName();
-		
-		DecayModel decay = new ExperimentalDecay();
+		 
+		// Prepare experimentally based decay, note that it must be initialized
+		ExperimentalDecay decay = new ExperimentalDecay();
 		decay.prepare(fileName);
+		decay.initialize();
 		properties.setDecayModel(decay);
 		properties.setTimeSteps(decay.estimateRunningTime() + PADDING);
 		
@@ -220,7 +222,7 @@ public class ChemSim implements Simulation {
 	/**
 	 * Initialize the model by loading the initial chemicals in the correct ratio.
 	 */
-	private void initializeModel(List<ChemicalDto> chemicals, double rate, double volume) throws IOException {
+	private void initializeModel(List<ChemicalDto> chemicals) throws IOException {
 				
 		// Find the scaling for the chemicals
 		double scaling = findIntitalCount(chemicals);

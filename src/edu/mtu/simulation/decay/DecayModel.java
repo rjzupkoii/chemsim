@@ -1,4 +1,4 @@
-package edu.mtu.simulation;
+package edu.mtu.simulation.decay;
 
 import java.io.IOException;
 
@@ -9,7 +9,7 @@ public interface DecayModel {
 	 * 
 	 * @return The estimated number of time steps.
 	 */
-	public long estimateRunningTime();
+	public int estimateRunningTime();
 	
 	/**
 	 * Get the decay quantity for the current time step based upon experimental results.
@@ -19,7 +19,7 @@ public interface DecayModel {
 	 * @param moleclues The current number of molecules.
 	 * @return The number of the molecules that should decay.
 	 */
-	public long getDecayQuantity(long timeStep, String compound, long moleclues);
+	public long getDecayQuantity(int timeStep, String compound, long moleclues);
 	
 	/**
 	 * Prepare the decay model by loading the experimental results, 

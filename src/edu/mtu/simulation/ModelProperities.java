@@ -1,5 +1,7 @@
 package edu.mtu.simulation;
 
+import edu.mtu.simulation.decay.DecayModel;
+
 /**
  * This class contains various properties related to how the model should behave. 
  * These properties are managed by the ChemSim class and may change during model
@@ -12,7 +14,7 @@ public class ModelProperities {
 	private int slowPathway = 3;	
 		
 	// The expected duration of the model in time steps
-	private long timeSteps;
+	private int timeSteps;
 	
 	// Values needed to ensure hydrogen peroxide exhibits a linear decay based upon the UV intensity
 	private double hydrogenPeroxideDecay = 0;
@@ -47,7 +49,7 @@ public class ModelProperities {
 		return slowPathway;
 	}
 	
-	public long getTimeSteps() {
+	public int getTimeSteps() {
 		return timeSteps;
 	}
 	
@@ -75,7 +77,7 @@ public class ModelProperities {
 		slowPathway = value;
 	}
 	
-	public void setTimeSteps(long value) {
+	public void setTimeSteps(int value) {
 		timeSteps = value;
 	}
 }

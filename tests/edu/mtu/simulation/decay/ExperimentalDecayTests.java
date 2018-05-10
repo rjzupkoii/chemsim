@@ -1,4 +1,4 @@
-package edu.mtu.simulation;
+package edu.mtu.simulation.decay;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import edu.mtu.simulation.decay.DecayDto;
 import junit.framework.Assert;
 
 public class ExperimentalDecayTests {
@@ -62,8 +63,6 @@ public class ExperimentalDecayTests {
 				
 				DecayDto expected = experimental.get(time).get(compound);
 				DecayDto dto = data.get(time).get(compound);
-				
-				System.out.println(String.format("%d %f %f", time, dto.slope, dto.mols));
 				
 				Assert.assertEquals(expected.slope, dto.slope, Epsilon);
 				Assert.assertEquals(expected.mols, dto.mols, Epsilon);

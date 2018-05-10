@@ -1,4 +1,4 @@
-package edu.mtu.simulation;
+package edu.mtu.simulation.decay;
 
 public class DecayDto {
 	public DecayDto() { } 
