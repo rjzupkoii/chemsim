@@ -1,12 +1,13 @@
 package edu.mtu.simulation.decay;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
 
-import edu.mtu.simulation.decay.DecayDto;
 import junit.framework.Assert;
 
 public class ExperimentalDecayTests {
@@ -42,6 +43,21 @@ public class ExperimentalDecayTests {
 		experimental.put(300,  new HashMap<String, DecayDto>());
 		experimental.get(300).put("CH3COCH3", new DecayDto(-0.00129, 0.0001));
 		experimental.get(300).put("H2O2", new DecayDto(-0.00357, 0.0005));
+	}
+	
+	@Test
+	public void dumpResults() throws IOException {
+		ExperimentalDecay model = new ExperimentalDecay();
+		model.prepare("experiment/experiment.csv");
+		Map<Integer, Map<String, DecayDto>> data = model.getData();
+		ArrayList<Integer> times = new ArrayList<Integer>(data.keySet());
+		Collections.sort(times);
+		for (int time : times) {
+			for (String compound : data.get(time).keySet()) {
+				DecayDto dto = data.get(time).get(compound);
+				System.out.printf("%d: %s - Mols %f, Slope %f\n", time, compound, dto.mols, dto.slope);
+			}
+		}
 	}
 	
 	/**

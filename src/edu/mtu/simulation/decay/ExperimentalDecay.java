@@ -14,6 +14,8 @@ import edu.mtu.simulation.ChemSim;
  */
 public class ExperimentalDecay implements DecayModel {
 
+	private static final int TimeIndex = 0;
+	
 	private double volume;
 	private int maxTimeStep;
 	private Map<String, Long> calculated;
@@ -118,7 +120,7 @@ public class ExperimentalDecay implements DecayModel {
 			String[] previous = current;			
 			while ((current = reader.readNext()) != null) {
 				// Note the time and update the max if need be
-				int time = Integer.parseInt(previous[0]);
+				int time = Integer.parseInt(previous[TimeIndex]);
 				if (time > maxTimeStep) {
 					maxTimeStep = time;
 				}
@@ -126,15 +128,14 @@ public class ExperimentalDecay implements DecayModel {
 				data.put(time, new HashMap<String, DecayDto>());
 				for (int ndx = 1; ndx < current.length; ndx++) {
 					DecayDto dto = new DecayDto();
-
-					// Calculate the mols, mols = value * volume * 1000
-					double concentration = (Double.parseDouble(current[ndx]) / 1000) * volume;
-					dto.mols = (Double.parseDouble(previous[ndx]) / 1000) * volume;
 					
 					// Calculate the slope, m = (y2 - y1) / (x2 - x1)
-					double rise = concentration - dto.mols;
-					double run = Double.parseDouble(current[0]) - Double.parseDouble(previous[0]);
+					double rise = Double.parseDouble(current[ndx]) - Double.parseDouble(previous[ndx]);
+					double run = Double.parseDouble(current[TimeIndex]) - Double.parseDouble(previous[TimeIndex]);
 					dto.slope = rise / run;
+
+					// Calculate the mols, mols = value * volume * 1000
+					dto.mols = (Double.parseDouble(previous[ndx]) / 1000) * volume;
 					
 					// Store the slope and mols for later calculation
 					data.get(time).put(header[ndx], dto);

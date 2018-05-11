@@ -1,4 +1,4 @@
-#!/usr/bin/rscript
+#!/usr/local/bin/rscript
 
 library(matrixStats)
 
@@ -101,4 +101,4 @@ analysis <- function(data, label, unit) {
 
 dir.create(OUTPUT_DIR, showWarnings = FALSE)
 #process('../data/simple/molecules', 'Molecules')
-process('../data/simple/mols', 'Mols')
+process('../data/mols', 'Mols')

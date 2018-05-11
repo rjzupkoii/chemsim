@@ -82,6 +82,7 @@ public final class Launcher {
 				break;
 			default:
 				System.err.println("Unknown argument, " + args[ndx]);
+				printUsage();
 				System.exit(-1);				
 			}
 		}
