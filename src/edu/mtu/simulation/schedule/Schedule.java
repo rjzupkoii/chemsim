@@ -1,5 +1,7 @@
 package edu.mtu.simulation.schedule;
 
+import java.util.ArrayList;
+
 /**
  * The schedule is based upon a ring buffer, but modified so that there is always
  * a marker node that ensures a callback is made to the simulation.  
@@ -9,30 +11,24 @@ public class Schedule {
 	private boolean stopping;
 	private boolean stop;
 	
-	private int count;
 	private int timeStep;
 	
-	private Node current;
-	private Node last;
-	
+	private ArrayList<Steppable> active;
+	private ArrayList<Steppable> next = new ArrayList<Steppable>();
+		
 	/**
 	 * Constructor.
 	 */
 	public Schedule() {
 		// We are stopped by default
 		stop = true;
-		
-		// Create the marker node
-		last = new Node();
-		last.next = last;
-		current = last;
 	}
 	
 	/**
 	 * Get the count of nodes in the schedule.
 	 */
 	public int getCount() {
-		return count;
+		return active.size() + next.size();
 	}
 	
 	/**
@@ -43,20 +39,21 @@ public class Schedule {
 	}
 	
 	/**
-	 * Insert a new node at the beginning of the next time step.
+	 * Insert a new steppable at the beginning of the next time step.
 	 */
-	public void insert(Node node) {
-		node.next = last.next;
-		last.next = node;
-		count++;
+	public void insert(Steppable steppable) {
+		next.add(steppable);
 	}
 		
 	/**
 	 * Remove the node indicated from the schedule.
 	 */
-	public void remove(Node node) {
-		node.deleted = true;		
-		count--;
+	public void remove(Steppable steppable) {
+		if (active.contains(steppable)) {
+			steppable.deactivate();
+		} else {
+			next.remove(steppable);
+		}
 	}
 	
 	/**
@@ -75,22 +72,26 @@ public class Schedule {
 		stop = false;
 		
 		// Set the current time step
-		timeStep = 0;
-		
-		Node previous = last;		
+		timeStep = 0;			
 		while (!stop) {
-			current = current.next;
+			active = new ArrayList<Steppable>(next);
+			next.clear();
+			System.out.println(getCount());
 			
-			// If this is a steppable, then clear it if it has been deleted, otherwise do the action
-			if (current instanceof Steppable) {
-				if (current.deleted) {
-					previous.next = current.next;
-					continue;
-				}
-				((Steppable)current).doAction();
-				previous = current;
-				continue;
+			if (active.size() == 0) {
+				break;
 			}
+			for (Steppable steppable : active) {
+				if (steppable.isActive()) {
+					steppable.doAction();	
+				}
+			}
+			for (Steppable steppable : active) {
+				if (steppable.isActive()) {
+					next.add(steppable);
+				}
+			}
+
 			
 			// If we are here then this must have been the end of time step marker
 			timeStep++;
@@ -99,7 +100,7 @@ public class Schedule {
 				stop = true;
 			}
 		}
-		
+	
 		// Perform clean-up operations
 		simulation.finish(stop);
 	}

@@ -25,7 +25,7 @@ public class ChemSim implements Simulation {
 	private static final boolean CENSUS = false;
 	
 	// Padding to add to the time steps to act as a buffer
-	private static final int PADDING = 500;
+	private static final int PADDING = 250;
 	
 	// Divisor for time steps to report on
 	private static final long REPORT = 100;
@@ -233,6 +233,8 @@ public class ChemSim implements Simulation {
 			total += entry.count;
 		}
 		Reactor reactor = Reactor.getInstance();
+
+		// TODO Expose this scaling factor!
 		long multiplier = reactor.getMaximumMolecules() / total;
 		
 		// Add the chemicals to the model

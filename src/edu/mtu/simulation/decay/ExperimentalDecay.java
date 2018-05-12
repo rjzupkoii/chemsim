@@ -19,7 +19,7 @@ public class ExperimentalDecay implements DecayModel {
 	private double volume;
 	private int maxTimeStep;
 	private Map<String, Long> calculated;
-	private Map<Integer, Map<String, DecayDto>> data;
+	private Map<Integer, Map<String, Double>> data;
 	
 	/**
 	 * Estimate how long the model needs to run for.
@@ -33,7 +33,7 @@ public class ExperimentalDecay implements DecayModel {
 	/**
 	 * Get the experimental data stored by the decay model.
 	 */
-	public Map<Integer, Map<String, DecayDto>> getData() {
+	public Map<Integer, Map<String, Double>> getData() {
 		return data;
 	}
 	
@@ -64,10 +64,8 @@ public class ExperimentalDecay implements DecayModel {
 				String message = String.format("The compound '%s' does not have decay data for time step %d", compound, timeStep);
 				throw new IllegalArgumentException(message);
 			}
-			DecayDto dto = data.get(timeStep).get(compound);
-						
-			// Calculate out the number of molecules, p_q  = (molecules * slope * volume) / mols
-			long count = (int)Math.ceil(Math.abs((moleclues * dto.slope * volume) / dto.mols));
+			double decay = data.get(timeStep).get(compound);
+			long count = (long)Math.abs(Math.ceil(decay));
 			calculated.put(compound, count);
 		}
 		
@@ -114,36 +112,63 @@ public class ExperimentalDecay implements DecayModel {
 			
 			// Prepare the data storage
 			String[] current = reader.readNext();
-			data = new HashMap<Integer, Map<String,DecayDto>>();
+			data = new HashMap<Integer, Map<String, Double>>();
+			
+			// Note the scaling
+			double scaling = (ChemSim.getProperties().getMoleculeToMol() * volume * 0.001);
 			
 			// Load the entries
 			String[] previous = current;			
 			while ((current = reader.readNext()) != null) {
-				// Note the time and update the max if need be
-				int time = Integer.parseInt(previous[TimeIndex]);
-				if (time > maxTimeStep) {
-					maxTimeStep = time;
-				}
+				// Note the time, create the entry
+				int time = Integer.parseInt(previous[TimeIndex]);				
+				data.put(time, new HashMap<String, Double>());
 				
-				data.put(time, new HashMap<String, DecayDto>());
+				// Calculate the slope as a unit of molecules in the reactor - m = ((scaling * volume * 0.001) * (y2 - y1)) / (x2 - x1)
 				for (int ndx = 1; ndx < current.length; ndx++) {
-					DecayDto dto = new DecayDto();
-					
-					// Calculate the slope, m = (y2 - y1) / (x2 - x1)
-					double rise = Double.parseDouble(current[ndx]) - Double.parseDouble(previous[ndx]);
+					double rise = scaling * (Double.parseDouble(current[ndx]) - Double.parseDouble(previous[ndx]));
 					double run = Double.parseDouble(current[TimeIndex]) - Double.parseDouble(previous[TimeIndex]);
-					dto.slope = rise / run;
-
-					// Calculate the mols, mols = value * volume * 1000
-					dto.mols = (Double.parseDouble(previous[ndx]) / 1000) * volume;
-					
-					// Store the slope and mols for later calculation
-					data.get(time).put(header[ndx], dto);
+					double slope = rise / run;
+					data.get(time).put(header[ndx], slope);
 				}
 				previous = current;
 			}
+			
+			// Attempt to find the last time point
+			estimateMax(previous, header);
+			
 		} finally {
 			if (reader != null) reader.close();
+		}
+	}
+	
+	/**
+	 * Estimate the final decay point in the model based upon when the last experimental result should decay.
+	 */
+	private void estimateMax(String[] enteries, String[] header) {
+		// Note the last calculated time entry
+		int lastTime = 0;
+		for (int value : data.keySet()) {
+			if (value > lastTime) {
+				lastTime = value;
+			}
+		}
+
+		// Note the time of the entry
+		int entryTime = Integer.parseInt(enteries[TimeIndex]);
+		maxTimeStep = entryTime;
+
+		// Note the scaling
+		double scaling = (ChemSim.getProperties().getMoleculeToMol() * volume * 0.001);
+		
+		// Attempt to find the last time step
+		for (int ndx = 1; ndx < enteries.length; ndx++) {
+			double molecules = Double.parseDouble(enteries[ndx]) * scaling;
+			double slope = data.get(lastTime).get(header[ndx]);
+			int steps = (int)Math.ceil(Math.abs(molecules / slope));
+			if (entryTime + steps > maxTimeStep) {
+				maxTimeStep = entryTime + steps;
+			}
 		}
 	}
 }
