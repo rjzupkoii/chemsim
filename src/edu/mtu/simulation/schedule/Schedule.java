@@ -1,6 +1,6 @@
 package edu.mtu.simulation.schedule;
 
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 
 /**
  * The schedule is based upon a ring buffer, but modified so that there is always
@@ -8,19 +8,23 @@ import java.util.ArrayList;
  */
 public class Schedule {
 	
+	private class Escapement extends Steppable {
+		@Override
+		public void doAction() { } 
+	}
+	
 	private boolean stopping;
 	private boolean stop;
 	
 	private int timeStep;
 	
-	private ArrayList<Steppable> active;
-	private ArrayList<Steppable> next = new ArrayList<Steppable>();
-		
+	private ArrayDeque<Steppable> schedule;
+	
 	/**
 	 * Constructor.
 	 */
 	public Schedule() {
-		// We are stopped by default
+		schedule = new ArrayDeque<Steppable>();
 		stop = true;
 	}
 	
@@ -28,7 +32,7 @@ public class Schedule {
 	 * Get the count of nodes in the schedule.
 	 */
 	public int getCount() {
-		return active.size() + next.size();
+		return schedule.size();
 	}
 	
 	/**
@@ -42,18 +46,14 @@ public class Schedule {
 	 * Insert a new steppable at the beginning of the next time step.
 	 */
 	public void insert(Steppable steppable) {
-		next.add(steppable);
+		schedule.add(steppable);
 	}
 		
 	/**
 	 * Remove the node indicated from the schedule.
 	 */
 	public void remove(Steppable steppable) {
-		if (active.contains(steppable)) {
-			steppable.deactivate();
-		} else {
-			next.remove(steppable);
-		}
+		steppable.deactivate();
 	}
 	
 	/**
@@ -67,37 +67,25 @@ public class Schedule {
 			throw new IllegalArgumentException("The simulation cannot be null");
 		}
 		
-		// Set the termination flags
+		// Prepare to run, set the flags, time step
 		stopping = false;
 		stop = false;
-		
-		// Set the current time step
 		timeStep = 0;			
-		while (!stop) {
-			active = new ArrayList<Steppable>(next);
-			next.clear();
-			System.out.println(getCount());
-			
-			if (active.size() == 0) {
-				break;
-			}
-			for (Steppable steppable : active) {
-				if (steppable.isActive()) {
-					steppable.doAction();	
+		schedule.add(new Escapement());
+		
+		while (schedule.size() > 0) {			
+			Steppable steppable = schedule.remove();			
+			if (steppable instanceof Escapement) {
+				timeStep++;
+				simulation.step(timeStep, runTill);
+				if (timeStep == runTill || stopping) {
+					schedule.clear();
+					break;
 				}
-			}
-			for (Steppable steppable : active) {
-				if (steppable.isActive()) {
-					next.add(steppable);
-				}
-			}
-
-			
-			// If we are here then this must have been the end of time step marker
-			timeStep++;
-			simulation.step(timeStep, runTill);
-			if (timeStep == runTill || stopping) {
-				stop = true;
+				schedule.add(steppable);
+			} else if (steppable.isActive()) {
+				steppable.doAction();
+				schedule.add(steppable);
 			}
 		}
 	
@@ -117,5 +105,6 @@ public class Schedule {
 	 */
 	public void terminate() {
 		stop = true;
+		schedule.clear();
 	}
 }
