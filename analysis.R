@@ -4,10 +4,10 @@ library(matrixStats)
 
 options(scipen=5)
 
-EXPERIMENTAL <- '../data/experimental.csv'
+EXPERIMENTAL <- 'experiment/experimental.csv'
 
-OUTPUT_DIR <- '../results'
-OUTPUT_PATH <- '../results/%s.png'
+OUTPUT_DIR <- 'data/plots'
+OUTPUT_PATH <- 'data/plots/%s.png'
 
 getExperimental <- function(label) {
 	# Load the data
@@ -101,4 +101,4 @@ analysis <- function(data, label, unit) {
 
 dir.create(OUTPUT_DIR, showWarnings = FALSE)
 #process('../data/simple/molecules', 'Molecules')
-process('../data/mols', 'Mols')
+process('data/mols', 'Mols')

@@ -2,9 +2,7 @@
 /.settings/
 .DS_Store
 /target/
-results.csv
-console.txt
-/census.csv
 /data/
-/results/
 /ChemSim.jar
+console.txt
+*.zip
