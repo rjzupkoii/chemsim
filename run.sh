@@ -14,19 +14,18 @@ mkdir data
 # Run the simulation
 for ndx in {1..10}
 do
-  echo $ndx -r $reactions -c $chemicals -e $experiment
   java -javaagent:lib/SizeOf.jar -jar ChemSim.jar -n $ndx -r $reactions -c $chemicals -e $experiment 
 done
 
 # Move the results, last console
 mkdir data/molecules
-mv data/results-* data/results
+mv data/results-* data/molecules
 mkdir data/mols
 mv data/molar-* data/mols
 mv console.txt data
 
 # Make a copy of the experimental inputs
-cp $reaction data
+cp $reactions data
 cp $chemicals data
 cp $experiment data
 
