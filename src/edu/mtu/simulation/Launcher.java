@@ -80,6 +80,10 @@ public final class Launcher {
 			case "--run":
 				iteration = "-" + args[ndx + 1];
 				break;
+			case "-l":
+			case "--limit":
+				long limit = Long.parseLong(args[ndx + 1]);
+				properties.setMoleculeLimit(limit);
 			default:
 				System.err.println("Unknown argument, " + args[ndx]);
 				printUsage();
@@ -107,6 +111,7 @@ public final class Launcher {
 		System.err.printf(format, "-e, --experimental [file]", "CSV file with the known experimental results for photolysis decay");
 		System.err.printf(format, "-r, --reactions [file]", "CSV file with reactions to be modeled");
 		System.err.println("\nOptional: ");
+		System.err.printf(format, "-l", "--limit [number]", "The maximum number of molecules to generate at initlization.");
 		System.err.printf(format, "-n, --run [number]", "The run number to apply to results files");
 		System.err.println("\nNOTE:");
 		System.err.println("JAVAGENT initialization is required, -javaagent:lib/SizeOf.jar");

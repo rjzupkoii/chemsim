@@ -14,8 +14,7 @@ public class SimulationProperties {
 	private boolean overWriteResults = true;
 	
 	// Limit to the number of molecules in the model, -1 means no limit
-	//private long moleculeLimit = NO_LIMIT;
-	private long moleculeLimit = 1000000;
+	private long moleculeLimit = NO_LIMIT;
 				
 	// Default paths to experiments
 	private String chemicalsFileName = "";
