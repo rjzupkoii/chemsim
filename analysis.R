@@ -50,6 +50,9 @@ load <- function(path) {
 process <- function(file, unit) {
 	raw <- load(file)
 	data <- list()
+			
+	# TODO The length of the data set can change, so we need to pad it with zeros
+	
 	# Extract the data for each compound
 	for (compound in colnames(raw[[1]])) {
 		data[[compound]] <- matrix(, nrow = nrow(raw[[1]]), ncol = length(raw))
