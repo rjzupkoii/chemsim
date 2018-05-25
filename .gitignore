@@ -1,8 +1,10 @@
-/bin/
 /.settings/
-.DS_Store
+/bin/
 /target/
+.DS_Store
+
 /data/
+/results/
 /ChemSim.jar
 console.txt
 *.zip
