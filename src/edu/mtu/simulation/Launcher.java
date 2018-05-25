@@ -84,6 +84,7 @@ public final class Launcher {
 			case "--limit":
 				long limit = Long.parseLong(args[ndx + 1]);
 				properties.setMoleculeLimit(limit);
+				break;
 			default:
 				System.err.println("Unknown argument, " + args[ndx]);
 				printUsage();

@@ -2,6 +2,7 @@ package edu.mtu.catalog;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -103,7 +104,8 @@ public class ReactionRegistry {
 	 * Returns the list of bimolecular reactions for the chemical species or null.
 	 */
 	public List<ReactionDescription> getBiomolecularReaction(Molecule molecule) {
-		return bimolecular.get(molecule.getFormula());
+		List<ReactionDescription> results = bimolecular.get(molecule.getFormula());
+		return (results == null) ? null : Collections.unmodifiableList(results);
 	}
 	
 	/**
@@ -176,7 +178,8 @@ public class ReactionRegistry {
 	 * Returns the list of unimolecular reactions for the chemical species or null.
 	 */
 	public List<ReactionDescription> getUnimolecularReaction(Molecule molecule) {
-		return unimolecular.get(molecule.getFormula());
+		List<ReactionDescription> results = unimolecular.get(molecule.getFormula());
+		return (results == null) ? null : Collections.unmodifiableList(results);
 	}
 	
 	/**

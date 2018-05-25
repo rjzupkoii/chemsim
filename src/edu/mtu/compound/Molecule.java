@@ -20,6 +20,7 @@ public class Molecule extends Steppable{
 	
 	@Override
 	public void doAction() {
+			
 		// Check to see if any reactants exist for us, if they don't then disappear
 		if (ReactionRegistry.getInstance().getProducts().contains(formula)) {
 			dispose(false);
@@ -30,7 +31,7 @@ public class Molecule extends Steppable{
 		Reactor reactor = Reactor.getInstance();
 		Int3D location = move(reactor.getLocation(this), reactor.getContainer());
 		
-		if (react(location)) {
+		if (react()) {
 			// If a reaction occurred, dispose of this molecule
 			dispose();
 		} else {
@@ -105,7 +106,7 @@ public class Molecule extends Steppable{
 	 * 
 	 *  @return True if something happened, false otherwise.
 	 */
-	private boolean react(Int3D location) {
+	private boolean react() {
 		return Reaction.getInstance().react(this);
 	}
 }

@@ -1,5 +1,6 @@
 package edu.mtu.compound;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.mtu.catalog.ReactionDescription;
@@ -16,7 +17,7 @@ public class DisproportionatingMolecule extends Molecule {
 	 * Constructor.
 	 */
 	public DisproportionatingMolecule(String formula) {
-		// NOTE We are assuming that disproportion is always independent of photolysis
+		// NOTE We are assuming that disproportion is always independent of photolysis		
 		super(formula);
 	}
 
@@ -24,9 +25,9 @@ public class DisproportionatingMolecule extends Molecule {
 	 * Create a new disproportionating species from the species and reactions provided. 
 	 */
 	public static DisproportionatingMolecule create(Molecule species, List<ReactionDescription> reactions) {
-		DisproportionatingMolecule enttiy = new DisproportionatingMolecule(species.getFormula());
-		enttiy.reactions = reactions;
-		return enttiy;
+		DisproportionatingMolecule entity = new DisproportionatingMolecule(species.getFormula());
+		entity.reactions = new ArrayList<ReactionDescription>(reactions);
+		return entity;
 	}
 	
 	/**
@@ -38,8 +39,17 @@ public class DisproportionatingMolecule extends Molecule {
 		}
 		
 		DisproportionatingMolecule entity = new DisproportionatingMolecule(one.getFormula() + " + " + two.getFormula());
-		entity.reactions = reactions;
+		entity.reactions = new ArrayList<ReactionDescription>(reactions);
 		return entity;		
+	}
+	
+	@Override
+	public void doAction() {
+		if (reactions.size() != 0) {
+			Reaction.getInstance().react(this);
+		} else {
+			dispose();
+		}
 	}
 	
 	/**
