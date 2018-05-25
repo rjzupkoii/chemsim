@@ -4,6 +4,7 @@
 .DS_Store
 
 /data/
+/experiment/
 /results/
 /ChemSim.jar
 console.txt
