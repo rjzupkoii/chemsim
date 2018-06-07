@@ -133,7 +133,7 @@ public class ChemSim implements Simulation {
 		}
 		
 		// Reset the tracker and note the step
-		boolean flush = (count % REPORT == 0) || true;
+		boolean flush = (count % REPORT == 0);
 		tracker.reset(flush);
 		if (flush) {
 			System.out.println(count + " of " + total);
