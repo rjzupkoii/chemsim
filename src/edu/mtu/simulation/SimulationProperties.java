@@ -13,6 +13,9 @@ public class SimulationProperties {
 	// Flag for if results should be overwritten
 	private boolean overWriteResults = true;
 	
+	// Flag to indicate the type of decay model to use
+	private boolean experimetnalDecay = false;
+	
 	// Limit to the number of molecules in the model, -1 means no limit
 	private long moleculeLimit = NO_LIMIT;
 				
@@ -47,6 +50,10 @@ public class SimulationProperties {
 		return experimentalDataFileName;
 	}
 	
+	public boolean getExperimentalDecay() {
+		return experimetnalDecay;
+	}
+	
 	public String getMolarFileName() {
 		return molarFileName;
 	}
@@ -73,6 +80,10 @@ public class SimulationProperties {
 	
 	public void setExperimentalDataFileName(String value) {
 		experimentalDataFileName = value;
+	}
+	
+	public void setExperimentalDecay(boolean value) {
+		experimetnalDecay = value;
 	}
 	
 	public void setMolarFileName(String value) {

@@ -15,6 +15,7 @@ public class ReactionDescription {
 	private List<String> reactants = new ArrayList<String>();
 	
 	private double reactionRate = 0.0;
+	private double reactionOdds = 1.0;	// Default is one to allow the field to be optional
 				
 	/**
 	 * Constructor.
@@ -32,6 +33,16 @@ public class ReactionDescription {
 		this.products = products;
 		this.reactionRate = reactionRate;
 	}
+	
+	/**
+	 * Constructor.
+	 */
+	public ReactionDescription(List<String> reactants, List<String> products, double reactionRate, double reactionOdds) {
+		setReactants(reactants);
+		this.products = products;
+		this.reactionRate = reactionRate;
+		this.reactionOdds = reactionOdds;
+	}
 
 	/**
 	 * Constructor.
@@ -40,6 +51,16 @@ public class ReactionDescription {
 		setReactants(Arrays.asList(reactants));
 		this.products = Arrays.asList(products);
 		this.reactionRate = reactionRate;
+	}
+	
+	/**
+	 * Constructor.
+	 */
+	public ReactionDescription(String[] reactants, String[] products, double reactionRate, double reactionOdds) {
+		setReactants(Arrays.asList(reactants));
+		this.products = Arrays.asList(products);
+		this.reactionRate = reactionRate;
+		this.reactionOdds = reactionOdds;
 	}
 
 	/**
@@ -73,6 +94,13 @@ public class ReactionDescription {
 	}
 	
 	/**
+	 * Get the reaction odds.
+	 */
+	public double getReactionOdds() {
+		return reactionOdds;
+	}
+	
+	/**
 	 * Set the reactants for this reaction.
 	 */
 	private void setReactants(List<String> value) {
@@ -80,13 +108,6 @@ public class ReactionDescription {
 			throw new IllegalArgumentException("The number of reactants should not exceed two.");
 		}
 		reactants = value;
-	}
-	
-	/**
-	 * Set the reaction rate.
-	 */
-	public void setReactionRate(double value) {
-		reactionRate = value;
 	}
 	
 	@Override

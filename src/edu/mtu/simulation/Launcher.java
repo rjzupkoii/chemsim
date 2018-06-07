@@ -53,7 +53,8 @@ public final class Launcher {
 	// TODO For now the experimental file is required, refactor the code
 	// TODO to drop into the linear decay model if it is not present
 	private static void ParseArguments(String[] args) {
-		boolean chemicals = false, reactions = false, experiment = false;
+		boolean chemicals = false, reactions = false;
+		boolean experimentalDecay = false;
 		
 		SimulationProperties properties = SimulationProperties.getInstance();
 		String iteration = "";
@@ -69,7 +70,7 @@ public final class Launcher {
 			case "-e":
 			case "--experimental":
 				properties.setExperimentalDataFileName(args[ndx + 1]);
-				experiment = true;
+				experimentalDecay = true;
 				break;
 			case "-r":
 			case "--reactions":
@@ -93,12 +94,13 @@ public final class Launcher {
 		}
 		
 		// Make sure we have the parameters to run
-		if (!(chemicals && reactions && experiment)) {
+		if (!(chemicals && reactions)) {
 			printUsage();
 			System.exit(-1);
 		}
 		
 		// Apply the settings
+		properties.setExperimentalDecay(experimentalDecay);
 		properties.setMolarFileName(String.format(properties.getMolarFileName(), iteration));
 		properties.setResultsFileName(String.format(properties.getResultsFileName(), iteration));
 	}
@@ -109,9 +111,9 @@ public final class Launcher {
 		System.err.println("Usage: [ChemSim] [Parameters]");
 		System.err.println("\nRequired:");
 		System.err.printf(format, "-c, --chemicals [file]", "CSV file with compounds present at start of experiment");
-		System.err.printf(format, "-e, --experimental [file]", "CSV file with the known experimental results for photolysis decay");
 		System.err.printf(format, "-r, --reactions [file]", "CSV file with reactions to be modeled");
 		System.err.println("\nOptional: ");
+		System.err.printf(format, "-e, --experimental [file]", "CSV file with the known experimental results for photolysis decay");
 		System.err.printf(format, "-l", "--limit [number]", "The maximum number of molecules to generate at initlization.");
 		System.err.printf(format, "-n, --run [number]", "The run number to apply to results files");
 		System.err.println("\nNOTE:");

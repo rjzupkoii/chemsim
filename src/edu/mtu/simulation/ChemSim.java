@@ -12,7 +12,7 @@ import edu.mtu.compound.Molecule;
 import edu.mtu.parser.ChemicalDto;
 import edu.mtu.parser.Parser;
 import edu.mtu.reactor.Reactor;
-import edu.mtu.simulation.decay.ExperimentalDecay;
+import edu.mtu.simulation.decay.DecayFactory;
 import edu.mtu.simulation.schedule.Schedule;
 import edu.mtu.simulation.schedule.Simulation;
 import edu.mtu.simulation.tracking.CensusTracking;
@@ -23,10 +23,7 @@ import sim.util.Int3D;
 public class ChemSim implements Simulation {
 				
 	private static final boolean CENSUS = false;
-	
-	// Padding to add to the time steps to act as a buffer
-	private static final int PADDING = 250;
-	
+		
 	// Divisor for time steps to report on
 	private static final long REPORT = 100;
 	
@@ -88,7 +85,7 @@ public class ChemSim implements Simulation {
 			
 			// Load the compounds and decay model
 			initializeModel(compounds);
-			initializeDecay();
+			DecayFactory.createDecayModel(properties);
 			
 		} catch (Exception ex) {
 			// We can't recover from errors here
@@ -136,7 +133,7 @@ public class ChemSim implements Simulation {
 		}
 		
 		// Reset the tracker and note the step
-		boolean flush = (count % REPORT == 0);
+		boolean flush = (count % REPORT == 0) || true;
 		tracker.reset(flush);
 		if (flush) {
 			System.out.println(count + " of " + total);
@@ -199,32 +196,13 @@ public class ChemSim implements Simulation {
 	public static TrackEnties getTracker() {
 		return instance.tracker;
 	}
-	
-	/**
-	 * Initialize the model by loading the appropriate decay model.
-	 */
-	// TODO Generalize this method to use linear decay if the experimental data is not present
-	private void initializeDecay() throws IOException {
-		String fileName = SimulationProperties.getInstance().getExperimentalDataFileName();
-		 
-		// Prepare experimentally based decay, note that it must be initialized
-		ExperimentalDecay decay = new ExperimentalDecay();
-		decay.prepare(fileName);
-		decay.initialize();
-		properties.setDecayModel(decay);
-		properties.setTimeSteps(decay.estimateRunningTime() + PADDING);
 		
-		System.out.println("Using experimental decay data.");
-		System.out.println("Estimated running time of " + (properties.getTimeSteps() - PADDING) + 
-				" time steps, padded to " + properties.getTimeSteps());
-	}
-	
 	/**
 	 * Initialize the model by loading the initial chemicals in the correct ratio.
 	 */
 	private void initializeModel(List<ChemicalDto> chemicals) throws IOException {
-				
-		// Find the scaling for the chemicals
+			
+		// Scale the compouds and 
 		double scaling = findIntitalCount(chemicals);
 		
 		// Calculate out the multiplier
@@ -233,8 +211,6 @@ public class ChemSim implements Simulation {
 			total += entry.count;
 		}
 		Reactor reactor = Reactor.getInstance();
-
-		// TODO Expose this scaling factor!
 		long multiplier = reactor.getMaximumMolecules() / total;
 		
 		// Add the chemicals to the model

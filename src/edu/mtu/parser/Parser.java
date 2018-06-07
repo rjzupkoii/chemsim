@@ -124,6 +124,9 @@ public class Parser {
 			products++;
 		}
 		
+		// Check to see if there are odds associated with the file
+		boolean oddsColumn = false;
+		
 		List<ReactionDescription> results = new ArrayList<ReactionDescription>();
 		while ((enteries = reader.readNext()) != null) {
 			// Check to see if the line is commented out
@@ -147,9 +150,13 @@ public class Parser {
 			
 			// Note the reaction rate
 			double reactionRate = Double.parseDouble(enteries[reactants + products]);
-			
-			// Append to the running list
-			results.add(new ReactionDescription(reactant, product, reactionRate));
+						
+			if (oddsColumn) {
+				double reactionOdds = Double.parseDouble(enteries[reactants + products + 1]);
+				results.add(new ReactionDescription(reactant, product, reactionRate, reactionOdds));				
+			} else {
+				results.add(new ReactionDescription(reactant, product, reactionRate));	
+			}			
 		}
 		
 		// Close and return

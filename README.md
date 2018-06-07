@@ -21,4 +21,12 @@ The simulation makes use of premain instrumentation and needs to be launched wit
 
   -javaagent:lib/SizeOf.jar 
 
+### Launch Examples
+With experimental data controlling hydrogen peroxide decay,
+> java -javaagent:lib/SizeOf.jar -jar ChemSim.jar -c experiment/chemicals.csv -r experiment/pathway2.csv -e experiment/experiment.csv -l 1000000
+
+With linear decay of hydrogen peroxide,
+> java -javaagent:lib/SizeOf.jar -jar ChemSim.jar -c experiment/chemicals.csv -r experiment/pathway2.csv -l 1000000
+
+
 # Branches
