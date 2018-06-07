@@ -43,8 +43,12 @@ public class Reaction {
 
 		// Note the age
 		int age = molecule.updateAge();
+
+		// Keep track of the odds
+		boolean probabilistic = false;
+		ArrayList<Double> reactionOdds = new ArrayList<Double>();
 		
-		// Process potential products
+		// Find the indicies and odds of valid reactions
 		ArrayList<Integer> indicies = new ArrayList<Integer>();
 		for (int ndx = 0; ndx < molecule.getReactions().size(); ndx++) {
 			// Check to see if this reaction shouldn't occur yet
@@ -53,21 +57,65 @@ public class Reaction {
 				continue;
 			}
 			
+			// Note the odds
+			double odds = reaction.getReactionOdds();
+			probabilistic = probabilistic || (odds < 1);
+			reactionOdds.add(odds);			
+			
 			// Note the index for removal
 			indicies.add(ndx);
-			
-			// Create the products for the reaction
-			Reactor reactor = Reactor.getInstance();
-			Int3D location = reactor.getLocation(molecule);
-			for (String product : reaction.getProducts()) {			
-				create(product, location);
+		}
+				
+		if (probabilistic) {
+			doProbabilistic(molecule, indicies, reactionOdds);
+		} else {
+			// Process the reactions
+			for (int index : indicies) {
+				ReactionDescription reaction = molecule.getReactions().get(index);
+				// Create the products for the reaction
+				Reactor reactor = Reactor.getInstance();
+				Int3D location = reactor.getLocation(molecule);
+				for (String product : reaction.getProducts()) {			
+					create(product, location);
+				}
 			}
 		}
-		
+			
 		// Remove the reactions that occurred
 		Collections.sort(indicies, Collections.reverseOrder());
 		for (int ndx : indicies) {
 			molecule.getReactions().remove(ndx);
+		}
+	}
+	
+	private void doProbabilistic(DisproportionatingMolecule molecule, ArrayList<Integer> indicies, ArrayList<Double> reactionOdds) {
+		// Add the odds so we can do a single dice roll
+		int size = reactionOdds.size();
+		double value = 0;
+		for (int ndx = 1; ndx < size; ndx++) {
+			value = reactionOdds.get(ndx) + reactionOdds.get(ndx - 1);
+			reactionOdds.set(ndx, value);
+		}
+		if (value != 1.0) {
+			throw new IllegalArgumentException("Total odds of the reaction '" + molecule.getFormula() + "' cannot exceed 1.0");
+		}
+		double selected = ChemSim.getInstance().random.nextDouble();
+		
+		// Select the correct reaction
+		double previous = 0.0;
+		for (int ndx = 0; ndx < reactionOdds.size(); ndx++) {
+			
+			// If the selected value is in the range, then create the products and return
+			if (previous <= selected && selected <= reactionOdds.get(ndx)) {
+				ReactionDescription reaction = molecule.getReactions().get(indicies.get(ndx));
+				Int3D location = Reactor.getInstance().getLocation(molecule);
+				for (String product : reaction.getProducts()) {			
+					create(product, location);
+				}
+				return;
+			}
+			
+			previous = reactionOdds.get(ndx);
 		}
 	}
 	

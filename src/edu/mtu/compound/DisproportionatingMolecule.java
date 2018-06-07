@@ -65,7 +65,7 @@ public class DisproportionatingMolecule extends Molecule {
 	public List<ReactionDescription> getReactions() {
 		return reactions;
 	}
-	
+		
 	/**
 	 * Updates and returns the age.s
 	 */

@@ -125,7 +125,7 @@ public class Parser {
 		}
 		
 		// Check to see if there are odds associated with the file
-		boolean oddsColumn = false;
+		boolean oddsColumn = enteries.length == (reactants + products + 2);
 		
 		List<ReactionDescription> results = new ArrayList<ReactionDescription>();
 		while ((enteries = reader.readNext()) != null) {
