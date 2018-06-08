@@ -50,8 +50,25 @@ load <- function(path) {
 process <- function(file, unit) {
 	raw <- load(file)
 	data <- list()
-			
-	# TODO The length of the data set can change, so we need to pad it with zeros
+				
+	# Find the largest number of rows so we can pad the raw data as needed
+	max <- 0
+	for (set in raw) {
+		if (nrow(set) > max) {
+			max <- nrow(set)
+		}
+	}
+	
+	# Append zeroed rows to the raw data if need be
+	for (ndx in seq(1, length(raw), 1)) {
+		rows <- nrow(raw[[ndx]])
+		if (rows < max) {
+			working <- raw[[ndx]]
+			zeros <- matrix(0, nrow = max - rows, ncol = length(working))
+			colnames(zeros) = names(working)
+			raw[[ndx]] <- rbind(working, zeros)
+		}
+	}
 	
 	# Extract the data for each compound
 	for (compound in colnames(raw[[1]])) {

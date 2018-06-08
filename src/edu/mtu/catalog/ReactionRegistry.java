@@ -191,20 +191,24 @@ public class ReactionRegistry {
 		List<ReactionDescription> reactions = Parser.parseReactions(fileName); 
 		for (ReactionDescription reaction : reactions) {
 			// Note what we are currently loading
-			String message = "Loading " + reaction.toString();						
+			String message = "Loading " + reaction.toString() + " (";						
 			if (reaction.getReactants().size() == 1) {
 				// This is a unimolecular reaction
 				addUnimolecularReaction(reaction);
-				message += " (unimolecular)";
+				message += "unimolecular";
 			} else if (reaction.getReactants().contains("UV")) {
 				// This is a photolysis reaction
 				addPhotolysisReaction(reaction);
-				message += " (photolysis)";
+				message += "photolysis";
 			} else {
 				// Must be a bimolecular reaction
 				addBimolecularReaction(reaction);
-				message += " (bimolecular)";
+				message += "bimolecular";
 			}
+			if (reaction.getReactionOdds() != 1.0) {
+				message += ", " + reaction.getReactionOdds();
+			}
+			message += ")";
 			
 			// TODO Make this optional
 			System.out.println(message);

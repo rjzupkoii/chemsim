@@ -49,7 +49,5 @@ public class DecayFactory {
 		decay.prepare(fileName);
 		properties.setDecayModel(decay);
 		properties.setTimeSteps(decay.estimateRunningTime() + PADDING);
-		
-		System.out.println("Using lineary decay.");
 	}
 }

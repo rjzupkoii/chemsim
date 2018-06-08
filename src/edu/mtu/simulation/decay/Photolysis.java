@@ -42,6 +42,7 @@ public class Photolysis implements DecayModel {
 		// hydrogen peroxide agent will be removed each time step based upon
 		// the new population which requires us knowing the initial decay
 		quantity = (int)Math.ceil(Math.abs((count * rate * volume) / chemical.mols)) * ChemSim.SCALING;
+		System.out.println("H2O2 photolysis decay rate: " + quantity + " moleclules/timestep");
 		
 		// Since we know the decay rate we can calculate the running time
 		time = (int)(count / quantity);

@@ -8,7 +8,7 @@ fi
 REACTIONS=$1
 
 # Note the inputs
-experiment=experiment/experiment.csv
+#experiment=experiment/experiment.csv
 chemicals=experiment/chemicals.csv
 reactions=experiment/$REACTIONS.csv
 path=../data
@@ -21,7 +21,7 @@ mkdir data
 # Run the simulation
 for ndx in {1..10}
 do
-  java -javaagent:lib/SizeOf.jar -jar ChemSim.jar -n $ndx -r $reactions -c $chemicals -e $experiment -l 1000000
+  java -javaagent:lib/SizeOf.jar -jar ChemSim.jar -n $ndx -r $reactions -c $chemicals -l 1000000
 done
 
 # Move the results, last console
@@ -34,7 +34,7 @@ mv console.txt data
 # Make a copy of the experimental inputs
 cp $reactions data
 cp $chemicals data
-cp $experiment data
+#cp $experiment data
 
 # Generate the plots
 ./analysis.R
