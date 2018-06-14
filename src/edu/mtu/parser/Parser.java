@@ -38,6 +38,11 @@ public class Parser {
 			// Load the entries
 			List<ChemicalDto> results = new ArrayList<ChemicalDto>();
 			while ((entries = reader.readNext()) != null) {
+				// Check to see if this is an empty line
+				if (entries[0].isEmpty()) {
+					continue;
+				}
+				
 				results.add(new ChemicalDto(entries[0], entries[1], Double.parseDouble(entries[2])));
 			}
 			
@@ -131,6 +136,11 @@ public class Parser {
 		while ((enteries = reader.readNext()) != null) {
 			// Check to see if the line is commented out
 			if (enteries[0].startsWith("#")) {
+				continue;
+			}
+			
+			// Check to see if this is an empty line
+			if (enteries[0].isEmpty()) {
 				continue;
 			}
 			
