@@ -118,14 +118,12 @@ public class ChemSim implements Simulation {
 		properties.setHydrogenPeroxideDecay(decay);
 			
 		// Check to see if we can terminate
-		if (hydrogenPeroxide == 0 && tracker.getCount("HO*") == 0) {
-			System.out.println("Hydroxyl Radical source exhausted, terminating...");
-			schedule.stop();
+		for (String molecule : SimulationProperties.getInstance().getTerminationOn()) {
+			if (tracker.getCount(molecule) == 0) {
+				System.out.print(molecule + " is exausted, terminating...");
+				schedule.stop();
+			}
 		}
-		if (tracker.getCount("CH3COCH3") == 0) {
-			System.out.println("Acetone source exhasusted, termianting...");
-			schedule.stop();
-		}		
 		
 		// Update the census if need be
 		if (census != null) {

@@ -50,8 +50,6 @@ public final class Launcher {
 		instance.start(timeSteps);
 	}
 
-	// TODO For now the experimental file is required, refactor the code
-	// TODO to drop into the linear decay model if it is not present
 	private static void ParseArguments(String[] args) {
 		boolean chemicals = false, reactions = false;
 		boolean experimentalDecay = false;
@@ -86,6 +84,10 @@ public final class Launcher {
 				long limit = Long.parseLong(args[ndx + 1]);
 				properties.setMoleculeLimit(limit);
 				break;
+			case "-t":
+			case "--terminate":
+				properties.addTerminationOn(args[ndx + 1]);
+				break;
 			default:
 				System.err.println("Unknown argument, " + args[ndx]);
 				printUsage();
@@ -116,6 +118,7 @@ public final class Launcher {
 		System.err.printf(format, "-e, --experimental [file]", "CSV file with the known experimental results for photolysis decay");
 		System.err.printf(format, "-l", "--limit [number]", "The maximum number of molecules to generate at initlization.");
 		System.err.printf(format, "-n, --run [number]", "The run number to apply to results files");
+		System.err.printf(format, "-t, --terminate [formula]", "Terminate the model when the given molecule has zero entities");
 		System.err.println("\nNOTE:");
 		System.err.println("JAVAGENT initialization is required, -javaagent:lib/SizeOf.jar");
 	}

@@ -1,5 +1,8 @@
 package edu.mtu.simulation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This class contains various properties related to how the simulation should run 
  * and be managed. Note that the should not change once the application has been
@@ -19,6 +22,9 @@ public class SimulationProperties {
 	// Limit to the number of molecules in the model, -1 means no limit
 	private long moleculeLimit = NO_LIMIT;
 				
+	// List of entities to terminate when zero
+	private List<String> terminateOn = new ArrayList<String>(); 
+	
 	// Default paths to experiments
 	private String chemicalsFileName = "";
 	private String experimentalDataFileName = "";
@@ -40,6 +46,10 @@ public class SimulationProperties {
 	 */
 	public static SimulationProperties getInstance() {
 		return instance;
+	}
+	
+	public void addTerminationOn(String value) {
+		terminateOn.add(value);
 	}
 	
 	public String getChemicalsFileName() {
@@ -72,6 +82,10 @@ public class SimulationProperties {
 	
 	public String getResultsFileName() {
 		return resultsFileName;
+	}
+	
+	public List<String> getTerminationOn() {
+		return terminateOn;
 	}
 	
 	public void setChemicalsFileName(String value) {

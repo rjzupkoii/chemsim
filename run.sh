@@ -21,7 +21,7 @@ mkdir data
 # Run the simulation
 for ndx in {1..10}
 do
-  java -javaagent:lib/SizeOf.jar -jar ChemSim.jar -n $ndx -r $reactions -c $chemicals -l 1000000
+  java -javaagent:lib/SizeOf.jar -jar ChemSim.jar -n $ndx -r $reactions -c $chemicals -t CH3COCH3 -l 1000000
 done
 
 # Move the results, last console
