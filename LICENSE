@@ -1,6 +1,13 @@
+Most of ChemSim is licensed under the MIT license with the exception of the
+following files:
+
+	Bag.java					Academic Free License, version 3.0
+	Indexed.java				Academic Free License, version 3.0
+	MersenneTwisterFast.java	BSD License
+
 MIT License
 
-Copyright (c) 2017 Robert Zupko
+Copyright (c) 2017 - 2018 Robert Zupko
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

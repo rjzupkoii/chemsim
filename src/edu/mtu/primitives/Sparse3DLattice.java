@@ -5,7 +5,6 @@ import java.util.Set;
 import edu.mtu.compound.Molecule;
 import gnu.trove.map.hash.THashMap;
 import sim.util.Bag;
-import sim.util.Int3D;
 
 /**
  * A sparse volume consists of entities that exist in an integer lattice. 
@@ -36,8 +35,7 @@ public class Sparse3DLattice {
 	
 	// The size is the divisor to use to find the partition based upon the coordinates
 	private int partitionSize;
-	
-	
+		
 	/**
 	 * Private constructor.
 	 */

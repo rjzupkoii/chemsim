@@ -6,10 +6,10 @@ import java.util.List;
 
 import edu.mtu.catalog.ReactionDescription;
 import edu.mtu.catalog.ReactionRegistry;
+import edu.mtu.primitives.Int3D;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;
 import edu.mtu.simulation.schedule.Schedule;
-import sim.util.Int3D;
 
 /**
  * This class provides a means for a chemical species to react with other species.

@@ -11,6 +11,7 @@ import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.compound.Molecule;
 import edu.mtu.parser.ChemicalDto;
 import edu.mtu.parser.Parser;
+import edu.mtu.primitives.Int3D;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.decay.DecayFactory;
 import edu.mtu.simulation.schedule.Schedule;
@@ -18,7 +19,6 @@ import edu.mtu.simulation.schedule.Simulation;
 import edu.mtu.simulation.tracking.CensusTracking;
 import edu.mtu.simulation.tracking.Converter;
 import edu.mtu.simulation.tracking.TrackEnties;
-import sim.util.Int3D;
 
 public class ChemSim implements Simulation {
 				

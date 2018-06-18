@@ -5,11 +5,11 @@ import java.util.Set;
 
 import edu.mtu.compound.Molecule;
 import edu.mtu.parser.ChemicalDto;
+import edu.mtu.primitives.Int3D;
 import edu.mtu.primitives.Sparse3DLattice;
 import edu.mtu.simulation.SimulationProperties;
 import net.sourceforge.sizeof.SizeOf;
 import sim.util.Bag;
-import sim.util.Int3D;
 
 /**
  * The reactor is the container that the experiment takes place in. As a 

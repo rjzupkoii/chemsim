@@ -2,10 +2,10 @@ package edu.mtu.compound;
 
 import ec.util.MersenneTwisterFast;
 import edu.mtu.catalog.ReactionRegistry;
+import edu.mtu.primitives.Int3D;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;
 import edu.mtu.simulation.schedule.Steppable;
-import sim.util.Int3D;
 
 public class Molecule extends Steppable{
 
