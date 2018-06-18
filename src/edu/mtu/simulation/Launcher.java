@@ -81,7 +81,7 @@ public final class Launcher {
 				break;
 			case "-l":
 			case "--limit":
-				long limit = Long.parseLong(args[ndx + 1]);
+				int limit = Integer.parseInt(args[ndx + 1]);
 				properties.setMoleculeLimit(limit);
 				break;
 			case "-t":

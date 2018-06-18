@@ -1,12 +1,13 @@
 package edu.mtu.reactor;
 
 import java.util.List;
+import java.util.Set;
 
 import edu.mtu.compound.Molecule;
 import edu.mtu.parser.ChemicalDto;
+import edu.mtu.primitives.Sparse3DLattice;
 import edu.mtu.simulation.SimulationProperties;
 import net.sourceforge.sizeof.SizeOf;
-import sim.field.grid.SparseGrid3D;
 import sim.util.Bag;
 import sim.util.Int3D;
 
@@ -25,11 +26,11 @@ public class Reactor {
 	
 	private static Reactor instance = new Reactor();
 	
-	private long moleculeCount;
+	private int moleculeCount;
 	private long moleculeSize;
 
 	private Int3D container;
-	private SparseGrid3D grid; 
+	private Sparse3DLattice grid; 
 	
 	/**
 	 * Constructor.
@@ -79,9 +80,9 @@ public class Reactor {
 	 * Returns all molecules present in the reactor.
 	 */
 	public Molecule[] getMolecules() {
-		Bag bag = grid.getAllObjects();
-		Molecule[] array = new Molecule[bag.numObjs];
-		bag.toArray(array);
+		Set<Object> objects = grid.getAllObjects();
+		Molecule[] array = new Molecule[objects.size()];
+		objects.toArray(array);
 		return array;
 	}
 	
@@ -117,7 +118,7 @@ public class Reactor {
 			// Calculate out how many molecules we can create, note that the molecule 
 			// will exist in the sparse matrix and the schedule as well
 			moleculeSize = SizeOf.deepSizeOf(new Molecule("CH3COCH2OH")) * 3;
-			moleculeCount = (long) ((heapSize * MemoryOverhead) / moleculeSize);
+			moleculeCount = (int) ((heapSize * MemoryOverhead) / moleculeSize);
 			
 			// Check to see if a molecule limit was enforced
 			if (SimulationProperties.getInstance().getMoleculeLimit() != SimulationProperties.NO_LIMIT) {
@@ -127,7 +128,7 @@ public class Reactor {
 			// Use the maximum molecule count to estimate a size for the reactor
 			int dimension = calculateSize(compounds, moleculeCount);
 			container = new Int3D(dimension, dimension, dimension);
-			grid = new SparseGrid3D(dimension, dimension, dimension);
+			grid = Sparse3DLattice.create3DLattice(moleculeCount * 2, dimension);
 			
 		} catch (IllegalArgumentException ex) {
 			System.err.println("Fatal Error while initalizing the Reactor");

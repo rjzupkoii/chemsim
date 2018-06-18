@@ -11,7 +11,7 @@ import java.util.List;
 public class SimulationProperties {
 
 	// Flag to indicate no limit on the number of molecules
-	public static final long NO_LIMIT = -1;
+	public static final int NO_LIMIT = -1;
 	
 	// Flag for if results should be overwritten
 	private boolean overWriteResults = true;
@@ -20,7 +20,7 @@ public class SimulationProperties {
 	private boolean experimetnalDecay = false;
 	
 	// Limit to the number of molecules in the model, -1 means no limit
-	private long moleculeLimit = NO_LIMIT;
+	private int moleculeLimit = NO_LIMIT;
 				
 	// List of entities to terminate when zero
 	private List<String> terminateOn = new ArrayList<String>(); 
@@ -68,7 +68,7 @@ public class SimulationProperties {
 		return molarFileName;
 	}
 	
-	public long getMoleculeLimit() {
+	public int getMoleculeLimit() {
 		return moleculeLimit;
 	}
 			
@@ -108,7 +108,7 @@ public class SimulationProperties {
 		overWriteResults = value;
 	}
 	
-	public void setMoleculeLimit(long value) {
+	public void setMoleculeLimit(int value) {
 		moleculeLimit = value;
 	}
 	
