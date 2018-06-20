@@ -1,5 +1,6 @@
 package edu.mtu.compound;
 
+import edu.mtu.catalog.MoleculeDescription;
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.primitives.Int3D;
 import edu.mtu.primitives.Sparse3DLattice;
@@ -10,16 +11,10 @@ import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 
 public class Molecule extends Steppable{
 
-	// Helper flags for the type of reactions that may occur
-	private boolean hasBimolecular;
-	private boolean hasPhotolysis;
-	private boolean hasUnimolecular;
-	private boolean hasReactants;
-	private boolean hasDissolvedReactants;
+	private MoleculeDescription md;
 	
 	// Pointer to the reactor we are working in
 	private Int3D dimensions;
-	private Reaction reaction;
 	private Sparse3DLattice grid;
 	
 	// Used to identify the molecule and find reactions
@@ -45,47 +40,22 @@ public class Molecule extends Steppable{
 		this.formula = formula;
 		formulaHash = formula.hashCode();
 		if (cache) {
-			cachePointers();
+			md = ReactionRegistry.getInstance().getMoleculeDescription(formula);		
+			dimensions = Reactor.getInstance().dimensions;
+			grid = Reactor.getInstance().grid;
 		}
 	}
 	
 	/**
 	 * Constructor, mostly for probing memory space.
 	 */
-	public Molecule(String formula, Int3D dimensions, boolean hasReactants) {
+	public Molecule(String formula, Int3D dimensions) {
 		this.formula = formula;
 		this.dimensions = dimensions;
-		this.hasReactants = hasReactants;
 	}
-	
-	/**
-	 * Cache pointers that are used by the molecule, speeds things up a bit.
-	 */
-	private void cachePointers() {
-		// Note if we have reactants, if so grab the rest of the pointers
-		hasReactants = ReactionRegistry.hasReactants(formula);
-		if (hasReactants) {
-
-			// TODO Cache this like the other
-			hasBimolecular = ReactionRegistry.getBimolecularReaction(this) != null;
-			hasPhotolysis = ReactionRegistry.getPhotolysisReaction(this) != null;
-			
-			hasDissolvedReactants = ReactionRegistry.hasDissolvedReactants(formula);			
-			dimensions = Reactor.getInstance().dimensions;
-			grid = Reactor.getInstance().grid;
-			reaction = Reaction.getInstance();
-		}
-	}
-	
-	@Override
-	public void doAction() {
 		
-		// If no reactants exist for us, then dispose of ourselves
-		if (!hasReactants) {
-			dispose(false);
-			return;
-		}
-			
+	@Override
+	public void doAction() {			
 		if (react()) {
 			// If a reaction occurred, dispose of this molecule
 			dispose();
@@ -122,19 +92,19 @@ public class Molecule extends Steppable{
 	}
 	
 	public boolean hasBimoleculear() {
-		return hasBimolecular;
+		return md.hasBimolecular;
 	}
 	
 	public boolean hasPhotolysis() {
-		return hasPhotolysis;
+		return md.hasPhotolysis;
 	}
 	
 	public boolean hasUnimolecular() {
-		return hasUnimolecular;
+		return md.hasUnimolecular;
 	}
 	
 	public boolean hasDissolvedReactants() {
-		return hasDissolvedReactants;
+		return md.hasDissolvedReactants;
 	}
 	
 	/**
@@ -143,7 +113,7 @@ public class Molecule extends Steppable{
 	private void move() {
 				
 		// Get our current location
-		Int3D location = Reactor.getInstance().getLocation(this);
+		Int3D location = grid.getObjectLocation(this);
 		
 		// Generate the random values for the walk 
 		XoRoShiRo128PlusRandom random = ChemSim.getInstance().random;
@@ -181,7 +151,7 @@ public class Molecule extends Steppable{
 	 *  @return True if something happened, false otherwise.
 	 */
 	private boolean react() {
-		return reaction.react(this);
+		return Reaction.getInstance().react(this);
 	}
 	
 	/**

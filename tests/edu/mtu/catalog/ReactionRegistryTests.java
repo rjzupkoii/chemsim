@@ -1,6 +1,7 @@
 package edu.mtu.catalog;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -29,7 +30,7 @@ public class ReactionRegistryTests {
 	
 	@Test
 	public void getEntityListTest() {
-		List<String> entities = ReactionRegistry.getInstance().getEntityList();
+		List<String> entities = new ArrayList<String>(ReactionRegistry.getInstance().getEntityList());
 		for (String expected : expectedEntities) {
 			Assert.assertTrue(expected, entities.contains(expected));
 			entities.remove(expected);

@@ -113,7 +113,7 @@ public class Reactor {
 			long heapSize = Runtime.getRuntime().maxMemory();
 			
 			// Calculate out how many molecules we can create
-			long size = SizeOf.deepSizeOf(new Molecule("CH3COCH2OH", new Int3D(0, 0, 0), false)) * 3;
+			long size = SizeOf.deepSizeOf(new Molecule("CH3COCH2OH", new Int3D(0, 0, 0))) * 3;
 			int count = (int) ((heapSize * MemoryOverhead) / size);
 			
 			// Check to see if a molecule limit was enforced

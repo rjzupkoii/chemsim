@@ -2,6 +2,7 @@ package edu.mtu.simulation.tracking;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -51,7 +52,7 @@ public abstract class Tracker {
 	
 	protected void prepare() {
 		// Note the entities that may will appear in the model over the entire run
-		entities = ReactionRegistry.getInstance().getEntityList();
+		entities = new ArrayList<String>(ReactionRegistry.getInstance().getEntityList());
 		if (entities.size() == 0) {
 			System.err.println("No entities were found.");
 			System.exit(-1);

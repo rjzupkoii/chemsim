@@ -43,7 +43,7 @@ public class CensusTracking extends Tracker {
 			// Write them to the file
 			for (String entity : entities) {
 				// Write a sentinel value for products
-				if (!ReactionRegistry.hasReactants(entity)) {
+				if (!ReactionRegistry.getInstance().hasReactants(entity)) {
 					writer.write(-1);
 					continue;
 				}

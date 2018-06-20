@@ -8,7 +8,6 @@ import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.primitives.Int3D;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;
-import edu.mtu.simulation.schedule.Schedule;
 import sim.util.Bag;
 
 /**
@@ -80,8 +79,8 @@ public class Reaction {
 				// Create the products for the reaction
 				Reactor reactor = Reactor.getInstance();
 				Int3D location = reactor.getLocation(molecule);
-				for (String product : reactions[index].getProducts()) {			
-					create(product, location);
+				for (String formula : reactions[index].getProducts()) {			
+					MoleculeFactory.create(formula, location);
 				}
 			}
 		}
@@ -112,8 +111,8 @@ public class Reaction {
 			// If the selected value is in the range, then create the products and return
 			if (previous <= selected && selected <= reactionOdds.get(ndx)) {
 				Int3D location = Reactor.getInstance().getLocation(molecule);
-				for (String product : reactions[indicies.get(ndx)].getProducts()) {			
-					create(product, location);
+				for (String formula : reactions[indicies.get(ndx)].getProducts()) {			
+					MoleculeFactory.create(formula, location);
 				}
 				return;
 			}
@@ -163,21 +162,11 @@ public class Reaction {
 	}
 	
 	/**
-	 * Create a molecule of the given type at the given location.
-	 */
-	private void create(String formula, Int3D location) {
-		Molecule entity = new Molecule(formula);
-		ChemSim.getSchedule().insert(entity);
-		ChemSim.getTracker().update(formula, 1);
-		Reactor.getInstance().insert(entity, location);
-	}
-	
-	/**
 	 * Perform a bimolecular reaction on the given species.
 	 */
 	private boolean bimolecularReaction(Molecule molecule, final Bag molecules) {
 		// Get the possible reactions for this species
-		ReactionDescription[] reactions = ReactionRegistry.getBimolecularReaction(molecule);
+		ReactionDescription[] reactions = ReactionRegistry.getInstance().getBimolecularReaction(molecule);
 		
 		// Check to see what other species at this location react with the given one
 		int size = molecules.numObjs;
@@ -192,7 +181,7 @@ public class Reaction {
 		
 		// Check to see if there are any dissolved molecule we should be aware of
 		if (molecule.hasDissolvedReactants()) {		
-			for (DissolvedMolecule reactant : ReactionRegistry.disolved) {
+			for (DissolvedMolecule reactant : ReactionRegistry.DissolvedMoleclues) {
 				if (process(molecule, reactant, reactions)) {
 					return true;
 				}
@@ -218,10 +207,8 @@ public class Reaction {
 		
 		// Add the products at this location
 		Int3D location = Reactor.getInstance().getLocation(molecule);
-		String[] products = ReactionRegistry.getPhotolysisReaction(molecule);
-		for (String product : products) {
-			create(product, location);
-		}
+		String[] products = ReactionRegistry.getInstance().getPhotolysisReaction(molecule);
+		MoleculeFactory.create(products, location);
 		
 		// Note that a reaction occurred, molecule will dispose of itself
 		return true;
@@ -244,20 +231,13 @@ public class Reaction {
 		}
 		
 		// Add the molecules to the model
-		Reactor reactor = Reactor.getInstance();
-		Int3D location = reactor.getLocation(molecule);
-		Schedule schedule = ChemSim.getSchedule();
+		Int3D location = Reactor.getInstance().getLocation(molecule);
 		if (matched.size() > 1) {
 			// Disproportion is occurring
-			Molecule product = DisproportionatingMolecule.create(molecule, reactant, reactions);
-			schedule.insert(product);
-			reactor.insert(product, location);
-			ChemSim.getTracker().update(product.getFormula(), 1);
+			MoleculeFactory.create(molecule, reactant, matched, location);
 		} else {
 			// A standard reaction is occurring
-			for (String product : matched.get(0).getProducts()) {
-				create(product, location);
-			}
+			MoleculeFactory.create(matched.get(0).getProducts(), location);
 		}
 		
 		// Clean up the reactant that was involved
@@ -273,7 +253,7 @@ public class Reaction {
 	 * Perform a unimolecular reaction on the given species.
 	 */
 	private boolean unimolecularDecay(Molecule molecule) {
-		ReactionDescription[] reactions = ReactionRegistry.getUnimolecularReaction(molecule);
+		ReactionDescription[] reactions = ReactionRegistry.getInstance().getUnimolecularReaction(molecule);
 		return process(molecule, null, reactions);
 	}
 }

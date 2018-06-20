@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.activity.InvalidActivityException;
 
@@ -21,21 +22,19 @@ import edu.mtu.parser.Parser;
  */
 public class ReactionRegistry {
 	
-	// TODO Preprocess so we can return an array describing the molecule, ex. boolean[] { bimolecular, unimolecular, photolysis, product }
-	
 	/**
 	 * Dissolved molecules that are always present in the reactor.
 	 */
-	public static final DissolvedMolecule[] disolved = { 
+	public static final DissolvedMolecule[] DissolvedMoleclues = { 
 			new DissolvedMolecule("O2"),
 			new DissolvedMolecule("H2O")
 	};
 	
 	private static ReactionRegistry instance = new ReactionRegistry();
-	
-	private Map<String, Boolean> hasReactants = new HashMap<String, Boolean>();
-	private Map<String, Boolean> hasDissolvedReactants = new HashMap<String, Boolean>();
-	
+
+	// Mapping of all of the molecules and the basics of their reactions
+	private Map<String, MoleculeDescription> moleculeDescriptions;
+
 	// Photolysis is [Reactant] + UV -> [Product] + ... + [Product] 
 	private Map<String, String[]> photolysis;
 		
@@ -111,118 +110,49 @@ public class ReactionRegistry {
 		bimolecular = null;
 		photolysis = null;
 		unimolecular = null;
-		hasReactants.clear();
-		hasDissolvedReactants.clear();
+		moleculeDescriptions = null;
 	}
 	
 	/**
 	 * Returns the list of bimolecular reactions for the chemical species or null.
 	 */
-	public static ReactionDescription[] getBimolecularReaction(Molecule molecule) {
-		return instance.bimolecular.get(molecule.getFormula());
+	public ReactionDescription[] getBimolecularReaction(Molecule molecule) {
+		return bimolecular.get(molecule.getFormula());
 	}
 	
 	/**
 	 * Get a list of all the entities in the registry.
-	 * @return A list of entities in the registry.
 	 */
-	public List<String> getEntityList() {
-		HashSet<String> entities = new HashSet<String>();
-		
-		for (String key : photolysis.keySet()) {
-			entities.add(key);
-			for (String value : photolysis.get(key)) {
-				entities.add(value);
-			}
-		}
-		
-		entities.addAll(extractEntities(unimolecular));
-		entities.addAll(extractEntities(bimolecular));
-		
-		return new ArrayList<String>(entities);
+	public Set<String> getEntityList() {
+		return moleculeDescriptions.keySet();
 	}
-			
+				
 	/**
 	 * Returns the photolysis products for the chemical species or null.
 	 */
-	public String[] getPhotolysisReaction(String formula) {
-		return photolysis.get(formula);
-	}
-	
-	/**
-	 * Returns the photolysis products for the chemical species or null.
-	 */
-	public static String[] getPhotolysisReaction(Molecule molecule) {
-		return instance.photolysis.get(molecule.getFormula());
+	public String[] getPhotolysisReaction(Molecule molecule) {
+		return photolysis.get(molecule.getFormula());
 	}
 		
 	/**
 	 * Returns the list of unimolecular reactions for the chemical species or null.
 	 */
-	public static ReactionDescription[] getUnimolecularReaction(Molecule molecule) {
-		return instance.unimolecular.get(molecule.getFormula());
+	public ReactionDescription[] getUnimolecularReaction(Molecule molecule) {
+		return unimolecular.get(molecule.getFormula());
 	}
 	
 	/**
-	 * 
-	 * @param formula
-	 * @return
+	 * Get the molecule description for the given formula.
 	 */
-	public static boolean hasDissolvedReactants(String formula) {
-		assert (instance != null);
-		
-		if (!instance.hasDissolvedReactants.containsKey(formula)) {
-			for (ReactionDescription reaction : instance.bimolecular.get(formula)) {
-				for (String compound : reaction.getReactants()) {
-					for (DissolvedMolecule molecule : disolved) {
-						if (molecule.getFormula().equals(compound)) {
-							instance.hasDissolvedReactants.put(formula, true);
-							return true;
-						}
-					}
-				}
-			}
-			instance.hasDissolvedReactants.put(formula, false);
-		}
-		
-		return instance.hasDissolvedReactants.get(formula);
+	public MoleculeDescription getMoleculeDescription(String formula) {
+		return moleculeDescriptions.get(formula);
 	}
-	
+		
 	/**
-	 * 
-	 * @param formula
-	 * @return
+	 * Check to see if the given formula has any reactants. 
 	 */
-	public static boolean hasReactants(String formula) {
-		assert (instance != null);
-		
-		// If the key doesn't already exist, then scan the known formulas to 
-		// determine if it is a product or a reactant
-		if (!instance.hasReactants.containsKey(formula)) {
-			// Start by getting a list of everything
-			List<String> products = instance.getEntityList();
-			
-			// Remove ones that are reactants
-			for (String compound : instance.photolysis.keySet()) {
-				products.remove(compound);
-			}
-			for (String compound : instance.unimolecular.keySet()) {
-				products.remove(compound);
-			}
-			for (String key : instance.bimolecular.keySet()) {
-				for (ReactionDescription reaction : instance.bimolecular.get(key)) {
-					for (String compound : reaction.getReactants()) {
-						products.remove(compound);
-					}
-				}
-			}
-			
-			// Note the results
-			instance.hasReactants.put(formula, !products.contains(formula));
-		}
-		
-		// Return the result
-		return instance.hasReactants.get(formula);
+	public boolean hasReactants(String formula) {
+		return moleculeDescriptions.get(formula).hasReactants;
 	}
 	
 	/**
@@ -267,8 +197,14 @@ public class ReactionRegistry {
 		this.photolysis = Collections.unmodifiableMap(new HashMap<String, String[]>(photoysis));
 		this.bimolecular = fixMap(bimolecular);
 		this.unimolecular = fixMap(unimolecular);
+		
+		// Build the molecule descriptions
+		buildMoleculeDescriptions();
 	}
 	
+	/**
+	 * Helper function to convert working hashes with lists over to unmodifiable maps with arrays.
+	 */
 	private Map<String, ReactionDescription[]> fixMap(Map<String, List<ReactionDescription>> source) {
 		Map<String, ReactionDescription[]> working = new HashMap<String, ReactionDescription[]>();
 		for (String key : source.keySet()) {
@@ -279,6 +215,53 @@ public class ReactionRegistry {
 			working.put(key, rd);
 		}
 		return Collections.unmodifiableMap(new HashMap<String, ReactionDescription[]>(working));
+	}
+	
+	/**
+	 * Build out all of the molecule descriptions once so we don't have to do any processing again.
+	 */
+	private void buildMoleculeDescriptions() {
+		// Start by finding all of our unique entities
+		HashSet<String> entities = new HashSet<String>();
+		for (String key : photolysis.keySet()) {
+			entities.add(key);
+			for (String value : photolysis.get(key)) {
+				entities.add(value);
+			}
+		}
+		entities.addAll(extractEntities(unimolecular));
+		entities.addAll(extractEntities(bimolecular));
+		
+		// Now use that list to start building the descriptions
+		moleculeDescriptions = new HashMap<String, MoleculeDescription>();
+		for (String formula : entities) {
+			MoleculeDescription md = new MoleculeDescription();
+			md.hasBimolecular = bimolecular.containsKey(formula);
+			md.hasPhotolysis = photolysis.containsKey(formula);
+			md.hasUnimolecular = unimolecular.containsKey(formula);			
+			md.hasReactants = (md.hasBimolecular || md.hasPhotolysis || md.hasUnimolecular);
+			md.hasDissolvedReactants = checkDissolvedReactants(formula);
+			moleculeDescriptions.put(formula, md);
+		}
+	}
+	
+	/**
+	 * Check to see if the given molecule has any dissolved reactants.
+	 */
+	private boolean checkDissolvedReactants(String formula) {
+		ReactionDescription[] rd = bimolecular.get(formula);
+		if (rd != null) {
+			for (ReactionDescription reaction : rd) {
+				for (String compound : reaction.getReactants()) {
+					for (DissolvedMolecule molecule : DissolvedMoleclues) {
+						if (molecule.getFormula().equals(compound)) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
 	}
 	
 	/**
