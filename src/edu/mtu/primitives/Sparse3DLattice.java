@@ -109,7 +109,8 @@ public class Sparse3DLattice {
 		if (lai == null) {
 			return null;
 		}
-		return latticeMap[lai.ix][lai.iy][lai.iz].lattice.get(lai.location);
+//		return latticeMap[lai.ix][lai.iy][lai.iz].lattice.get(lai.location);
+		return lai.colocated;
 	}
 	
 	/**
@@ -154,7 +155,8 @@ public class Sparse3DLattice {
 		}
 				
 		// Remove from the the location lattice
-		Bag bag = latticeMap[lai.ix][lai.iy][lai.iz].lattice.get(lai.location);
+//		Bag bag = latticeMap[lai.ix][lai.iy][lai.iz].lattice.get(lai.location);
+		Bag bag = lai.colocated;
 		bag.remove(object);
 		
 		// Clear empty bags
@@ -206,7 +208,8 @@ public class Sparse3DLattice {
 			
 			// We have a location, so we are updating
 			// Start by removing the object from the old bag
-			bag = latticeMap[lai.ix][lai.iy][lai.iz].lattice.get(lai.location);
+//			bag = latticeMap[lai.ix][lai.iy][lai.iz].lattice.get(lai.location);
+			bag = lai.colocated;
 			bag.remove(object);
 			
 			// Clear empty bags
@@ -224,13 +227,14 @@ public class Sparse3DLattice {
 			lai = new LocationAndIndex(location);
 		}
 		
-		// Update the bag in the lattice
+		// Update the bag in the lattice at the new location
 		bag = latticeMap[lai.ix][lai.iy][lai.iz].lattice.get(location);
 		if (bag == null) {
 			bag = new Bag(INITIAL_BAG_SIZE);
 			latticeMap[lai.ix][lai.iy][lai.iz].lattice.put(lai.location, bag);
 		} 
 		bag.add(object);
+		lai.colocated = bag;
 	}
 		
 	/**
@@ -249,6 +253,7 @@ public class Sparse3DLattice {
 	 * the index of it in a bag.
 	 */
 	private static class LocationAndIndex {
+		private Bag colocated;
 		private Int3D location;
 		private int ix, iy, iz;
 		
@@ -256,7 +261,7 @@ public class Sparse3DLattice {
 			this.location = location;
 			ix = (int)(location.x / partitionSize);
 			iy = (int)(location.y / partitionSize);
-			iz = (int)(location.x / partitionSize);		
+			iz = (int)(location.x / partitionSize);	
 		}
 	}
 }
