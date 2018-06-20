@@ -93,7 +93,7 @@ public class ReactionDescription implements Cloneable {
 		reactants = new String[value.size()];
 		reactants = value.toArray(reactants);
 		reactantHashes = new int[reactants.length];
-		for (int ndx = 0; ndx < 1; ndx++) {
+		for (int ndx = 0; ndx < reactants.length; ndx++) {
 			reactantHashes[ndx] = reactants[ndx].hashCode();
 		}
 	}

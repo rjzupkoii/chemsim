@@ -205,12 +205,6 @@ public class Reaction {
 	 * @return True if it occurred, false otherwise.
 	 */
 	private boolean photolysis(Molecule molecule) {
-		// Return if there are no products registered
-		String[] products = ReactionRegistry.getPhotolysisReaction(molecule);
-		if (products == null) {
-			return false;
-		}
-		
 		// Check to see if the reaction occurred based upon decay rates
 		double decay = ChemSim.getProperties().getHydrogenPeroxideDecay();
 		if (ChemSim.getInstance().random.nextDouble() > decay) {
@@ -218,8 +212,8 @@ public class Reaction {
 		}
 		
 		// Add the products at this location
-		Reactor reactor = Reactor.getInstance();
-		Int3D location = reactor.getLocation(molecule);
+		Int3D location = Reactor.getInstance().getLocation(molecule);
+		String[] products = ReactionRegistry.getPhotolysisReaction(molecule);
 		for (String product : products) {
 			create(product, location);
 		}
@@ -232,6 +226,7 @@ public class Reaction {
 	 * Process the reactions that are possible for this entity.
 	 */
 	private boolean process(Molecule molecule, Molecule reactant, ReactionDescription[] reactions) {
+
 		// Can this reaction occur?
 		List<ReactionDescription> matched = new ArrayList<ReactionDescription>();
 		for (ReactionDescription rd : reactions) {
