@@ -150,11 +150,4 @@ public class Reactor {
 	public void remove(Molecule molecule) {
 		grid.remove(molecule);
 	}
-	
-	/**
-	 * Set the molecule location.
-	 */
-//	public static void setLocation(Molecule molecule, Int3D location) {
-//		instance.grid.setObjectLocation(molecule, location);
-//	}
 }

@@ -45,6 +45,9 @@ public class Sparse3DLattice {
 	
 	// The size is the divisor to use to find the partition based upon the coordinates
 	private static int partitionSize;
+	
+	// The size of the partitioned hash tables, used for hashing
+	private static int allocation;
 		
 	/**
 	 * Private constructor.
@@ -80,7 +83,7 @@ public class Sparse3DLattice {
 		lattice.partitions = (int)(x / partitionSize) + 1;
 
 		// Assume a uniform distribution of entities
-		int allocation = (int)(maxEntities / Math.pow(lattice.partitions, 3)) * PARTITION_MULTIPLIER; 
+		allocation = (int)(maxEntities / Math.pow(lattice.partitions, 3)) * PARTITION_MULTIPLIER; 
 				
 		// Allocate and return
 		lattice.entityMap = new Object2ObjectOpenHashMap<Object, LocationAndIndex>(maxEntities * ENTITY_MULTIPLIER);
@@ -138,6 +141,15 @@ public class Sparse3DLattice {
 		
 		// Retrieve the bag, if any, and return
 		return latticeMap[ix][iy][iz].lattice.get(location);
+	}
+	
+	/**
+	 * Hash the x, y, z coordinates provided based upon the internal hash table allocation. 
+	 */
+	public static int hashCoordinates(int x, int y, int z) {
+		// TODO Evaluate this for performance
+		final int p1 = 73856093, p2 = 19349663, p3 = 83492791;
+		return (x * p1 ^ y * p2 ^ z * p3) % allocation;
 	}
 	
 	/**

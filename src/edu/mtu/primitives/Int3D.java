@@ -3,7 +3,7 @@ package edu.mtu.primitives;
 import java.util.Arrays;
 
 public class Int3D {
-
+	
 	public final int x;
 	public final int y;
 	public final int z;
@@ -18,9 +18,8 @@ public class Int3D {
 		this.y = y;
 		this.z = z;
 		
-		// TODO Evaluate this for performance
-		// Calculate the hash once and retain it
-		this.hash = Arrays.hashCode(new int[] { x, y, z});
+		// Use the basic array hash to be safe
+		hash = Arrays.hashCode(new int[] { x, y, z});
 	}
 	
 	/**
