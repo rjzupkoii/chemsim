@@ -10,15 +10,13 @@ import edu.mtu.primitives.Int3D;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;
 import edu.mtu.simulation.schedule.Schedule;
+import sim.util.Bag;
 
 /**
  * This class provides a means for a chemical species to react with other species.
  */
 public class Reaction {
-	
-	// TODO Find a better place to put this
-	private static final String[] disolved = { "O2", "H2O" };
-	
+			
 	private static Reaction instance = new Reaction();
 		
 	/**
@@ -131,7 +129,7 @@ public class Reaction {
 			 disproportionate((DisproportionatingMolecule)molecule);
 			 return true;
 		}
-		
+
 		// First, see if there are any bimolecular reactions to take place
 		if (bimolecularReaction(molecule)) {
 			return true;
@@ -141,8 +139,8 @@ public class Reaction {
 		if (unimolecularDecay(molecule)) {
 			return true;
 		}
-		
-		// Third, see if photolysis needs to take place
+
+		// Finally, see if photolysis needs to take place
 		return photolysis(molecule);
 	}
 	
@@ -161,13 +159,14 @@ public class Reaction {
 	 */
 	private boolean bimolecularReaction(Molecule molecule) {
 		// Get the possible reactions for this species
-		List<ReactionDescription> reactions = ReactionRegistry.getInstance().getBiomolecularReaction(molecule);
+		List<ReactionDescription> reactions = ReactionRegistry.getBimolecularReaction(molecule);
 		if (reactions == null) {
 			return false;
 		}
 		
 		// Check to see what other species at this location react with the given one
-		for (Object reactant : Reactor.getInstance().getMolecules(molecule)) {
+		Bag molecules = Reactor.getInstance().getMolecules(molecule);
+		for (Object reactant : molecules) {
 			
 			// Break when we encounter a null
 			if (reactant == null) {
@@ -185,9 +184,11 @@ public class Reaction {
 		}
 		
 		// Check to see if there are any dissolved molecule we should be aware of
-		for (String reactant : disolved) {
-			if (process(molecule, new DissolvedMolecule(reactant), reactions)) {
-				return true;
+		if (molecule.hasDissolvedReactants()) {		
+			for (DissolvedMolecule reactant : ReactionRegistry.disolved) {
+				if (process(molecule, reactant, reactions)) {
+					return true;
+				}
 			}
 		}
 				
@@ -203,7 +204,7 @@ public class Reaction {
 	 */
 	private boolean photolysis(Molecule molecule) {
 		// Return if there are no products registered
-		List<String> products = ReactionRegistry.getInstance().getPhotolysisReaction(molecule);
+		List<String> products = ReactionRegistry.getPhotolysisReaction(molecule);
 		if (products == null) {
 			return false;
 		}
@@ -271,7 +272,7 @@ public class Reaction {
 	 */
 	private boolean unimolecularDecay(Molecule molecule) {
 		// Get the possible reactions for this species
-		List<ReactionDescription> reactions = ReactionRegistry.getInstance().getUnimolecularReaction(molecule);
+		List<ReactionDescription> reactions = ReactionRegistry.getUnimolecularReaction(molecule);
 		if (reactions == null) {
 			return false;
 		}

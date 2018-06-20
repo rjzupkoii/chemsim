@@ -2,6 +2,7 @@ package edu.mtu.compound;
 
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.primitives.Int3D;
+import edu.mtu.primitives.Sparse3DLattice;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;
 import edu.mtu.simulation.schedule.Steppable;
@@ -10,16 +11,31 @@ import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 public class Molecule extends Steppable{
 
 	private boolean hasReactants;
+	private boolean hasDissolvedReactants;
 	private Int3D dimensions;
-	private String formula;
+	private Reaction reaction;
+	protected String formula;
+	private Sparse3DLattice grid;
 		
+	/**
+	 * Constructor.
+	 */
+	protected Molecule() { }
+	
 	/**
 	 * Constructor.
 	 */
 	public Molecule(String formula) {
 		this.formula = formula;
-		dimensions = Reactor.getInstance().dimensions;
+		
+		// Note if we have reactants, if so hold on to pointers to the reactor
 		hasReactants = ReactionRegistry.hasReactants(formula);
+		if (hasReactants) {
+			hasDissolvedReactants = ReactionRegistry.hasDissolvedReactants(formula);
+			dimensions = Reactor.getInstance().dimensions;
+			grid = Reactor.getInstance().grid;
+			reaction = Reaction.getInstance();
+		}
 	}
 	
 	/**
@@ -75,6 +91,10 @@ public class Molecule extends Steppable{
 		return formula;
 	}
 	
+	public boolean hasDissolvedReactants() {
+		return hasDissolvedReactants;
+	}
+	
 	/**
 	 * Calculate the new location for this molecule.
 	 */
@@ -110,7 +130,7 @@ public class Molecule extends Steppable{
 		z = (z < 0) ? 0 : z;
 		
 		// Set the new location		
-		Reactor.getInstance().setLocation(this, new Int3D(x, y, z));
+		grid.setObjectLocation(this, new Int3D(x, y, z));
 	}
 
 	/**
@@ -119,6 +139,6 @@ public class Molecule extends Steppable{
 	 *  @return True if something happened, false otherwise.
 	 */
 	private boolean react() {
-		return Reaction.getInstance().react(this);
+		return reaction.react(this);
 	}
 }

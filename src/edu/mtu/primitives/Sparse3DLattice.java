@@ -1,8 +1,9 @@
 package edu.mtu.primitives;
 
+import java.util.Map;
 import java.util.Set;
 
-import gnu.trove.map.hash.THashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import sim.util.Bag;
 
 /**
@@ -22,6 +23,9 @@ import sim.util.Bag;
  */
 public class Sparse3DLattice {
 
+	private final static int ENTITY_MULTIPLIER = 2;
+	private final static int PARTITION_MULTIPLIER = 3;
+	
 	// TODO This is a point where tuning can take place
 	// Parameters for sizing and resizing bags
 	private final static int INITIAL_BAG_SIZE = 16;
@@ -30,7 +34,7 @@ public class Sparse3DLattice {
 	private final static int REPLACEMENT_BAG_RATIO = 2;
 	
 	/* Note that for now we are using Int3D from MASON, the class may need to be upgraded though. */
-	private THashMap<Object, LocationAndIndex> entityMap;
+	private Map<Object, LocationAndIndex> entityMap;
 	
 	// The lattice map partitions the lattice into n^3 sections which cuts down
 	// on the amount of work that needs to be done when searching it
@@ -76,10 +80,10 @@ public class Sparse3DLattice {
 		lattice.partitions = (int)(x / partitionSize) + 1;
 
 		// Assume a uniform distribution of entities
-		int allocation = (int)(maxEntities / Math.pow(lattice.partitions, 3)); 
+		int allocation = (int)(maxEntities / Math.pow(lattice.partitions, 3)) * PARTITION_MULTIPLIER; 
 				
 		// Allocate and return
-		lattice.entityMap = new THashMap<Object, LocationAndIndex>(maxEntities);
+		lattice.entityMap = new Object2ObjectOpenHashMap<Object, LocationAndIndex>(maxEntities * ENTITY_MULTIPLIER);
 		lattice.latticeMap = new Lattice[lattice.partitions][lattice.partitions][lattice.partitions];
 		for (int ndx = 0; ndx < lattice.partitions; ndx++) {
 			for (int ndy = 0; ndy < lattice.partitions; ndy++) {
@@ -106,11 +110,7 @@ public class Sparse3DLattice {
 	 */
 	public Bag getColocatedObjects(final Object object) {
 		LocationAndIndex lai = entityMap.get(object);
-		if (lai == null) {
-			return null;
-		}
-//		return latticeMap[lai.ix][lai.iy][lai.iz].lattice.get(lai.location);
-		return lai.colocated;
+		return (lai == null) ? null : lai.colocated;
 	}
 	
 	/**
@@ -155,7 +155,6 @@ public class Sparse3DLattice {
 		}
 				
 		// Remove from the the location lattice
-//		Bag bag = latticeMap[lai.ix][lai.iy][lai.iz].lattice.get(lai.location);
 		Bag bag = lai.colocated;
 		bag.remove(object);
 		
@@ -207,8 +206,6 @@ public class Sparse3DLattice {
 			}
 			
 			// We have a location, so we are updating
-			// Start by removing the object from the old bag
-//			bag = latticeMap[lai.ix][lai.iy][lai.iz].lattice.get(lai.location);
 			bag = lai.colocated;
 			bag.remove(object);
 			
@@ -228,10 +225,11 @@ public class Sparse3DLattice {
 		}
 		
 		// Update the bag in the lattice at the new location
-		bag = latticeMap[lai.ix][lai.iy][lai.iz].lattice.get(location);
+		Map<Int3D, Bag> lattice = latticeMap[lai.ix][lai.iy][lai.iz].lattice;
+		bag = lattice.get(location);
 		if (bag == null) {
 			bag = new Bag(INITIAL_BAG_SIZE);
-			latticeMap[lai.ix][lai.iy][lai.iz].lattice.put(lai.location, bag);
+			lattice.put(location, bag);
 		} 
 		bag.add(object);
 		lai.colocated = bag;
@@ -241,10 +239,10 @@ public class Sparse3DLattice {
 	 * Java does not approve of using generics in arrays, so wrap the hashmap to get around that.
 	 */
 	private static class Lattice {
-		private THashMap<Int3D, Bag> lattice;
+		private Map<Int3D, Bag> lattice;
 		
 		public Lattice(int maxEntities) {
-			lattice = new THashMap<Int3D, Bag>(maxEntities);
+			lattice = new Object2ObjectOpenHashMap<Int3D, Bag>(maxEntities);
 		}
 	}
 	

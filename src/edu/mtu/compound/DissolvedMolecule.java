@@ -7,7 +7,7 @@ package edu.mtu.compound;
 public class DissolvedMolecule extends Molecule {
 
 	public DissolvedMolecule(String formula) {
-		super(formula);
+		this.formula = formula;
 	}
 
 	@Override

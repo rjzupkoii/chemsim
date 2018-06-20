@@ -30,7 +30,7 @@ public class Reactor {
 	private long moleculeSize;
 
 	public final Int3D dimensions;
-	private Sparse3DLattice grid; 
+	public Sparse3DLattice grid; 
 	
 	/**
 	 * Constructor.
@@ -154,7 +154,7 @@ public class Reactor {
 	/**
 	 * Set the molecule location.
 	 */
-	public void setLocation(Molecule molecule, Int3D location) {
-		grid.setObjectLocation(molecule, location);
-	}
+//	public static void setLocation(Molecule molecule, Int3D location) {
+//		instance.grid.setObjectLocation(molecule, location);
+//	}
 }
