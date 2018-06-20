@@ -172,8 +172,7 @@ public class Molecule extends Steppable{
 		z = (z < 0) ? 0 : z;
 		
 		// Set the new location		
-		location = new Int3D(x, y, z, Sparse3DLattice.hashCoordinates(x, y, z));
-		grid.setObjectLocation(this, location);
+		grid.setObjectLocation((Object)this, x, y, z);
 	}
 
 	/**

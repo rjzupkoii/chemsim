@@ -26,8 +26,7 @@ public class Sparse3DLattice {
 	private final static int ENTITY_MULTIPLIER = 2;
 	private final static int PARTITION_MULTIPLIER = 3;
 	
-	// TODO This is a point where tuning can take place
-	// Parameters for sizing and resizing bags
+	// Parameters for sizing and resizing bags, this is a point where tuning can take place
 	private final static int INITIAL_BAG_SIZE = 16;
 	private final static int LARGE_BAG_RATIO = 4;
 	private final static int MIN_BAG_SIZE = 32;
@@ -184,6 +183,19 @@ public class Sparse3DLattice {
 		// Return the location
 		return lai.location;		
 	}
+			
+	/**
+	 * Add or update the location of the object in the lattice.
+	 * 
+	 * @param object to be added or updated.
+	 * @param x coordinate of the object.
+	 * @param y coordinate of the object.
+	 * @param z coordinate of the object.
+	 */
+	public void setObjectLocation(final Object object, int x, int y, int z) {
+		Int3D location = new Int3D(x, y, z, hashCoordinates(x, y, z));
+		setObjectLocation(object, location);
+	}
 	
 	/**
 	 * Add or update the location of the object in the lattice.
@@ -192,14 +204,8 @@ public class Sparse3DLattice {
 	 * @param location of the object in the lattice.
 	 */
 	public void setObjectLocation(final Object object, final Int3D location) {
-		
-		// Start by checking our conditions
-		if (object == null) {
-			throw new RuntimeException("Cannot add null to a the lattice.");
-		}
-		if (location == null) {
-			throw new RuntimeException("The location in the lattice cannot be null.");
-		}
+		// Start by checking our conditions		
+		assert (object != null);
 		
 		// Check to see if the object already exists
 		LocationAndIndex lai = entityMap.get(object);

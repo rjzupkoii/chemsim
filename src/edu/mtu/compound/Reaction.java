@@ -125,16 +125,21 @@ public class Reaction {
 	/**
 	 * Have the chemical species indicated react with anything located here.
 	 * 
-	 * @param species of chemical for the reaction.
-	 * @return True if a reaction occured, false otherwise.
+	 * @param moleclue for the reaction.
+	 * @return True if a reaction occurred, false otherwise.
+	 */
+	public boolean react(DisproportionatingMolecule moleclue) {
+		 disproportionate(moleclue);
+		 return true;
+	}
+	
+	/**
+	 * Have the chemical species indicated react with anything located here.
+	 * 
+	 * @param moleclue for the reaction.
+	 * @return True if a reaction occurred, false otherwise.
 	 */
 	public boolean react(Molecule molecule) {
-		// Perform any relevant dispropriation reactions
-		if (molecule instanceof DisproportionatingMolecule) {
-			 disproportionate((DisproportionatingMolecule)molecule);
-			 return true;
-		}
-
 		// First, see if there are any bimolecular reactions to take place
 		if (molecule.hasBimoleculear()) {
 			Bag molecules = Reactor.getInstance().getMolecules(molecule);
