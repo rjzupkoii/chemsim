@@ -2,7 +2,6 @@ package edu.mtu.primitives;
 
 import java.util.Set;
 
-import edu.mtu.compound.Molecule;
 import gnu.trove.map.hash.THashMap;
 import sim.util.Bag;
 
@@ -23,12 +22,16 @@ import sim.util.Bag;
  */
 public class Sparse3DLattice {
 
+	// TODO This is a point where tuning can take place
+	// Size of the bags whenwe start
+	private final static int INITIAL_BAG_SIZE = 16;
+	
 	/* Note that for now we are using Int3D from MASON, the class may need to be upgraded though. */
 	private THashMap<Object, LocationAndIndex> entityMap;
 	
 	// The lattice map partitions the lattice into n^3 sections which cuts down
 	// on the amount of work that needs to be done when searching it
-	private THashMap<LocationAndIndex, Bag>[][][] latticeMap;
+	private Lattice[][][] latticeMap;
 
 	// The number of partitions along one direction in the lattice 
 	private int partitions;
@@ -67,17 +70,27 @@ public class Sparse3DLattice {
 		// TODO How this is done needs to be refined
 		// Determine the partition size based upon the dimensions
 		lattice.partitionSize = 100;
-		lattice.partitions = (int)(x / lattice.partitionSize);
+		lattice.partitions = (int)(x / lattice.partitionSize) + 1;
 
 		// Assume a uniform distribution of entities
 		int allocation = (int)(maxEntities / Math.pow(lattice.partitions, 3)); 
-		
+				
 		// Allocate and return
 		lattice.entityMap = new THashMap<Object, LocationAndIndex>(maxEntities);
-		lattice.latticeMap[lattice.partitions][lattice.partitions][lattice.partitions] = new THashMap<LocationAndIndex, Bag>(allocation);
+		lattice.latticeMap = new Lattice[lattice.partitions][lattice.partitions][lattice.partitions];
+		for (int ndx = 0; ndx < lattice.partitions; ndx++) {
+			for (int ndy = 0; ndy < lattice.partitions; ndy++) {
+				for (int ndz = 0; ndz < lattice.partitions; ndz++) {
+					lattice.latticeMap[ndx][ndy][ndz] = new Lattice(allocation);
+				}
+			}
+		}
 		return lattice;
 	}
 
+	/**
+	 * Get all of the objects in the lattice.
+	 */
 	public Set<Object> getAllObjects() {
 		return entityMap.keySet();
 	}
@@ -93,19 +106,116 @@ public class Sparse3DLattice {
 		return (lai == null) ? null : lai.location;
 	}
 	
+	/**
+	 * Get all of the objects at the given location.
+	 * 
+	 * @param location To retrieve the objects from.
+	 * @return The bag of objects or null.
+	 */
 	public Bag getObjectsAtLocation(Int3D location) {
-		// TODO Auto-generated method stub
-		return null;
+		// Index to the correct HashMap
+		Int3D index = latticeIndex(location);
+		
+		// Retrieve, check the bag, and return
+		Bag bag = latticeMap[index.x][index.y][index.z].lattice.get(location);
+		return (bag == null || bag.numObjs == 0) ? null : bag;
 	}
 	
-	public void remove(Molecule molecule) {
-		// TODO Auto-generated method stub
+	/**
+	 * Remove the object if it exists. 
+	 * 
+	 * @param object to be removed.
+	 * @return The location of the object, or null if it doesn't exist.
+	 */
+	public Int3D remove(Object object) {
 		
+		// Start by removing the object finding out where it is located
+		LocationAndIndex lai = entityMap.remove(object);
+		if (lai == null) {
+			return null;
+		}
+				
+		// Remove from the the location lattice
+		Bag bag = latticeMap[lai.index.x][lai.index.y][lai.index.z].lattice.get(lai.location);
+		bag.remove(object);
+		
+		// TODO Determine if bag resizing or removal should take place
+		
+		// Return the location
+		return lai.location;		
 	}
 	
-	public void setObjectLocation(Molecule molecule, Int3D location) {
-		// TODO Auto-generated method stub
+	/**
+	 * Add or update the location of the object in the lattice.
+	 * 
+	 * @param object to be added or updated.
+	 * @param location of the object in the lattice.
+	 */
+	public void setObjectLocation(Object object, Int3D location) {
 		
+		// Start by checking our conditions
+		if (object == null) {
+			throw new RuntimeException("Cannot add null to a the lattice.");
+		}
+		if (location == null) {
+			throw new RuntimeException("The location in the lattice cannot be null.");
+		}
+		
+		// Check to see if the object already exists
+		LocationAndIndex lai = entityMap.get(object);
+				
+		if (lai == null) {
+			// No location returned, must be a new object
+			lai = new LocationAndIndex(location, latticeIndex(location));
+			entityMap.put(object, lai);
+		} else {
+			// Return if there is no update
+			if (lai.location.equals(location)) {
+				return;
+			}
+			
+			// We have a location, so we are updating
+			// Start by removing the object from the old bag
+			Bag bag = latticeMap[lai.index.x][lai.index.y][lai.index.z].lattice.get(lai.location);
+			bag.remove(object);
+			
+			// Update our location
+			lai.location = location;
+			lai.index = latticeIndex(location);			
+		}
+		
+		// Update the bag in the lattice
+		Bag bag = latticeMap[lai.index.x][lai.index.y][lai.index.z].lattice.get(location);
+		if (bag == null) {
+			bag = new Bag(INITIAL_BAG_SIZE);
+			latticeMap[lai.index.x][lai.index.y][lai.index.z].lattice.put(lai, bag);
+		} 
+		bag.add(object);
+	}
+	
+	/**
+	 * Calculate the location of the lattice section based upon the location.
+	 *  
+	 * It's good practice to keep this code in one spot since everything is 
+	 * dependent upon it. In theory this should be in-lined by javac as well. 
+	 */
+	private final Int3D latticeIndex(Int3D location) {
+		int x = (int)(location.x / partitionSize);
+		int y = (int)(location.y / partitionSize);
+		int z = (int)(location.z / partitionSize);
+		
+		return new Int3D(x, y, z, 0);
+	}
+	
+	/**
+	 * 
+	 */
+	private static class Lattice {
+		private THashMap<LocationAndIndex, Bag> lattice;
+		
+		public Lattice(int maxEntities) {
+			lattice = new THashMap<LocationAndIndex, Bag>(maxEntities);
+		}
 	}
 	
 	/**
@@ -114,19 +224,11 @@ public class Sparse3DLattice {
 	 */
 	private static class LocationAndIndex {
 		private Int3D location;
-		private int index;
+		private Int3D index;
 		
-		public LocationAndIndex(final Int3D location, final int index) {
+		public LocationAndIndex(final Int3D location, final Int3D index) {
 			this.location = location;
 			this.index = index;
-		}
-		
-		public Int3D getLocation() {
-			return location;
-		}
-		
-		public int getIndex() {
-			return index;
 		}
 	}
 }

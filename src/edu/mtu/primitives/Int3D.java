@@ -10,8 +10,10 @@ public class Int3D {
 	
 	private final int hash;
 	
+	/**
+	 * Constructor, will create a hash based upon x, y, z
+	 */
 	public Int3D(int x, int y, int z) {
-		// Note the values
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -20,12 +22,30 @@ public class Int3D {
 		// Calculate the hash once and retain it
 		this.hash = Arrays.hashCode(new int[] { x, y, z});
 	}
+	
+	/**
+	 * Constructor, expects the hash to be provided but only asserts it
+	 * when hashCode() is called.
+	 */
+	public Int3D(int x, int y, int z, int hash) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.hash = hash;
+	}
 
+	/**
+	 * Return the hash for this object.
+	 */
 	@Override
 	public int hashCode() {
+		assert (hash != 0);
         return hash;
 	}
 	
+	/**
+	 * Compare this object to the one provided.
+	 */
 	@Override
 	public boolean equals(final Object obj) {
 		if (obj == null) {
