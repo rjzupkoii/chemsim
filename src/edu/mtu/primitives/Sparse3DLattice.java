@@ -23,7 +23,7 @@ import sim.util.Bag;
 public class Sparse3DLattice {
 
 	// TODO This is a point where tuning can take place
-	// Size of the bags whenwe start
+	// Size of the bags when we start
 	private final static int INITIAL_BAG_SIZE = 16;
 	
 	/* Note that for now we are using Int3D from MASON, the class may need to be upgraded though. */
@@ -188,7 +188,7 @@ public class Sparse3DLattice {
 		Bag bag = latticeMap[lai.index.x][lai.index.y][lai.index.z].lattice.get(location);
 		if (bag == null) {
 			bag = new Bag(INITIAL_BAG_SIZE);
-			latticeMap[lai.index.x][lai.index.y][lai.index.z].lattice.put(lai, bag);
+			latticeMap[lai.index.x][lai.index.y][lai.index.z].lattice.put(lai.location, bag);
 		} 
 		bag.add(object);
 	}
@@ -208,13 +208,13 @@ public class Sparse3DLattice {
 	}
 	
 	/**
-	 * 
+	 * Java does not approve of using generics in arrays, so wrap the hashmap to get around that.
 	 */
 	private static class Lattice {
-		private THashMap<LocationAndIndex, Bag> lattice;
+		private THashMap<Int3D, Bag> lattice;
 		
 		public Lattice(int maxEntities) {
-			lattice = new THashMap<LocationAndIndex, Bag>(maxEntities);
+			lattice = new THashMap<Int3D, Bag>(maxEntities);
 		}
 	}
 	

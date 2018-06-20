@@ -90,7 +90,13 @@ public class Reactor {
 	 * Get the molecules at the given location in the reactor.
 	 */
 	public Molecule[] getMolecules(Int3D location) {
+		// Get the bag, note that it may be null
 		Bag bag = grid.getObjectsAtLocation(location);
+		if (bag == null) {
+			return new Molecule[0];
+		}
+		
+		// Convert it to an array and return
 		Molecule[] array = new Molecule[bag.numObjs];
 		bag.toArray(array);
 		return array;
