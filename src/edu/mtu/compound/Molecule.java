@@ -10,12 +10,21 @@ import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 
 public class Molecule extends Steppable{
 
+	// Helper flags for the type of reactions that may occur
+	private boolean hasBimolecular;
+	private boolean hasPhotolysis;
+	private boolean hasUnimolecular;
 	private boolean hasReactants;
 	private boolean hasDissolvedReactants;
+	
+	// Pointer to the reactor we are working in
 	private Int3D dimensions;
 	private Reaction reaction;
-	protected String formula;
 	private Sparse3DLattice grid;
+	
+	// Used to identify the molecule and find reactions
+	private int formulaHash;
+	private String formula;
 		
 	/**
 	 * Constructor.
@@ -26,15 +35,17 @@ public class Molecule extends Steppable{
 	 * Constructor.
 	 */
 	public Molecule(String formula) {
+		this(formula, true);
+	}
+	
+	/**
+	 * Constructor, note if pointers should be cached or not.
+	 */
+	public Molecule(String formula, boolean cache) {
 		this.formula = formula;
-		
-		// Note if we have reactants, if so hold on to pointers to the reactor
-		hasReactants = ReactionRegistry.hasReactants(formula);
-		if (hasReactants) {
-			hasDissolvedReactants = ReactionRegistry.hasDissolvedReactants(formula);
-			dimensions = Reactor.getInstance().dimensions;
-			grid = Reactor.getInstance().grid;
-			reaction = Reaction.getInstance();
+		formulaHash = formula.hashCode();
+		if (cache) {
+			cachePointers();
 		}
 	}
 	
@@ -45,6 +56,25 @@ public class Molecule extends Steppable{
 		this.formula = formula;
 		this.dimensions = dimensions;
 		this.hasReactants = hasReactants;
+	}
+	
+	/**
+	 * Cache pointers that are used by the molecule, speeds things up a bit.
+	 */
+	private void cachePointers() {
+		// Note if we have reactants, if so grab the rest of the pointers
+		hasReactants = ReactionRegistry.hasReactants(formula);
+		if (hasReactants) {
+
+			// TODO Cache this like the other
+			hasBimolecular = ReactionRegistry.getBimolecularReaction(this) != null;
+			hasPhotolysis = ReactionRegistry.getPhotolysisReaction(this) != null;
+			
+			hasDissolvedReactants = ReactionRegistry.hasDissolvedReactants(formula);			
+			dimensions = Reactor.getInstance().dimensions;
+			grid = Reactor.getInstance().grid;
+			reaction = Reaction.getInstance();
+		}
 	}
 	
 	@Override
@@ -89,6 +119,18 @@ public class Molecule extends Steppable{
 	 */
 	public String getFormula() {
 		return formula;
+	}
+	
+	public boolean hasBimoleculear() {
+		return hasBimolecular;
+	}
+	
+	public boolean hasPhotolysis() {
+		return hasPhotolysis;
+	}
+	
+	public boolean hasUnimolecular() {
+		return hasUnimolecular;
 	}
 	
 	public boolean hasDissolvedReactants() {
@@ -141,5 +183,19 @@ public class Molecule extends Steppable{
 	 */
 	private boolean react() {
 		return reaction.react(this);
+	}
+	
+	/**
+	 * Check to see if the two molecules are the same chemical entity.
+	 */
+	public boolean sameEntity(Molecule moleclue) {
+		return (formulaHash == moleclue.formulaHash);
+	}
+	
+	/**
+	 * Check to see if the two molecules are the same chemical entity.
+	 */
+	public boolean sameEntity(int formulaHash) {
+		return (this.formulaHash == formulaHash);
 	}
 }

@@ -2,6 +2,7 @@ package edu.mtu.catalog;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,14 +14,15 @@ import javax.activity.InvalidActivityException;
 import edu.mtu.compound.DissolvedMolecule;
 import edu.mtu.compound.Molecule;
 import edu.mtu.parser.Parser;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 /**
  * This singleton contains a look up of the reactions in the simulation. In order to account for 
  * disproportionation each of the species is associated with a list of formulas.
  */
 public class ReactionRegistry {
-
+	
+	// TODO Preprocess so we can return an array describing the molecule, ex. boolean[] { bimolecular, unimolecular, photolysis, product }
+	
 	/**
 	 * Dissolved molecules that are always present in the reactor.
 	 */
@@ -35,13 +37,13 @@ public class ReactionRegistry {
 	private Map<String, Boolean> hasDissolvedReactants = new HashMap<String, Boolean>();
 	
 	// Photolysis is [Reactant] + UV -> [Product] + ... + [Product] 
-	private Map<String, List<String>> photolysis;
+	private Map<String, String[]> photolysis;
 		
 	// Bimolecular reactions are [Reactant] + [Reactant] -> [Product] + ... + [Product]
-	private Map<String, List<ReactionDescription>> bimolecular;
+	private Map<String, ReactionDescription[]> bimolecular;
 	
 	// Unimolecular reactions are [Reactant] -> [Product] + ... + [Product]
-	private Map<String, List<ReactionDescription>> unimolecular;
+	private Map<String, ReactionDescription[]> unimolecular;
 	
 	/**
 	 * Singleton constructor.
@@ -73,10 +75,10 @@ public class ReactionRegistry {
 	/**
 	 * Add the given photolysis reaction to the registry.
 	 */
-	private void addPhotolysisReaction(ReactionDescription reaction, Map<String, List<String>> working) throws InvalidActivityException {
-		String reactant = reaction.getReactants().get(0);
+	private void addPhotolysisReaction(ReactionDescription reaction, Map<String, String[]> working) throws InvalidActivityException {
+		String reactant = reaction.getReactants()[0];
 		if (reactant.toUpperCase().equals("UV")) {
-			reactant = reaction.getReactants().get(1);
+			reactant = reaction.getReactants()[1];
 		}
 		if (working.containsKey(reactant)) {
 			throw new InvalidActivityException("Reaction registry already contains photolysis products for " + reactant);
@@ -90,7 +92,7 @@ public class ReactionRegistry {
 	 */
 	private void addUnimolecularReaction(ReactionDescription reaction, Map<String, List<ReactionDescription>> working) throws InvalidActivityException {
 		// Make sure the key is valid
-		String key = reaction.getReactants().get(0);
+		String key = reaction.getReactants()[0];
 		if (key.toUpperCase() == "UV") {
 			throw new IllegalArgumentException("A photolysis reaction cannot be unimolecular");
 		}
@@ -116,7 +118,7 @@ public class ReactionRegistry {
 	/**
 	 * Returns the list of bimolecular reactions for the chemical species or null.
 	 */
-	public static List<ReactionDescription> getBimolecularReaction(Molecule molecule) {
+	public static ReactionDescription[] getBimolecularReaction(Molecule molecule) {
 		return instance.bimolecular.get(molecule.getFormula());
 	}
 	
@@ -143,21 +145,21 @@ public class ReactionRegistry {
 	/**
 	 * Returns the photolysis products for the chemical species or null.
 	 */
-	public List<String> getPhotolysisReaction(String formula) {
+	public String[] getPhotolysisReaction(String formula) {
 		return photolysis.get(formula);
 	}
 	
 	/**
 	 * Returns the photolysis products for the chemical species or null.
 	 */
-	public static List<String> getPhotolysisReaction(Molecule molecule) {
+	public static String[] getPhotolysisReaction(Molecule molecule) {
 		return instance.photolysis.get(molecule.getFormula());
 	}
 		
 	/**
 	 * Returns the list of unimolecular reactions for the chemical species or null.
 	 */
-	public static List<ReactionDescription> getUnimolecularReaction(Molecule molecule) {
+	public static ReactionDescription[] getUnimolecularReaction(Molecule molecule) {
 		return instance.unimolecular.get(molecule.getFormula());
 	}
 	
@@ -170,7 +172,7 @@ public class ReactionRegistry {
 		assert (instance != null);
 		
 		if (!instance.hasDissolvedReactants.containsKey(formula)) {
-			for (ReactionDescription reaction : (List<ReactionDescription>)instance.bimolecular.get(formula)) {
+			for (ReactionDescription reaction : instance.bimolecular.get(formula)) {
 				for (String compound : reaction.getReactants()) {
 					for (DissolvedMolecule molecule : disolved) {
 						if (molecule.getFormula().equals(compound)) {
@@ -208,7 +210,7 @@ public class ReactionRegistry {
 				products.remove(compound);
 			}
 			for (String key : instance.bimolecular.keySet()) {
-				for (ReactionDescription reaction : (List<ReactionDescription>)instance.bimolecular.get(key)) {
+				for (ReactionDescription reaction : instance.bimolecular.get(key)) {
 					for (String compound : reaction.getReactants()) {
 						products.remove(compound);
 					}
@@ -231,19 +233,19 @@ public class ReactionRegistry {
 	public void load(String fileName) throws IOException {
 		
 		// Define our working maps
-		Map<String, List<ReactionDescription>> bimolecular = new Object2ObjectOpenHashMap<String, List<ReactionDescription>>();
-		Map<String, List<String>> photoysis = new Object2ObjectOpenHashMap<String, List<String>>();
-		Map<String, List<ReactionDescription>> unimolecular = new Object2ObjectOpenHashMap<String, List<ReactionDescription>>();
+		Map<String, List<ReactionDescription>> bimolecular = new HashMap<String, List<ReactionDescription>>();
+		Map<String, String[]> photoysis = new HashMap<String, String[]>();
+		Map<String, List<ReactionDescription>> unimolecular = new HashMap<String, List<ReactionDescription>>();
 		
 		List<ReactionDescription> reactions = Parser.parseReactions(fileName); 
 		for (ReactionDescription reaction : reactions) {
 			// Note what we are currently loading
 			String message = "Loading " + reaction.toString() + " (";						
-			if (reaction.getReactants().size() == 1) {
+			if (reaction.getReactants().length == 1) {
 				// This is a unimolecular reaction
 				addUnimolecularReaction(reaction, unimolecular);
 				message += "unimolecular";
-			} else if (reaction.getReactants().contains("UV")) {
+			} else if (Arrays.asList(reaction.getReactants()).contains("UV")) {
 				// This is a photolysis reaction
 				addPhotolysisReaction(reaction, photoysis);
 				message += "photolysis";
@@ -262,21 +264,37 @@ public class ReactionRegistry {
 		}
 		
 		// Everything is loaded, now lock it down
-		this.bimolecular = Collections.unmodifiableMap(new Object2ObjectOpenHashMap<String, List<ReactionDescription>>(bimolecular));
-		this.photolysis = Collections.unmodifiableMap(new Object2ObjectOpenHashMap<String, List<String>>(photoysis));
-		this.unimolecular = Collections.unmodifiableMap(new Object2ObjectOpenHashMap<String, List<ReactionDescription>>(unimolecular));
+		this.photolysis = Collections.unmodifiableMap(new HashMap<String, String[]>(photoysis));
+		this.bimolecular = fixMap(bimolecular);
+		this.unimolecular = fixMap(unimolecular);
+	}
+	
+	private Map<String, ReactionDescription[]> fixMap(Map<String, List<ReactionDescription>> source) {
+		Map<String, ReactionDescription[]> working = new HashMap<String, ReactionDescription[]>();
+		for (String key : source.keySet()) {
+			ReactionDescription[] rd = new ReactionDescription[source.get(key).size()];
+			for (int ndx = 0; ndx < source.get(key).size(); ndx++) {
+				rd[ndx] = source.get(key).get(ndx);
+			}
+			working.put(key, rd);
+		}
+		return Collections.unmodifiableMap(new HashMap<String, ReactionDescription[]>(working));
 	}
 	
 	/**
 	 * Extract the unique entity names from the collection.
 	 */
-	private HashSet<String> extractEntities(Map<String, List<ReactionDescription>> reactions) {
+	private HashSet<String> extractEntities(Map<String, ReactionDescription[]> reactions) {
 		HashSet<String> entities = new HashSet<String>();
 		for (String key : reactions.keySet()) {
 			entities.add(key);
 			for (ReactionDescription value : reactions.get(key)) {
-				entities.addAll(value.getReactants());
-				entities.addAll(value.getProducts());
+				for (String formula : value.getReactants()) {
+					entities.add(formula);
+				}
+				for (String formula : value.getProducts()) {
+					entities.add(formula);
+				}
 			}
 		}
 		return entities;

@@ -1,7 +1,6 @@
 package edu.mtu.compound;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import edu.mtu.catalog.ReactionDescription;
@@ -41,6 +40,10 @@ public class Reaction {
 
 		// Note the age
 		int age = molecule.updateAge();
+		
+		// Local pointer to the reactions
+		ReactionDescription[] reactions = molecule.getReactions();
+		int size = reactions.length;
 
 		// Keep track of the odds
 		boolean probabilistic = false;
@@ -48,9 +51,14 @@ public class Reaction {
 		
 		// Find the indicies and odds of valid reactions
 		ArrayList<Integer> indicies = new ArrayList<Integer>();
-		for (int ndx = 0; ndx < molecule.getReactions().size(); ndx++) {
+		for (int ndx = 0; ndx < size; ndx++) {
+			// Press on if the descrption is null
+			if (reactions[ndx] == null) {
+				continue;
+			}
+			
 			// Check to see if this reaction shouldn't occur yet
-			ReactionDescription reaction = molecule.getReactions().get(ndx);
+			ReactionDescription reaction = reactions[ndx];
 			if (reaction.getReactionRate() > age) {
 				continue;
 			}
@@ -65,28 +73,26 @@ public class Reaction {
 		}
 				
 		if (probabilistic) {
-			doProbabilistic(molecule, indicies, reactionOdds);
+			doProbabilistic(molecule, reactions, indicies, reactionOdds);
 		} else {
 			// Process the reactions
 			for (int index : indicies) {
-				ReactionDescription reaction = molecule.getReactions().get(index);
 				// Create the products for the reaction
 				Reactor reactor = Reactor.getInstance();
 				Int3D location = reactor.getLocation(molecule);
-				for (String product : reaction.getProducts()) {			
+				for (String product : reactions[index].getProducts()) {			
 					create(product, location);
 				}
 			}
 		}
 			
-		// Remove the reactions that occurred
-		Collections.sort(indicies, Collections.reverseOrder());
+		// Null out the reactions that occurred
 		for (int ndx : indicies) {
-			molecule.getReactions().remove(ndx);
+			reactions[ndx] = null;
 		}
 	}
 	
-	private void doProbabilistic(DisproportionatingMolecule molecule, ArrayList<Integer> indicies, ArrayList<Double> reactionOdds) {
+	private void doProbabilistic(DisproportionatingMolecule molecule, ReactionDescription[] reactions, ArrayList<Integer> indicies, ArrayList<Double> reactionOdds) {
 		// Add the odds so we can do a single dice roll
 		int size = reactionOdds.size();
 		double value = 0;
@@ -105,9 +111,8 @@ public class Reaction {
 			
 			// If the selected value is in the range, then create the products and return
 			if (previous <= selected && selected <= reactionOdds.get(ndx)) {
-				ReactionDescription reaction = molecule.getReactions().get(indicies.get(ndx));
 				Int3D location = Reactor.getInstance().getLocation(molecule);
-				for (String product : reaction.getProducts()) {			
+				for (String product : reactions[indicies.get(ndx)].getProducts()) {			
 					create(product, location);
 				}
 				return;
@@ -131,17 +136,25 @@ public class Reaction {
 		}
 
 		// First, see if there are any bimolecular reactions to take place
-		if (bimolecularReaction(molecule)) {
-			return true;
+		if (molecule.hasBimoleculear()) {
+			Bag molecules = Reactor.getInstance().getMolecules(molecule);
+			int size = molecules.numObjs;
+			if (size > 1 && bimolecularReaction(molecule, molecules)) {
+				return true;
+			}
 		}
 		
 		// Second, see if unimolecular decay needs to take place
-		if (unimolecularDecay(molecule)) {
+		if (molecule.hasUnimolecular() && unimolecularDecay(molecule)) {
 			return true;
 		}
 
 		// Finally, see if photolysis needs to take place
-		return photolysis(molecule);
+		if (molecule.hasPhotolysis()) {
+			return photolysis(molecule);
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -157,28 +170,17 @@ public class Reaction {
 	/**
 	 * Perform a bimolecular reaction on the given species.
 	 */
-	private boolean bimolecularReaction(Molecule molecule) {
+	private boolean bimolecularReaction(Molecule molecule, final Bag molecules) {
 		// Get the possible reactions for this species
-		List<ReactionDescription> reactions = ReactionRegistry.getBimolecularReaction(molecule);
-		if (reactions == null) {
-			return false;
-		}
+		ReactionDescription[] reactions = ReactionRegistry.getBimolecularReaction(molecule);
 		
 		// Check to see what other species at this location react with the given one
-		Bag molecules = Reactor.getInstance().getMolecules(molecule);
-		for (Object reactant : molecules) {
-			
-			// Break when we encounter a null
-			if (reactant == null) {
-				break;
-			}
-			
-			if (reactant.equals(molecule)) {
+		int size = molecules.numObjs;
+		for (int ndx = 0; ndx < size; ndx++) {
+			if (molecules.get(ndx).equals(molecule)) {
 				continue;
 			}
-									
-			// Process the reactants and press on if a match is not found
-			if (process(molecule, (Molecule)reactant, reactions)) {
+			if (process(molecule, (Molecule)molecules.get(ndx), reactions)) {
 				return true;
 			}
 		}
@@ -204,7 +206,7 @@ public class Reaction {
 	 */
 	private boolean photolysis(Molecule molecule) {
 		// Return if there are no products registered
-		List<String> products = ReactionRegistry.getPhotolysisReaction(molecule);
+		String[] products = ReactionRegistry.getPhotolysisReaction(molecule);
 		if (products == null) {
 			return false;
 		}
@@ -229,7 +231,7 @@ public class Reaction {
 	/**
 	 * Process the reactions that are possible for this entity.
 	 */
-	private boolean process(Molecule molecule, Molecule reactant, List<ReactionDescription> reactions) {
+	private boolean process(Molecule molecule, Molecule reactant, ReactionDescription[] reactions) {
 		// Can this reaction occur?
 		List<ReactionDescription> matched = new ArrayList<ReactionDescription>();
 		for (ReactionDescription rd : reactions) {
@@ -271,13 +273,7 @@ public class Reaction {
 	 * Perform a unimolecular reaction on the given species.
 	 */
 	private boolean unimolecularDecay(Molecule molecule) {
-		// Get the possible reactions for this species
-		List<ReactionDescription> reactions = ReactionRegistry.getUnimolecularReaction(molecule);
-		if (reactions == null) {
-			return false;
-		}
-		
-		// Return the results of processing the reactions
+		ReactionDescription[] reactions = ReactionRegistry.getUnimolecularReaction(molecule);
 		return process(molecule, null, reactions);
 	}
 }

@@ -100,7 +100,7 @@ public class ChemSim implements Simulation {
 	 */
 	@Override
 	public void start(int timeSteps) {
-		System.out.println("\nStarting simulation...");
+		System.out.println("\n" + LocalDateTime.now() + ": Starting simulation...");
 		schedule.start(this, timeSteps);
 	}
 	
