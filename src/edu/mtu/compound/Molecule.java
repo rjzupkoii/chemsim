@@ -1,14 +1,16 @@
 package edu.mtu.compound;
 
-import ec.util.MersenneTwisterFast;
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.primitives.Int3D;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;
 import edu.mtu.simulation.schedule.Steppable;
+import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 
 public class Molecule extends Steppable{
 
+	private boolean hasReactants;
+	private Int3D dimensions;
 	private String formula;
 		
 	/**
@@ -16,27 +18,33 @@ public class Molecule extends Steppable{
 	 */
 	public Molecule(String formula) {
 		this.formula = formula;
+		dimensions = Reactor.getInstance().dimensions;
+		hasReactants = ReactionRegistry.hasReactants(formula);
+	}
+	
+	/**
+	 * Constructor, mostly for probing memory space.
+	 */
+	public Molecule(String formula, Int3D dimensions, boolean hasReactants) {
+		this.formula = formula;
+		this.dimensions = dimensions;
+		this.hasReactants = hasReactants;
 	}
 	
 	@Override
 	public void doAction() {
-			
-		// Check to see if any reactants exist for us, if they don't then disappear
-		if (ReactionRegistry.getInstance().getProducts().contains(formula)) {
+		
+		// If no reactants exist for us, then dispose of ourselves
+		if (!hasReactants) {
 			dispose(false);
 			return;
 		}
-		
-		// Attempt to move this molecule
-		Reactor reactor = Reactor.getInstance();
-		Int3D location = move(reactor.getLocation(this), reactor.getContainer());
-		
+			
 		if (react()) {
 			// If a reaction occurred, dispose of this molecule
 			dispose();
 		} else {
-			// Otherwise, apply the movement
-			reactor.setLocation(this, location);
+			move();
 		}		
 	}
 		
@@ -70,35 +78,39 @@ public class Molecule extends Steppable{
 	/**
 	 * Calculate the new location for this molecule.
 	 */
-	private Int3D move(Int3D location, Int3D container) {
+	private void move() {
+				
+		// Get our current location
+		Int3D location = Reactor.getInstance().getLocation(this);
+		
 		// Generate the random values for the walk 
-		MersenneTwisterFast random = ChemSim.getInstance().random;
-		double walkX = random.nextGaussian();
-		double walkY = random.nextGaussian();
-		double walkZ = random.nextGaussian();
+		XoRoShiRo128PlusRandom random = ChemSim.getInstance().random;
+		double walkX = random.nextDoubleFast();
+		double walkY = random.nextDoubleFast();
+		double walkZ = random.nextDoubleFast();
 		
 		// Apply the values, note that we are discarding everything outside of one standard deviation
-		int x = location.x + ((walkX > 0 && walkX <= 1) ? 1 : 0);
-		x += (walkX <= 0 && walkX >= -1) ? -1 : 0;
+		int x = location.x + (walkX >= 0.5 ? 1 : 0);
+		x += (walkX < 0.5) ? -1 : 0;
 		
-		int y = location.y + ((walkY > 0 && walkY <= 1) ? 1 : 0);
-		y += (walkY <= 0 && walkY >= -1) ? -1 : 0;
+		int y = location.y + ((walkY >= 0.5) ? 1 : 0);
+		y += (walkY < 0.5) ? -1 : 0;
 		
-		int z = location.z + ((walkZ > 0 && walkZ <= 1) ? 1 : 0);
-		z += (walkZ <= 0 && walkZ >= -1) ? -1 : 0;
+		int z = location.z + ((walkZ >= 0.5) ? 1 : 0);
+		z += (walkZ < 0.5) ? -1 : 0;
 		
 		// Adjust the location as needed so we stay in the bounds of the container
-		x = (x > container.x) ? container.x : x;
+		x = (x > dimensions.x) ? dimensions.x : x;
 		x = (x < 0) ? 0 : x;
 		
-		y = (y > container.y) ? container.y : y;
+		y = (y > dimensions.y) ? dimensions.y : y;
 		y = (y < 0) ? 0 : y;
 		
-		z = (z > container.z) ? container.z : z;
+		z = (z > dimensions.z) ? dimensions.z : z;
 		z = (z < 0) ? 0 : z;
 		
-		// Return the new location
-		return new Int3D(x, y, z);
+		// Set the new location		
+		Reactor.getInstance().setLocation(this, new Int3D(x, y, z));
 	}
 
 	/**

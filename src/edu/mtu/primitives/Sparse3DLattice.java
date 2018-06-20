@@ -23,8 +23,11 @@ import sim.util.Bag;
 public class Sparse3DLattice {
 
 	// TODO This is a point where tuning can take place
-	// Size of the bags when we start
+	// Parameters for sizing and resizing bags
 	private final static int INITIAL_BAG_SIZE = 16;
+	private final static int LARGE_BAG_RATIO = 4;
+	private final static int MIN_BAG_SIZE = 32;
+	private final static int REPLACEMENT_BAG_RATIO = 2;
 	
 	/* Note that for now we are using Int3D from MASON, the class may need to be upgraded though. */
 	private THashMap<Object, LocationAndIndex> entityMap;
@@ -37,7 +40,7 @@ public class Sparse3DLattice {
 	private int partitions;
 	
 	// The size is the divisor to use to find the partition based upon the coordinates
-	private int partitionSize;
+	private static int partitionSize;
 		
 	/**
 	 * Private constructor.
@@ -69,8 +72,8 @@ public class Sparse3DLattice {
 		
 		// TODO How this is done needs to be refined
 		// Determine the partition size based upon the dimensions
-		lattice.partitionSize = 100;
-		lattice.partitions = (int)(x / lattice.partitionSize) + 1;
+		partitionSize = 100;
+		lattice.partitions = (int)(x / partitionSize) + 1;
 
 		// Assume a uniform distribution of entities
 		int allocation = (int)(maxEntities / Math.pow(lattice.partitions, 3)); 
@@ -96,6 +99,20 @@ public class Sparse3DLattice {
 	}
 	
 	/**
+	 * Get the all of the objects that share the location of the given object.
+	 * 
+	 * @param object To base the location on.
+	 * @return The bag of objects, or null if the original object was not found.
+	 */
+	public Bag getColocatedObjects(final Object object) {
+		LocationAndIndex lai = entityMap.get(object);
+		if (lai == null) {
+			return null;
+		}
+		return latticeMap[lai.ix][lai.iy][lai.iz].lattice.get(lai.location);
+	}
+	
+	/**
 	 * Get the location of the given object.
 	 * 
 	 * @param object To retrieve the location of.
@@ -112,13 +129,14 @@ public class Sparse3DLattice {
 	 * @param location To retrieve the objects from.
 	 * @return The bag of objects or null.
 	 */
-	public Bag getObjectsAtLocation(Int3D location) {
-		// Index to the correct HashMap
-		Int3D index = latticeIndex(location);
+	public Bag getObjectsAtLocation(final Int3D location) {
+		// Calculate the location of the lattice section based upon the location.
+		int ix = (int)(location.x / partitionSize);
+		int iy = (int)(location.y / partitionSize);
+		int iz = (int)(location.x / partitionSize);			
 		
-		// Retrieve, check the bag, and return
-		Bag bag = latticeMap[index.x][index.y][index.z].lattice.get(location);
-		return (bag == null || bag.numObjs == 0) ? null : bag;
+		// Retrieve the bag, if any, and return
+		return latticeMap[ix][iy][iz].lattice.get(location);
 	}
 	
 	/**
@@ -127,7 +145,7 @@ public class Sparse3DLattice {
 	 * @param object to be removed.
 	 * @return The location of the object, or null if it doesn't exist.
 	 */
-	public Int3D remove(Object object) {
+	public Int3D remove(final Object object) {
 		
 		// Start by removing the object finding out where it is located
 		LocationAndIndex lai = entityMap.remove(object);
@@ -136,10 +154,19 @@ public class Sparse3DLattice {
 		}
 				
 		// Remove from the the location lattice
-		Bag bag = latticeMap[lai.index.x][lai.index.y][lai.index.z].lattice.get(lai.location);
+		Bag bag = latticeMap[lai.ix][lai.iy][lai.iz].lattice.get(lai.location);
 		bag.remove(object);
 		
-		// TODO Determine if bag resizing or removal should take place
+		// Clear empty bags
+		int count = bag.numObjs;
+		if (count == 0) {
+			bag.clear();
+		}
+
+		// Shrink oversized bags
+        if (count >= MIN_BAG_SIZE && count * LARGE_BAG_RATIO <= bag.objs.length) {
+        	bag.shrink(count * REPLACEMENT_BAG_RATIO); 
+		}
 		
 		// Return the location
 		return lai.location;		
@@ -151,7 +178,7 @@ public class Sparse3DLattice {
 	 * @param object to be added or updated.
 	 * @param location of the object in the lattice.
 	 */
-	public void setObjectLocation(Object object, Int3D location) {
+	public void setObjectLocation(final Object object, final Int3D location) {
 		
 		// Start by checking our conditions
 		if (object == null) {
@@ -164,9 +191,12 @@ public class Sparse3DLattice {
 		// Check to see if the object already exists
 		LocationAndIndex lai = entityMap.get(object);
 				
+		// Create an empty bag
+		Bag bag = null;
+		
 		if (lai == null) {
 			// No location returned, must be a new object
-			lai = new LocationAndIndex(location, latticeIndex(location));
+			lai = new LocationAndIndex(location);
 			entityMap.put(object, lai);
 		} else {
 			// Return if there is no update
@@ -176,37 +206,33 @@ public class Sparse3DLattice {
 			
 			// We have a location, so we are updating
 			// Start by removing the object from the old bag
-			Bag bag = latticeMap[lai.index.x][lai.index.y][lai.index.z].lattice.get(lai.location);
+			bag = latticeMap[lai.ix][lai.iy][lai.iz].lattice.get(lai.location);
 			bag.remove(object);
 			
+			// Clear empty bags
+			int count = bag.numObjs;
+			if (count == 0) {
+				bag.clear();
+			}
+
+			// Shrink oversized bags
+            if (count >= MIN_BAG_SIZE && count * LARGE_BAG_RATIO <= bag.objs.length) {
+            	bag.shrink(count * REPLACEMENT_BAG_RATIO); 
+			}
+			
 			// Update our location
-			lai.location = location;
-			lai.index = latticeIndex(location);			
+			lai = new LocationAndIndex(location);
 		}
 		
 		// Update the bag in the lattice
-		Bag bag = latticeMap[lai.index.x][lai.index.y][lai.index.z].lattice.get(location);
+		bag = latticeMap[lai.ix][lai.iy][lai.iz].lattice.get(location);
 		if (bag == null) {
 			bag = new Bag(INITIAL_BAG_SIZE);
-			latticeMap[lai.index.x][lai.index.y][lai.index.z].lattice.put(lai.location, bag);
+			latticeMap[lai.ix][lai.iy][lai.iz].lattice.put(lai.location, bag);
 		} 
 		bag.add(object);
 	}
-	
-	/**
-	 * Calculate the location of the lattice section based upon the location.
-	 *  
-	 * It's good practice to keep this code in one spot since everything is 
-	 * dependent upon it. In theory this should be in-lined by javac as well. 
-	 */
-	private final Int3D latticeIndex(Int3D location) {
-		int x = (int)(location.x / partitionSize);
-		int y = (int)(location.y / partitionSize);
-		int z = (int)(location.z / partitionSize);
 		
-		return new Int3D(x, y, z, 0);
-	}
-	
 	/**
 	 * Java does not approve of using generics in arrays, so wrap the hashmap to get around that.
 	 */
@@ -224,11 +250,13 @@ public class Sparse3DLattice {
 	 */
 	private static class LocationAndIndex {
 		private Int3D location;
-		private Int3D index;
+		private int ix, iy, iz;
 		
-		public LocationAndIndex(final Int3D location, final Int3D index) {
+		public LocationAndIndex(final Int3D location) {
 			this.location = location;
-			this.index = index;
+			ix = (int)(location.x / partitionSize);
+			iy = (int)(location.y / partitionSize);
+			iz = (int)(location.x / partitionSize);		
 		}
 	}
 }

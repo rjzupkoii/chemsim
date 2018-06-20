@@ -6,7 +6,6 @@ import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import ec.util.MersenneTwisterFast;
 import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.compound.Molecule;
 import edu.mtu.parser.ChemicalDto;
@@ -19,6 +18,7 @@ import edu.mtu.simulation.schedule.Simulation;
 import edu.mtu.simulation.tracking.CensusTracking;
 import edu.mtu.simulation.tracking.Converter;
 import edu.mtu.simulation.tracking.TrackEnties;
+import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 
 public class ChemSim implements Simulation {
 				
@@ -44,7 +44,7 @@ public class ChemSim implements Simulation {
 	/**
 	 * Random number generator that is tied to the simulation. 
 	 */
-	public MersenneTwisterFast random;
+	public XoRoShiRo128PlusRandom random;
 	
 	/**
 	 * Constructor.
@@ -79,8 +79,8 @@ public class ChemSim implements Simulation {
 			}
 			
 			// Initialize the model
-			random = new MersenneTwisterFast(seed);
-			Reactor.getInstance().initalize(compounds);
+			random = new XoRoShiRo128PlusRandom(seed);
+			Reactor.initalize(compounds);
 			printHeader();
 			
 			// Load the compounds and decay model
@@ -131,10 +131,11 @@ public class ChemSim implements Simulation {
 		}
 		
 		// Reset the tracker and note the step
-		boolean flush = (count % REPORT == 0);
+		boolean flush = (count % REPORT == 0) || true;
 		tracker.reset(flush);
 		if (flush) {
 			System.out.println(count + " of " + total);
+			System.out.println(LocalDateTime.now());
 		}
 	}
 	
@@ -212,7 +213,7 @@ public class ChemSim implements Simulation {
 		long multiplier = reactor.getMaximumMolecules() / total;
 		
 		// Add the chemicals to the model
-		Int3D container = reactor.getContainer();
+		Int3D container = reactor.dimensions;
 		for (ChemicalDto chemical : chemicals) {
 			long count = chemical.count * multiplier;			
 			System.out.println("Generating " + count + " molecules of " + chemical.formula);			
@@ -265,7 +266,7 @@ public class ChemSim implements Simulation {
 	private void printHeader() {
 		long size = Reactor.getInstance().getMoleculeSize();
 		long maxMolecules = Reactor.getInstance().getMaximumMolecules();
-		Int3D container = Reactor.getInstance().getContainer();
+		Int3D container = Reactor.getInstance().dimensions;
 		System.out.println("\n" + LocalDateTime.now());		
 		System.out.println("\nMax Memory:         " + Runtime.getRuntime().maxMemory() + "b");
 		System.out.println("Molecule Size:      " + size + "b");

@@ -24,23 +24,26 @@ public class Reactor {
 	public final static double AvogadrosNumber = 6.02214085774E23;
 	public final static double MemoryOverhead = 0.9;
 	
-	private static Reactor instance = new Reactor();
+	private static Reactor instance;
 	
 	private int moleculeCount;
 	private long moleculeSize;
 
-	private Int3D container;
+	public final Int3D dimensions;
 	private Sparse3DLattice grid; 
 	
 	/**
 	 * Constructor.
 	 */
-	private Reactor() { }
+	private Reactor(Int3D dimensions) { 
+		this.dimensions = dimensions;
+	}
 	
 	/**
 	 * Get an instance of the reactor.
 	 */
 	public static Reactor getInstance() { 
+		assert (instance != null);
 		return instance;
 	}
 	
@@ -57,14 +60,7 @@ public class Reactor {
 		double result = Math.cbrt((Math.pow(10.0, 24.0) * (double)molecules) / (count * AvogadrosNumber));
 		return (int)Math.ceil(result);
 	}
-	
-	/**
-	 * Get the dimensions of the reactor.
-	 */
-	public Int3D getContainer() {
-		return container;
-	}
-	
+		
 	public Int3D getLocation(Molecule molecule) {
 		return grid.getObjectLocation(molecule);
 	}
@@ -85,23 +81,18 @@ public class Reactor {
 		objects.toArray(array);
 		return array;
 	}
-	
-	/**
-	 * Get the molecules at the given location in the reactor.
-	 */
-	public Molecule[] getMolecules(Int3D location) {
-		// Get the bag, note that it may be null
-		Bag bag = grid.getObjectsAtLocation(location);
-		if (bag == null) {
-			return new Molecule[0];
-		}
 		
-		// Convert it to an array and return
-		Molecule[] array = new Molecule[bag.numObjs];
-		bag.toArray(array);
-		return array;
+	/**
+	 * Get the molecules at the same location as the given molecule.
+	 */
+	public Bag getMolecules(Molecule molecule) {
+		Bag results = grid.getColocatedObjects(molecule);
+		
+		assert (results != null && results.numObjs > 0);
+		
+		return results;
 	}
-	
+		
 	/**
 	 * Return the estimated total size of a molecule, in bytes.
 	 */
@@ -114,27 +105,30 @@ public class Reactor {
 	 * 
 	 * @param compounds a list of compounds that are going to be fed into the reactor.
 	 */
-	public void initalize(List<ChemicalDto> compounds) {
+	public static void initalize(List<ChemicalDto> compounds) {
 		try {
 			// Start by determining how much space we have to work with, note
 			// that this is based upon free memory to account for program over
 			// head that we have no control over
 			long heapSize = Runtime.getRuntime().maxMemory();
 			
-			// Calculate out how many molecules we can create, note that the molecule 
-			// will exist in the sparse matrix and the schedule as well
-			moleculeSize = SizeOf.deepSizeOf(new Molecule("CH3COCH2OH")) * 3;
-			moleculeCount = (int) ((heapSize * MemoryOverhead) / moleculeSize);
+			// Calculate out how many molecules we can create
+			long size = SizeOf.deepSizeOf(new Molecule("CH3COCH2OH", new Int3D(0, 0, 0), false)) * 3;
+			int count = (int) ((heapSize * MemoryOverhead) / size);
 			
 			// Check to see if a molecule limit was enforced
 			if (SimulationProperties.getInstance().getMoleculeLimit() != SimulationProperties.NO_LIMIT) {
-				moleculeCount = SimulationProperties.getInstance().getMoleculeLimit();
+				count = SimulationProperties.getInstance().getMoleculeLimit();
 			}
 			
 			// Use the maximum molecule count to estimate a size for the reactor
-			int dimension = calculateSize(compounds, moleculeCount);
-			container = new Int3D(dimension, dimension, dimension);
-			grid = Sparse3DLattice.create3DLattice(moleculeCount * 2, dimension);
+			int dimension = calculateSize(compounds, count);
+			
+			// Create the reactor, set relevant values, and return
+			instance = new Reactor(new Int3D(dimension, dimension, dimension));
+			instance.grid = Sparse3DLattice.create3DLattice(count, dimension);
+			instance.moleculeCount = count;
+			instance.moleculeSize = size;
 			
 		} catch (IllegalArgumentException ex) {
 			System.err.println("Fatal Error while initalizing the Reactor");

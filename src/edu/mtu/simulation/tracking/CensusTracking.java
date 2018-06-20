@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.mtu.catalog.ReactionRegistry;
 import edu.mtu.compound.Molecule;
 import edu.mtu.reactor.Reactor;
 
@@ -42,7 +43,7 @@ public class CensusTracking extends Tracker {
 			// Write them to the file
 			for (String entity : entities) {
 				// Write a sentinel value for products
-				if (products.contains(entity)) {
+				if (!ReactionRegistry.hasReactants(entity)) {
 					writer.write(-1);
 					continue;
 				}

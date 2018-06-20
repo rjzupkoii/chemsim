@@ -36,14 +36,4 @@ public class ReactionRegistryTests {
 		}
 		Assert.assertEquals(0, entities.size());
 	}
-	
-	@Test
-	public void getProductsTest() {
-		List<String> entities = ReactionRegistry.getInstance().getProducts();
-		for (String expected : expectedProducts) {
-			Assert.assertTrue(expected, entities.contains(expected));
-			entities.remove(expected);
-		}
-		Assert.assertEquals(0, entities.size());
-	}
 }

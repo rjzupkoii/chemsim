@@ -487,6 +487,7 @@ public class Bag implements java.util.Collection, java.io.Serializable, Cloneabl
         }
     
     /** Shuffles (randomizes the order of) the Bag */
+    /*
     public void shuffle(ec.util.MersenneTwisterFast random)
         {
         // teeny bit faster
@@ -502,7 +503,7 @@ public class Bag implements java.util.Collection, java.io.Serializable, Cloneabl
             objs[x] = objs[rand];
             objs[rand] = obj;
             }
-        }
+        }*/
     
     /** Reverses order of the elements in the Bag */
     public void reverse()

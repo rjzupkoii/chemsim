@@ -13,7 +13,6 @@ import edu.mtu.catalog.ReactionRegistry;
 public abstract class Tracker {
 	protected BufferedCsvWriter writer; 
 	protected List<String> entities;
-	protected List<String> products;
 	
 	/**
 	 * Constructor, prepare the list of entities.
@@ -63,9 +62,6 @@ public abstract class Tracker {
 		if (index != -1) {
 			entities.remove(index);
 		}
-		Collections.sort(entities);
-		
-		// Note the products
-		products = ReactionRegistry.getInstance().getProducts();
+		Collections.sort(entities);		
 	}
 }

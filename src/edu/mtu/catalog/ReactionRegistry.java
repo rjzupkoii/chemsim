@@ -3,7 +3,6 @@ package edu.mtu.catalog;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +11,7 @@ import javax.activity.InvalidActivityException;
 
 import edu.mtu.compound.Molecule;
 import edu.mtu.parser.Parser;
+import gnu.trove.map.hash.THashMap;
 
 /**
  * This singleton contains a look up of the reactions in the simulation. In order to account for 
@@ -20,16 +20,17 @@ import edu.mtu.parser.Parser;
 public class ReactionRegistry {
 
 	private static ReactionRegistry instance = new ReactionRegistry();
-	private List<String> products;
+	
+	private THashMap<String, Boolean> hasReactants = new THashMap<String, Boolean>();
 	
 	// Photolysis is [Reactant] + UV -> [Product] + ... + [Product] 
-	private Map<String, List<String>> photolysis = new HashMap<String, List<String>>();
+	private THashMap<String, List<String>> photolysis = new THashMap<String, List<String>>();
 		
 	// Bimolecular reactions are [Reactant] + [Reactant] -> [Product] + ... + [Product]
-	private Map<String, List<ReactionDescription>> bimolecular = new HashMap<String, List<ReactionDescription>>();
+	private THashMap<String, List<ReactionDescription>> bimolecular = new THashMap<String, List<ReactionDescription>>();
 	
 	// Unimolecular reactions are [Reactant] -> [Product] + ... + [Product]
-	private Map<String, List<ReactionDescription>> unimolecular = new HashMap<String, List<ReactionDescription>>();
+	private THashMap<String, List<ReactionDescription>> unimolecular = new THashMap<String, List<ReactionDescription>>();
 	
 	/**
 	 * Singleton constructor.
@@ -94,10 +95,10 @@ public class ReactionRegistry {
 	 * Clear the current contents of the registry.
 	 */
 	public void clear() {
-		products = null;
 		bimolecular.clear();
 		photolysis.clear();
 		unimolecular.clear();
+		hasReactants.clear();
 	}
 	
 	/**
@@ -127,39 +128,7 @@ public class ReactionRegistry {
 		
 		return new ArrayList<String>(entities);
 	}
-	
-	/**
-	 * Get a list of all of the entities in the registry that do not react with anything.
-	 * @return A list of all the non-reactive entities in the registry.
-	 */
-	public List<String> getProducts() {
-		// Has the work already been done?
-		if (products != null) {
-			return products;
-		}
-		
-		// Start by getting a list of everything
-		products = getEntityList();
-		
-		// Remove ones that are reactants
-		for (String compound : photolysis.keySet()) {
-			products.remove(compound);
-		}
-		for (String compound : unimolecular.keySet()) {
-			products.remove(compound);
-		}
-		for (String key : bimolecular.keySet()) {
-			for (ReactionDescription reaction : (List<ReactionDescription>)bimolecular.get(key)) {
-				for (String compound : reaction.getReactants()) {
-					products.remove(compound);
-				}
-			}
-		}
-		
-		// Return the results
-		return products;		
-	}
-		
+			
 	/**
 	 * Returns the photolysis products for the chemical species or null.
 	 */
@@ -180,6 +149,43 @@ public class ReactionRegistry {
 	public List<ReactionDescription> getUnimolecularReaction(Molecule molecule) {
 		List<ReactionDescription> results = unimolecular.get(molecule.getFormula());
 		return (results == null) ? null : Collections.unmodifiableList(results);
+	}
+	
+	/**
+	 * 
+	 * @param formula
+	 * @return
+	 */
+	public static boolean hasReactants(String formula) {
+		assert (instance != null);
+		
+		// If the key doesn't already exist, then scan the known formulas to 
+		// determine if it is a product or a reactant
+		if (!instance.hasReactants.containsKey(formula)) {
+			// Start by getting a list of everything
+			List<String> products = instance.getEntityList();
+			
+			// Remove ones that are reactants
+			for (String compound : instance.photolysis.keySet()) {
+				products.remove(compound);
+			}
+			for (String compound : instance.unimolecular.keySet()) {
+				products.remove(compound);
+			}
+			for (String key : instance.bimolecular.keySet()) {
+				for (ReactionDescription reaction : (List<ReactionDescription>)instance.bimolecular.get(key)) {
+					for (String compound : reaction.getReactants()) {
+						products.remove(compound);
+					}
+				}
+			}
+			
+			// Note the results
+			instance.hasReactants.put(formula, !products.contains(formula));
+		}
+		
+		// Return the result
+		return instance.hasReactants.get(formula);
 	}
 	
 	/**

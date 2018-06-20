@@ -167,15 +167,19 @@ public class Reaction {
 		}
 		
 		// Check to see what other species at this location react with the given one
-		Reactor reactor = Reactor.getInstance();
-		Int3D location = reactor.getLocation(molecule);
-		for (Molecule reactant : reactor.getMolecules(location)) {
+		for (Object reactant : Reactor.getInstance().getMolecules(molecule)) {
+			
+			// Break when we encounter a null
+			if (reactant == null) {
+				break;
+			}
+			
 			if (reactant.equals(molecule)) {
 				continue;
 			}
 									
 			// Process the reactants and press on if a match is not found
-			if (process(molecule, reactant, reactions)) {
+			if (process(molecule, (Molecule)reactant, reactions)) {
 				return true;
 			}
 		}
