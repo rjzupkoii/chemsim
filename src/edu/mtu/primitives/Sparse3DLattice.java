@@ -3,6 +3,7 @@ package edu.mtu.primitives;
 import java.util.Map;
 import java.util.Set;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import sim.util.Bag;
 
@@ -23,27 +24,21 @@ import sim.util.Bag;
  */
 public class Sparse3DLattice {
 
-	private final static int ENTITY_MULTIPLIER = 2;
-	private final static int PARTITION_MULTIPLIER = 3;
+	// Multiplier for setting the initial hash map size
+	private final static int ENTITY_MULTIPLIER = 3;
 	
 	// Parameters for sizing and resizing bags, this is a point where tuning can take place
 	private final static int INITIAL_BAG_SIZE = 16;
 	private final static int LARGE_BAG_RATIO = 4;
 	private final static int MIN_BAG_SIZE = 32;
 	private final static int REPLACEMENT_BAG_RATIO = 2;
-	
-	/* Note that for now we are using Int3D from MASON, the class may need to be upgraded though. */
-	private Map<Object, LocationAndIndex> entityMap;
-	
-	// The lattice map partitions the lattice into n^3 sections which cuts down
-	// on the amount of work that needs to be done when searching it
-	private Lattice[][][] latticeMap;
 
-	// The number of partitions along one direction in the lattice 
-	private int partitions;
-	
-	// The size is the divisor to use to find the partition based upon the coordinates
-	private static int partitionSize;
+	// This map allows us to find where the entity is and colocated entities in O(c)
+	private Map<Object, LocationAndIndex> entityMap;
+
+	// This map allows us to search for other entities by probing the space, since we are hashing
+	// the coordinates we really only need that hash value to find entities
+	private Map<Integer, Bag> latticeMap;
 	
 	// The size of the partitioned hash tables, used for hashing
 	private static int allocation;
@@ -76,24 +71,12 @@ public class Sparse3DLattice {
 	public static Sparse3DLattice create3DLattice(int maxEntities, int x, int y, int z) {
 		Sparse3DLattice lattice = new Sparse3DLattice();
 		
-		// TODO How this is done needs to be refined
-		// Determine the partition size based upon the dimensions
-		partitionSize = 100;
-		lattice.partitions = (int)(x / partitionSize) + 1;
-
 		// Assume a uniform distribution of entities
-		allocation = (int)(maxEntities / Math.pow(lattice.partitions, 3)) * PARTITION_MULTIPLIER; 
+		allocation = maxEntities * ENTITY_MULTIPLIER;
 				
 		// Allocate and return
 		lattice.entityMap = new Object2ObjectOpenHashMap<Object, LocationAndIndex>(maxEntities * ENTITY_MULTIPLIER);
-		lattice.latticeMap = new Lattice[lattice.partitions][lattice.partitions][lattice.partitions];
-		for (int ndx = 0; ndx < lattice.partitions; ndx++) {
-			for (int ndy = 0; ndy < lattice.partitions; ndy++) {
-				for (int ndz = 0; ndz < lattice.partitions; ndz++) {
-					lattice.latticeMap[ndx][ndy][ndz] = new Lattice(allocation);
-				}
-			}
-		}
+		lattice.latticeMap = new Int2ObjectOpenHashMap<Bag>(maxEntities * ENTITY_MULTIPLIER);
 		return lattice;
 	}
 
@@ -133,19 +116,13 @@ public class Sparse3DLattice {
 	 * @return The bag of objects or null.
 	 */
 	public Bag getObjectsAtLocation(final Int3D location) {
-		// Calculate the location of the lattice section based upon the location.
-		int ix = (int)(location.x / partitionSize);
-		int iy = (int)(location.y / partitionSize);
-		int iz = (int)(location.x / partitionSize);			
-		
-		// Retrieve the bag, if any, and return
-		return latticeMap[ix][iy][iz].lattice.get(location);
+		return latticeMap.get(location.hashCode());
 	}
 	
 	/**
 	 * Hash the x, y, z coordinates provided based upon the internal hash table allocation. 
 	 */
-	public static int hashCoordinates(int x, int y, int z) {
+	private static int hashCoordinates(int x, int y, int z) {
 		// TODO Evaluate this for performance
 		final int p1 = 73856093, p2 = 19349663, p3 = 83492791;
 		return (x * p1 ^ y * p2 ^ z * p3) % allocation;
@@ -215,7 +192,8 @@ public class Sparse3DLattice {
 		
 		if (lai == null) {
 			// No location returned, must be a new object
-			lai = new LocationAndIndex(location);
+			lai = new LocationAndIndex();
+			lai.location = location;
 			entityMap.put(object, lai);
 		} else {
 			// Return if there is no update
@@ -239,31 +217,20 @@ public class Sparse3DLattice {
 			}
 			
 			// Update our location
-			lai = new LocationAndIndex(location);
+            lai.location = location;
 		}
 		
 		// Update the bag in the lattice at the new location
-		Map<Int3D, Bag> lattice = latticeMap[lai.ix][lai.iy][lai.iz].lattice;
-		bag = lattice.get(location);
+		int hash = location.hashCode();
+		bag = latticeMap.get(hash);
 		if (bag == null) {
 			bag = new Bag(INITIAL_BAG_SIZE);
-			lattice.put(location, bag);
+			latticeMap.put(hash, bag);
 		} 
 		bag.add(object);
 		lai.colocated = bag;
 	}
-		
-	/**
-	 * Java does not approve of using generics in arrays, so wrap the hashmap to get around that.
-	 */
-	private static class Lattice {
-		private Map<Int3D, Bag> lattice;
-		
-		public Lattice(int maxEntities) {
-			lattice = new Object2ObjectOpenHashMap<Int3D, Bag>(maxEntities);
-		}
-	}
-	
+			
 	/**
 	 * Helper class that provides the location of the object in the lattice and
 	 * the index of it in a bag.
@@ -271,13 +238,5 @@ public class Sparse3DLattice {
 	private static class LocationAndIndex {
 		private Bag colocated;
 		private Int3D location;
-		private int ix, iy, iz;
-		
-		public LocationAndIndex(final Int3D location) {
-			this.location = location;
-			ix = (int)(location.x / partitionSize);
-			iy = (int)(location.y / partitionSize);
-			iz = (int)(location.x / partitionSize);	
-		}
 	}
 }

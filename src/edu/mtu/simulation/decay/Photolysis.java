@@ -35,9 +35,9 @@ public class Photolysis implements DecayModel {
 	@Override
 	public void prepare(String fileName) throws IOException {
 		// TODO Adjust this for multiple compounds
-		
+//		ChemicalDto chemical = getCompound("H2O2", fileName);
+
 		// Get the current count of H2O2
-		ChemicalDto chemical = getCompound("H2O2", fileName);
 		long count = ChemSim.getTracker().getCount("H2O2");
 		double rate = Parser.parseRate(fileName);
 		double volume = Parser.parseVolume(fileName);
@@ -60,6 +60,7 @@ public class Photolysis implements DecayModel {
 		time = (int)(count / quantity);
 	}
 	
+	// TODO Update this form more moleclues
 	private ChemicalDto getCompound(String compound, String fileName) throws IOException {
 		List<ChemicalDto> compounds = Parser.parseChemicals(fileName);
 		for (ChemicalDto dto : compounds) {

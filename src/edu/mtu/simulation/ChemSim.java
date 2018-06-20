@@ -11,7 +11,6 @@ import edu.mtu.compound.Molecule;
 import edu.mtu.parser.ChemicalDto;
 import edu.mtu.parser.Parser;
 import edu.mtu.primitives.Int3D;
-import edu.mtu.primitives.Sparse3DLattice;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.decay.DecayFactory;
 import edu.mtu.simulation.schedule.Schedule;
@@ -219,10 +218,8 @@ public class ChemSim implements Simulation {
 			System.out.println("Generating " + count + " molecules of " + chemical.formula);			
 			for (int ndx = 0; ndx < count; ndx++) {
 				int x = random.nextInt(container.x), y = random.nextInt(container.y), z = random.nextInt(container.z);
-				int hash = Sparse3DLattice.hashCoordinates(x, y, z);
-				Int3D location = new Int3D(x, y, z, hash);
 				Molecule molecule = new Molecule(chemical.formula);
-				reactor.insert(molecule, location);
+				reactor.grid.setObjectLocation(molecule, x, y, z);
 				schedule.insert(molecule);
 			}
 			
