@@ -1,6 +1,6 @@
 # ChemSim
 
-ChemSim is an agent-based modeling (ABM) approach to computational chemistry. ChemSim is primarily a Java application uses a custom scheduler to manage agents, although still contains some code based upon the use of [MASON Multiagent Simulation Toolkit](http://cs.gmu.edu/~eclab/projects/mason/) to manage to simulation.
+ChemSim is an agent-based modeling (ABM) approach to computational chemistry. ChemSim is primarily a Java application uses a custom scheduler to manage agents, although still contains some code based upon the use of [MASON Multiagent Simulation Toolkit](http://cs.gmu.edu/~eclab/projects/mason/).
 
 ## Development Environment
 
@@ -9,9 +9,9 @@ The following is the development environment:
 - Eclipse IDE Neon Release (4.6.0 or 4.6.1)
 - Java SE SDK 8 (JavaSE-1.8)
 
-The MASON JAR file is included due to some remaining dependencies, additional project libraries not included are managed using the MAVEN POM file.
+The SizeOf JAR file is included and is repsonsible for benchmarking the size of objects when the model starts. This is used to control how many agents are created. All other dependences are managed through the MAVEN POM file.
 
-Additionally, the following Eclipse plug-ins are recommended for developers:
+The following Eclipse plug-ins are recommended for developers wishing to see all documentation:
 
 - ObjectAid UML Explorer for Eclipse (1.1.11)
 
@@ -20,6 +20,10 @@ Additionally, the following Eclipse plug-ins are recommended for developers:
 The simulation makes use of premain instrumentation and needs to be launched with the following parameters:
 
   -javaagent:lib/SizeOf.jar 
+
+Depending upon the molelcue count, tuning of the JVM will be needed to either ensure enough space or prevent overcollection by the GC. One starting point is the following, but they are by no means guarneteed to be ideal:
+
+ -Xms4G  -XX:+UseParallelGC -XX:NewRatio=4
 
 ### Launch Examples
 With experimental data controlling hydrogen peroxide decay,
