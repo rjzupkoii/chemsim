@@ -148,14 +148,14 @@ public class Parser {
 			List<String> reactant = new ArrayList<String>();
 			for (int ndx = 0; ndx < reactants; ndx++) {
 				if (!enteries[ndx].isEmpty()) {
-					reactant.add(enteries[ndx]);	
+					reactant.add(enteries[ndx].trim());	
 				}
 			}
 						
 			// Process the products
 			List<String> product = new ArrayList<String>();
 			for (int ndx = 0; ndx < products; ndx++) {
-				product.addAll(parseProduct(enteries[reactants + ndx]));
+				product.addAll(parseProduct(enteries[reactants + ndx].trim()));
 			}				
 			
 			// Note the reaction rate

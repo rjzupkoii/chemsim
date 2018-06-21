@@ -1,8 +1,6 @@
 package edu.mtu.simulation;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -200,7 +198,7 @@ public class ChemSim implements Simulation {
 	 */
 	private void initializeModel(List<ChemicalDto> chemicals) throws IOException {
 			
-		// Scale the compouds and 
+		// Scale the compounds... that code could be migrated up here 
 		double scaling = findIntitalCount(chemicals);
 		
 		// Calculate out the multiplier
@@ -235,27 +233,26 @@ public class ChemSim implements Simulation {
 	}
 	
 	/**
-	 * Find the proportions for the chemicals input, return the scaling applied
+	 * Find the proportions for the chemicals input, return the scaling applied.
 	 */
 	private double findIntitalCount(List<ChemicalDto> input) {
-		// Find the smallest entry
+		// Find the smallest exponent based upon the natural log
 		double smallest = Double.MAX_VALUE;
 		for (ChemicalDto entry : input) {
-			if (entry.mols < smallest) {
-				smallest = entry.mols;
+			double exp = Math.log(entry.mols);
+			if (exp < smallest) {
+				smallest = exp;
 			}
 		}
 		
-		// Find the exponent to offset the value
-		NumberFormat format = new DecimalFormat("0.#E0");		
-		String value = format.format(smallest);
-		int exponent = Integer.parseInt(value.substring(value.indexOf("E") + 1));
-		
-		// Apply scaling to the adjusted molar values
-		double scaling = Math.pow(10, Math.abs(exponent) + 1);		
-		for (int ndx = 0; ndx < input.size(); ndx++) {
-			input.get(ndx).count = (long)(input.get(ndx).mols * scaling); 
+		// Calculate the scaling, note that this is closely related to find the 
+		// mantissa of the input value, but subtracting one from the value helps
+		// pack things a bit better 
+		double scaling = Math.pow(10, Math.abs(smallest) - 1);
+		for (ChemicalDto entry : input) {
+			entry.count = (long)Math.ceil(entry.mols * scaling);
 		}
+		
 		return scaling;
 	} 
 
