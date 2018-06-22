@@ -2,8 +2,8 @@ package edu.mtu.compound;
 
 import java.util.List;
 
-import edu.mtu.catalog.ReactionDescription;
-import edu.mtu.catalog.ReactionRegistry;
+import edu.mtu.reaction.ReactionDescription;
+import edu.mtu.reaction.ReactionRegistry;
 import edu.mtu.primitives.Int3D;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;

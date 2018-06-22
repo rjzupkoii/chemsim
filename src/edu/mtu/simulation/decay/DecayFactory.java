@@ -16,6 +16,11 @@ public class DecayFactory {
 	 */
 	public static void createDecayModel(ModelProperities properties) throws IOException {
 		if (SimulationProperties.getInstance().getExperimentalDecay()) {
+			
+			// TODO Remove error
+			System.out.println("Not supported. :(");
+			System.exit(-1);
+			
 			initializeExperimentalDecay(properties);
 		} else {
 			initializePhotolysisDecay(properties);

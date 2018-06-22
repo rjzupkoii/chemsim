@@ -52,6 +52,12 @@ public class Photolysis implements DecayModel {
 		// Prepare the adjustment for mM/L to mols/reactor
 		double adjustment = volume * 0.001;
 		
+		// Update the adjustment if the time step is not in minutes
+		int timeStep = ChemSim.getProperties().getTimeStepLength();
+		if (timeStep != 60) {
+			
+		}
+		
 		// Hydrogen peroxide is a linear decay, or f(x) = C - r * t 
 		// this means we need to determine the odds that any individual 
 		// hydrogen peroxide agent will be removed each time step based upon

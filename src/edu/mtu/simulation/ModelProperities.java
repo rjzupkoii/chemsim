@@ -16,11 +16,18 @@ public class ModelProperities {
 	// The expected duration of the model in time steps
 	private int timeSteps;
 	
+	// Lenght of one time step in seconds
+	private int timeStepLength = 1;
+	
 	// Values needed to ensure hydrogen peroxide exhibits a linear decay based upon the UV intensity
 	private double hydrogenPeroxideDecay = 0;
 	
 	// Scalar needed to convert molecules to molar values
 	private double moleculeToMol = 0;
+	
+	// Distance to search around molecules for a reaction, realistically this 
+	// should be a double, but we are using an integer lattice, so use an int
+	private int interactionRadius = 0;
 	
 	// Decay model to use for the model, may be null
 	private DecayModel decayModel = null;
@@ -37,6 +44,10 @@ public class ModelProperities {
 		return hydrogenPeroxideDecay;
 	}
 	
+	public int getInteractionRadius() {
+		return interactionRadius;
+	}
+	
 	public int getMediumPathway() {
 		return mediumPathway;
 	}
@@ -47,6 +58,10 @@ public class ModelProperities {
 	
 	public int getSlowPathway() {
 		return slowPathway;
+	}
+	
+	public int getTimeStepLength() {
+		return timeStepLength;
 	}
 	
 	public int getTimeSteps() {
@@ -63,6 +78,10 @@ public class ModelProperities {
 			
 	public void setHydrogenPeroxideDecay(double value) {
 		hydrogenPeroxideDecay = value;
+	}
+	
+	public void setInteractionRadius(int value) {
+		interactionRadius = value;
 	}
 				
 	public void setMediumPathway(int value) {

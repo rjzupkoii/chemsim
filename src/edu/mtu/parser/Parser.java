@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.com.bytecode.opencsv.CSVReader;
-import edu.mtu.catalog.ReactionDescription;
+import edu.mtu.reaction.ReactionDescription;
 
 /**
  * This class is used to parse the equation(s) that are present in an import file for their reaction.

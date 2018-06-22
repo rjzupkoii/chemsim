@@ -1,10 +1,12 @@
 package edu.mtu.simulation;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import edu.mtu.catalog.ReactionRegistry;
+import edu.mtu.reaction.ReactionRegistry;
 import edu.mtu.compound.Molecule;
 import edu.mtu.parser.ChemicalDto;
 import edu.mtu.parser.Parser;
@@ -22,8 +24,11 @@ public class ChemSim implements Simulation {
 				
 	private static final boolean CENSUS = false;
 		
+	// Format the number in scientific notation, two significant digits
+	private final static NumberFormat scientific = new DecimalFormat("0.##E0");
+	
 	// Divisor for time steps to report on
-	private static final long REPORT = 100;
+	private static final long REPORT = 1;
 	
 	// Scale the decay by the given time unit, 1 = sec, 60 = minute
 	public static final int SCALING = 60;
@@ -197,24 +202,17 @@ public class ChemSim implements Simulation {
 	 * Initialize the model by loading the initial chemicals in the correct ratio.
 	 */
 	private void initializeModel(List<ChemicalDto> chemicals) throws IOException {
-			
-		// Scale the compounds... that code could be migrated up here 
-		double scaling = findIntitalCount(chemicals);
 		
-		// Calculate out the multiplier
-		long total = 0;
-		for (ChemicalDto entry : chemicals) {
-			total += entry.count;
-		}
-		Reactor reactor = Reactor.getInstance();
-		long multiplier = reactor.getMaximumMolecules() / total;
-		
+		// Do all of the up-front calculations
+		calcluateParameters(chemicals);
+				
 		// Add the chemicals to the model
+		Reactor reactor = Reactor.getInstance();
 		Int3D container = reactor.dimensions;
 		for (ChemicalDto chemical : chemicals) {
-			long count = chemical.count * multiplier;			
-			System.out.println("Generating " + count + " molecules of " + chemical.formula);			
-			for (int ndx = 0; ndx < count; ndx++) {
+	
+			System.out.println("Generating " + chemical.count + " molecules of " + chemical.formula);			
+			for (int ndx = 0; ndx < chemical.count; ndx++) {
 				int x = random.nextInt(container.x), y = random.nextInt(container.y), z = random.nextInt(container.z);
 				Molecule molecule = new Molecule(chemical.formula);
 				reactor.grid.setObjectLocation(molecule, x, y, z);
@@ -222,14 +220,31 @@ public class ChemSim implements Simulation {
 			}
 			
 			// Set the baseline quantity
-			tracker.update(chemical.formula, count);
+			tracker.update(chemical.formula, chemical.count);
 		}
+	}
+	
+	private void calcluateParameters(List<ChemicalDto> input) {
+		final double k = 1.00E+08;
+		final double k_diff = 1.10E+10;
 		
-		// Find the scaling factor to go from molecules back to mols
-		scaling *= multiplier;
+		// Starting by calculating out our constants, k_chem and r which is based on Pogson et al., 2006
+		double k_chem = (k * k_diff) / (k + k_diff);
+		double delta_t = properties.getTimeStepLength();
+		double r = Math.cbrt((3 * k_chem * delta_t) / (4 * Math.PI * Math.pow(10, 3) * Reactor.AvogadrosNumber));	// meters
+		int r_nm = (int)(r * 1E+9);
+		properties.setInteractionRadius(r_nm);
+		
+		// Calculate and note the scaling factor to from molecules back to mols 
+		double scaling = findIntitalCount(input);
 		properties.setMoleculeToMol(scaling);
 		
-		System.out.println("Molecule to mol scalar: " + scaling);
+		// Print all of the parameters to the console
+		Int3D container = Reactor.getInstance().dimensions;
+		System.out.println("k_chem: " + scientific.format(k_chem) + "\t\tΔt (sec): " + delta_t);
+		System.out.println("Interaction radius (nm): " + r_nm );	
+		System.out.println("Reactor Dimensions (nm): " + container.x + ", " + container.x + ", " + container.x);
+		System.out.println("Molecule to mol scalar: " + scaling + "\n");
 	}
 	
 	/**
@@ -237,23 +252,31 @@ public class ChemSim implements Simulation {
 	 */
 	private double findIntitalCount(List<ChemicalDto> input) {
 		// Find the smallest exponent based upon the natural log
-		double smallest = Double.MAX_VALUE;
+		int smallest = Integer.MAX_VALUE;
 		for (ChemicalDto entry : input) {
-			double exp = Math.log(entry.mols);
-			if (exp < smallest) {
-				smallest = exp;
-			}
+			int exp = (int)Math.log(entry.mols);
+			smallest = Math.min(exp, smallest);
 		}
 		
 		// Calculate the scaling, note that this is closely related to find the 
-		// mantissa of the input value, but subtracting one from the value helps
-		// pack things a bit better 
+		// mantissa of the input value, but subtracting one from the exponent 
+		// is the same as dividing by ten and allows the actual sum of the 
+		// multipliers a bit more space to work in
+		long total = 0;
 		double scaling = Math.pow(10, Math.abs(smallest) - 1);
 		for (ChemicalDto entry : input) {
 			entry.count = (long)Math.ceil(entry.mols * scaling);
+			total += entry.count;
 		}
 		
-		return scaling;
+		// Calculate out the multiplier and apply it
+		long multiplier = Reactor.getInstance().getMaximumMolecules() / total;
+		for (ChemicalDto entry : input) {
+			entry.count *= multiplier;
+		}
+		
+		// Return the scalar to go from moleclues to mols
+		return multiplier * scaling;
 	} 
 
 	/**
@@ -262,14 +285,12 @@ public class ChemSim implements Simulation {
 	private void printHeader() {
 		long size = Reactor.getInstance().getMoleculeSize();
 		long maxMolecules = Reactor.getInstance().getMaximumMolecules();
-		Int3D container = Reactor.getInstance().dimensions;
 		System.out.println("\n" + LocalDateTime.now());		
-		System.out.println("\nMax Memory:         " + Runtime.getRuntime().maxMemory() + "b");
-		System.out.println("Molecule Size:      " + size + "b");
-		System.out.println("Max Molecule Count: " + maxMolecules + " (" + size * maxMolecules + "b)");
 		if (SimulationProperties.getInstance().getMoleculeLimit() != SimulationProperties.NO_LIMIT) {
 			System.out.println("WARNING: Molecule count limited by configuration");
 		}
-		System.out.println("Reactor Dimensions (nm): " + container.x + ", " + container.x + ", " + container.x);
+		System.out.println("Max Memory:         " + Runtime.getRuntime().maxMemory() + "b");
+		System.out.println("Molecule Size:      " + size + "b");
+		System.out.println("Staring Molecule Limit: " + scientific.format(maxMolecules) + " (" + size * maxMolecules + "b)\n");		
 	}
 }

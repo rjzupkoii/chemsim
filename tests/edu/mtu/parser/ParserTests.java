@@ -10,7 +10,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import edu.mtu.catalog.ReactionDescription;
+import edu.mtu.reaction.ReactionDescription;
 
 // TODO Fix this
 

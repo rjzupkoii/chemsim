@@ -1,4 +1,4 @@
-package edu.mtu.catalog;
+package edu.mtu.reaction;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -241,12 +241,13 @@ public class ReactionRegistry {
 			md.hasUnimolecular = unimolecular.containsKey(formula);			
 			md.hasReactants = (md.hasBimolecular || md.hasPhotolysis || md.hasUnimolecular);
 			md.hasDissolvedReactants = checkDissolvedReactants(formula);
+			md.reactsWith = extractReactants(formula);
 			moleculeDescriptions.put(formula, md);
 		}
 	}
 	
 	/**
-	 * Check to see if the given molecule has any dissolved reactants.
+	 * Check to see if the given compound has any dissolved reactants.
 	 */
 	private boolean checkDissolvedReactants(String formula) {
 		ReactionDescription[] rd = bimolecular.get(formula);
@@ -262,6 +263,37 @@ public class ReactionRegistry {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Get the list of reactants this compound reacts with
+	 */
+	private String[] extractReactants(String formula) {
+		ReactionDescription[] rds = bimolecular.get(formula);
+		if (rds == null) {
+			return new String[0];
+		}
+		
+		HashSet<String> entities = new HashSet<String>();
+		for (ReactionDescription rd : rds) {
+			String[] products = rd.getReactants();
+			
+			// Check for reactions with self
+			if (products[0].equals(products[1])) {
+				entities.add(products[0]);
+			}
+			
+			// Otherwise add the other compound
+			if (products[0].equals(formula)) {
+				entities.add(products[1]);
+			} else {
+				entities.add(products[0]);
+			}
+		}
+		
+		String[] results = new String[entities.size()];
+		results = entities.toArray(results);
+		return results;
 	}
 	
 	/**

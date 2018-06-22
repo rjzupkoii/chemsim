@@ -1,10 +1,12 @@
-package edu.mtu.compound;
+package edu.mtu.reaction;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.mtu.catalog.ReactionDescription;
-import edu.mtu.catalog.ReactionRegistry;
+import edu.mtu.compound.DisproportionatingMolecule;
+import edu.mtu.compound.DissolvedMolecule;
+import edu.mtu.compound.Molecule;
+import edu.mtu.compound.MoleculeFactory;
 import edu.mtu.primitives.Int3D;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;
@@ -165,14 +167,18 @@ public class Reaction {
 	 * Perform a bimolecular reaction on the given species.
 	 */
 	private boolean bimolecularReaction(Molecule molecule, final Bag molecules) {
-		// Get the possible reactions for this species
-		ReactionDescription[] reactions = ReactionRegistry.getInstance().getBimolecularReaction(molecule);
+		ReactionDescription[] reactions = null;
 		
 		// Check to see what other species at this location react with the given one
 		int size = molecules.numObjs;
 		for (int ndx = 0; ndx < size; ndx++) {
 			if (molecules.get(ndx).equals(molecule)) {
 				continue;
+			}
+			
+			// Get the reactions if we need them, then attempt to process
+			if (reactions == null) {
+				reactions = ReactionRegistry.getInstance().getBimolecularReaction(molecule);
 			}
 			if (process(molecule, (Molecule)molecules.get(ndx), reactions)) {
 				return true;
@@ -218,7 +224,7 @@ public class Reaction {
 	 * Process the reactions that are possible for this entity.
 	 */
 	private boolean process(Molecule molecule, Molecule reactant, ReactionDescription[] reactions) {
-
+		
 		// Can this reaction occur?
 		List<ReactionDescription> matched = new ArrayList<ReactionDescription>();
 		for (ReactionDescription rd : reactions) {

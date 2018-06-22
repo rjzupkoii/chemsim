@@ -1,6 +1,7 @@
 package edu.mtu.compound;
 
-import edu.mtu.catalog.ReactionDescription;
+import edu.mtu.reaction.Reaction;
+import edu.mtu.reaction.ReactionDescription;
 
 /**
  * This class represents a disproportionating chemical entity.

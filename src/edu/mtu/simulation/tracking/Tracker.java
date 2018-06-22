@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import edu.mtu.catalog.ReactionRegistry;
+import edu.mtu.reaction.ReactionRegistry;
 
 /**
  * This abstract class wraps the common methods used when tracking molecules.

@@ -1,7 +1,8 @@
 package edu.mtu.compound;
 
-import edu.mtu.catalog.MoleculeDescription;
-import edu.mtu.catalog.ReactionRegistry;
+import edu.mtu.reaction.MoleculeDescription;
+import edu.mtu.reaction.Reaction;
+import edu.mtu.reaction.ReactionRegistry;
 import edu.mtu.primitives.Int3D;
 import edu.mtu.primitives.Sparse3DLattice;
 import edu.mtu.reactor.Reactor;

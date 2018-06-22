@@ -53,11 +53,11 @@ public class Reactor {
 	 * @return The dimensions a long a single axis in nanometers (nm).
 	 */
 	public static int calculateSize(List<ChemicalDto> compounds, long molecules) {
-		double count = 0;
+		double mols = 0;
 		for (ChemicalDto compound : compounds) {
-			count += compound.mols;
+			mols += compound.mols;
 		}
-		double result = Math.cbrt((Math.pow(10.0, 24.0) * (double)molecules) / (count * AvogadrosNumber));
+		double result = Math.cbrt((Math.pow(10.0, 24.0) * (double)molecules) / (mols * AvogadrosNumber));
 		return (int)Math.ceil(result);
 	}
 		

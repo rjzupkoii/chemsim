@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.mtu.catalog.ReactionRegistry;
+import edu.mtu.reaction.ReactionRegistry;
 import edu.mtu.compound.Molecule;
 import edu.mtu.reactor.Reactor;
 

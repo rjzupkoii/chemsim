@@ -1,4 +1,4 @@
-package edu.mtu.catalog;
+package edu.mtu.reaction;
 
 import java.io.IOException;
 import java.util.ArrayList;

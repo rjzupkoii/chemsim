@@ -1,4 +1,4 @@
-package edu.mtu.catalog;
+package edu.mtu.reaction;
 
 public class MoleculeDescription {
 	public boolean hasBimolecular;
@@ -7,4 +7,6 @@ public class MoleculeDescription {
 	
 	public boolean hasReactants;
 	public boolean hasDissolvedReactants;
+	
+	public String[] reactsWith;
 }

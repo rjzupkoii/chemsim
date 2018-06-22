@@ -12,6 +12,7 @@ import edu.mtu.simulation.ChemSim;
  * This class provides a model for photolysis based upon experimentally 
  * observed data.  
  */
+// TODO Fix decay to adjust based upon the time step duration
 public class ExperimentalDecay implements DecayModel {
 
 	private static final int TimeIndex = 0;
@@ -88,7 +89,7 @@ public class ExperimentalDecay implements DecayModel {
 	 * 
 	 * @param fileName to load the data from.
 	 */
-	public void prepare(String fileName) throws IOException {
+	public void prepare(String fileName) throws IOException {		
 		CSVReader reader = null;
 		
 		try {
