@@ -12,6 +12,7 @@ import edu.mtu.catalog.ReactionDescription;
  * This class is used to parse the equation(s) that are present in an import file for their reaction.
  */
 public class Parser {
+	public static final double INVALID_ENTRY_VALUE = -999.999;
 	
 	/**
 	 * Read the chemicals from the file indicated.
@@ -76,6 +77,39 @@ public class Parser {
 			
 			// Return the result
 			return Double.parseDouble(entries[1]);
+		} finally {
+			if (reader != null) reader.close();
+		}
+	}
+	
+	/**
+	 * 
+	 * @param fileName
+	 * @return
+	 * @throws IOException
+	 */
+	public static double parseIntercept(String fileName) throws IOException {
+		CSVReader reader = null;
+		
+		try {
+			// Open the file, discard volume
+			reader = new CSVReader(new FileReader(fileName));
+			reader.readNext();
+			
+			// Second entry should be the rate and intercept
+			String[] entries = reader.readNext();
+			if (!entries[0].toUpperCase().equals("RATE")) {
+				System.err.println("File provided does not contain the rate on line two.");
+				throw new IOException("Invalid ChemSim chemicals file.");
+			}
+			
+			// Check for the intercept, return null if one isn't present
+			if (entries.length != 3){
+				return INVALID_ENTRY_VALUE;
+			}
+			
+			// Return the result
+			return Double.parseDouble(entries[2]);
 		} finally {
 			if (reader != null) reader.close();
 		}

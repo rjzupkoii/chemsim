@@ -14,16 +14,20 @@ import edu.mtu.simulation.ChemSim;
 public class Photolysis implements DecayModel {
 
 	private int time;
-	private long quantity;
+	private long m;
+	private long b;
 	
 	@Override
 	public int estimateRunningTime() {
 		return time;
 	}
-	
+
 	@Override
 	public long getDecayQuantity(int timeStep, String compound, long moleclues) {
 		// TODO Adjust this for multiple compounds
+		
+		long y = m * timeStep + b;
+		long quantity = moleclues - y;
 		return quantity;
 	}
 
@@ -52,12 +56,22 @@ public class Photolysis implements DecayModel {
 		// this means we need to determine the odds that any individual 
 		// hydrogen peroxide agent will be removed each time step based upon
 		// the new population which requires us knowing the initial decay
-		quantity = (int)Math.ceil(Math.abs(rate * adjustment * scaling));
+		m = (int)Math.ceil(rate * adjustment * scaling);
 		
-		System.out.println("H2O2 photolysis decay rate: " + quantity + " moleclules/timestep");
+		// If a b is supplied, then convert it to model units and use it
+		double intercept = Parser.parseIntercept(fileName);
+		if (intercept != Parser.INVALID_ENTRY_VALUE) {
+			// Convert to model units
+			b = (int)Math.ceil(Math.abs(intercept * adjustment * scaling));
+		} else {
+			b = count;
+		}
+			
+		// Time when y = 0
+		time = (int)Math.abs(-b / m);
 		
-		// Since we know the decay rate we can calculate the running time
-		time = (int)(count / quantity);
+		// Note the estimated decay
+		System.out.println("H2O2 photolysis decay rate: " + m + " moleclules/timestep");
 	}
 	
 	// TODO Update this form more moleclues
