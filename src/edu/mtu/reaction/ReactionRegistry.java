@@ -32,6 +32,8 @@ public class ReactionRegistry {
 	
 	private static ReactionRegistry instance = new ReactionRegistry();
 
+	private int[] entityHashes;
+	
 	// Mapping of all of the molecules and the basics of their reactions
 	private Map<String, MoleculeDescription> moleculeDescriptions;
 
@@ -57,10 +59,10 @@ public class ReactionRegistry {
 	}
 
 	/**
-	 * Add the given bimolecular reaction to the registry.
+	 * Add the given bimolecular reaction to the registry, returns the reaction as a check string.
 	 */
-	private void addBimolecularReaction(ReactionDescription reaction, Map<String, List<ReactionDescription>> working ) {
-		// Add the reactions to the registry
+	private String addBimolecularReaction(ReactionDescription reaction, Map<String, List<ReactionDescription>> working ) {
+		String check = "";
 		for (String reactant : reaction.getReactants()) {
 			if (!working.containsKey(reactant)) {
 				working.put(reactant, new ArrayList<ReactionDescription>());
@@ -68,13 +70,16 @@ public class ReactionRegistry {
 			if (!((ArrayList<ReactionDescription>)working.get(reactant)).contains(reaction)) {
 				((ArrayList<ReactionDescription>)working.get(reactant)).add(reaction);
 			}
+			check += reactant + " + ";
 		}
+		
+		return check.substring(0, check.length() - 3);
 	}
 	
 	/**
-	 * Add the given photolysis reaction to the registry.
+	 * Add the given photolysis reaction to the registry, returns the reaction as a check string.
 	 */
-	private void addPhotolysisReaction(ReactionDescription reaction, Map<String, String[]> working) throws InvalidActivityException {
+	private String addPhotolysisReaction(ReactionDescription reaction, Map<String, String[]> working) throws InvalidActivityException {
 		String reactant = reaction.getReactants()[0];
 		if (reactant.toUpperCase().equals("UV")) {
 			reactant = reaction.getReactants()[1];
@@ -82,14 +87,15 @@ public class ReactionRegistry {
 		if (working.containsKey(reactant)) {
 			throw new InvalidActivityException("Reaction registry already contains photolysis products for " + reactant);
 		}
-		
 		working.put(reactant, reaction.getProducts());
+		
+		return reactant + "+ UV";
 	}
 	
 	/**
-	 * Add the given unimolecular reaction to the registry.
+	 * Add the given unimolecular reaction to the registry, returns the check string
 	 */
-	private void addUnimolecularReaction(ReactionDescription reaction, Map<String, List<ReactionDescription>> working) throws InvalidActivityException {
+	private String addUnimolecularReaction(ReactionDescription reaction, Map<String, List<ReactionDescription>> working) throws InvalidActivityException {
 		// Make sure the key is valid
 		String key = reaction.getReactants()[0];
 		if (key.toUpperCase() == "UV") {
@@ -101,6 +107,9 @@ public class ReactionRegistry {
 		}
 		
 		((ArrayList<ReactionDescription>)working.get(key)).add(reaction);
+		
+		// Return the key as the check string
+		return key;
 	}
 	
 	/**
@@ -131,12 +140,7 @@ public class ReactionRegistry {
 	 * Get a list of all of the entity hashes in the registry.
 	 */
 	public int[] getEntityHashList() {
-		int[] hashes = new int[moleculeDescriptions.keySet().size()];
-		int ndx = 0;
-		for (String key : moleculeDescriptions.keySet()) {
-			hashes[ndx++] = key.hashCode();
-		}
-		return hashes;
+		return entityHashes;
 	}
 	
 	/**
@@ -179,39 +183,48 @@ public class ReactionRegistry {
 		Map<String, String[]> photoysis = new HashMap<String, String[]>();
 		Map<String, List<ReactionDescription>> unimolecular = new HashMap<String, List<ReactionDescription>>();
 		
+		// Define a hash set so we can check for dispropration reaction, namely two of the same reactants
+		HashSet<String> disproportionationCheck = new HashSet<String>();
+		HashSet<Integer> disproportationHash = new HashSet<Integer>(); 
+		
 		List<ReactionDescription> reactions = Parser.parseReactions(fileName); 
 		for (ReactionDescription reaction : reactions) {
 			// Note what we are currently loading
-			String message = "Loading " + reaction.toString() + " (";						
+			String check;
+			StringBuilder message = new StringBuilder("Loading " + reaction.toString() + " (");						
 			if (reaction.getReactants().length == 1) {
 				// This is a unimolecular reaction
-				addUnimolecularReaction(reaction, unimolecular);
-				message += "unimolecular";
+				check = addUnimolecularReaction(reaction, unimolecular);
+				message.append("unimolecular");
 			} else if (Arrays.asList(reaction.getReactants()).contains("UV")) {
 				// This is a photolysis reaction
-				addPhotolysisReaction(reaction, photoysis);
-				message += "photolysis";
+				check = addPhotolysisReaction(reaction, photoysis);
+				message.append("photolysis");
 			} else {
 				// Must be a bimolecular reaction
-				addBimolecularReaction(reaction, bimolecular);
-				message += "bimolecular";
+				check = addBimolecularReaction(reaction, bimolecular);
+				message.append("bimolecular");
 			}
 			if (reaction.getReactionOdds() != 1.0) {
-				message += ", " + reaction.getReactionOdds();
+				message.append(", " + reaction.getReactionOdds());
 			}
-			message += ")";
-			
-			// TODO Make this optional
+			message.append(")");
 			System.out.println(message);
+			
+			// Check to see if we've seen this reaction before
+			if (!disproportionationCheck.add(check)) {
+				disproportationHash.add(check.hashCode());
+			}
 		}
 		
 		// Everything is loaded, now lock it down
 		this.photolysis = Collections.unmodifiableMap(new HashMap<String, String[]>(photoysis));
 		this.bimolecular = fixMap(bimolecular);
 		this.unimolecular = fixMap(unimolecular);
-		
+				
 		// Build the molecule descriptions
 		buildMoleculeDescriptions();
+		buildEntityHash(disproportationHash);
 	}
 	
 	/**
@@ -227,6 +240,21 @@ public class ReactionRegistry {
 			working.put(key, rd);
 		}
 		return Collections.unmodifiableMap(new HashMap<String, ReactionDescription[]>(working));
+	}
+	
+	/**
+	 * Build the array that contains the entity hashes that are present.
+	 */
+	private void buildEntityHash(HashSet<Integer> disproportationHash) {
+		int size = moleculeDescriptions.keySet().size() + disproportationHash.size();
+		entityHashes = new int[size];
+		int ndx = 0;
+		for (String key : moleculeDescriptions.keySet()) {
+			entityHashes[ndx++] = key.hashCode();
+		}
+		for (int hash : disproportationHash) {
+			entityHashes[ndx++] = hash;
+		}
 	}
 	
 	/**

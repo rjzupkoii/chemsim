@@ -1,7 +1,6 @@
 package edu.mtu.reactor;
 
 import java.util.List;
-import java.util.Set;
 
 import edu.mtu.compound.Molecule;
 import edu.mtu.parser.ChemicalDto;
@@ -128,7 +127,9 @@ public class Reactor {
 			
 			// Create the reactor, set relevant values, and return
 			int[] hashes = ReactionRegistry.getInstance().getEntityHashList();
-			assert (hashes != null);
+			if (hashes == null) {
+				throw new IllegalAccessError("Entity hash table is null.");
+			}
 			
 			instance = new Reactor(new Int3D(dimension, dimension, dimension));
 			instance.grid = Sparse3DLattice.create3DLattice(count, hashes);
