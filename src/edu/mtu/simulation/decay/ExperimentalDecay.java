@@ -53,7 +53,7 @@ public class ExperimentalDecay implements DecayModel {
 	 * @param moleclues The current number of molecules.
 	 * @return The number of the molecules that should decay.
 	 */
-	public long getDecayQuantity(int timeStep, String compound, long moleclues) {
+	public double getDecayQuantity(int timeStep, String compound, long moleclues) {
 		// Return zero if there are no molecules
 		if (moleclues == 0) {
 			return 0;

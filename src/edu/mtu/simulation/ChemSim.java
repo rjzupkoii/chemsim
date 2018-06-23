@@ -29,15 +29,15 @@ public class ChemSim implements Simulation {
 		
 	// Scale the decay by the given time unit, 1 = sec, 60 = minute
 	public static final int SCALING = 60;
-	
-	
+		
 	// Singleton instance of the simulation and schedule
 	private static ChemSim instance = new ChemSim();
 	private Schedule schedule = new Schedule();
 	
 	// The properties for the simulation
 	private ModelProperities properties;
-	private int report;
+	private int reportInterval;
+	private int sampleInterval;
 	
 	// Entity count tracker for the simulation
 	private CensusTracking census;
@@ -62,7 +62,10 @@ public class ChemSim implements Simulation {
 		try {
 			// Note the properties
 			SimulationProperties simulation = SimulationProperties.getInstance();
-			report = simulation.getReportInterval();
+			
+			// Calculate the report interval, we only echo on the minute
+			sampleInterval = (60 / simulation.getTimeStepLength());
+			reportInterval = sampleInterval * simulation.getReportInterval();
 
 			// Import the reactions into the model
 			ReactionRegistry instance = ReactionRegistry.getInstance();
@@ -102,7 +105,9 @@ public class ChemSim implements Simulation {
 	 */
 	@Override
 	public void start(int timeSteps) {
+		// Note we call step since the scheduler doesn't call until t+1
 		System.out.println("\n" + LocalDateTime.now() + ": Starting simulation...");
+		step(0, timeSteps);
 		schedule.start(this, timeSteps);
 	}
 	
@@ -115,7 +120,7 @@ public class ChemSim implements Simulation {
 		long hydrogenPeroxide = tracker.getCount("H2O2");
 		double decay = 0;
 		if (hydrogenPeroxide != 0) {
-			long quantity = properties.getDecayModel().getDecayQuantity(count, "H2O2", hydrogenPeroxide);	
+			double quantity = properties.getDecayModel().getDecayQuantity(count, "H2O2", hydrogenPeroxide);	
 			decay = (double)quantity / hydrogenPeroxide;
 		}
 		properties.setHydrogenPeroxideDecay(decay);
@@ -133,11 +138,13 @@ public class ChemSim implements Simulation {
 			census.count();
 		}
 		
-		// Reset the tracker and note the step
-		boolean flush = (count % report == 0);
-		tracker.reset(flush);
-		if (flush) {
-			System.out.println(LocalDateTime.now() + ": " + count + " of " + total);
+		// Sample the count and report if need be
+		if (count % sampleInterval == 0) {
+			boolean flush = (count % reportInterval == 0);
+			tracker.reset(flush);
+			if (flush) {
+				System.out.println(LocalDateTime.now() + ": " + count + " of " + total);
+			}
 		}
 	}
 	
@@ -230,7 +237,7 @@ public class ChemSim implements Simulation {
 		
 		// Starting by calculating out our constants, k_chem and r which is based on Pogson et al., 2006
 		double k_chem = (k * k_diff) / (k + k_diff);
-		double delta_t = properties.getTimeStepLength();
+		double delta_t = SimulationProperties.getInstance().getTimeStepLength();
 		double r = Math.cbrt((3 * k_chem * delta_t) / (4 * Math.PI * Math.pow(10, 3) * Reactor.AvogadrosNumber));	// meters
 		int r_nm = (int)(r * 1E+9);
 		properties.setInteractionRadius(r_nm);

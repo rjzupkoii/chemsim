@@ -6,6 +6,7 @@ import java.util.List;
 import edu.mtu.parser.ChemicalDto;
 import edu.mtu.parser.Parser;
 import edu.mtu.simulation.ChemSim;
+import edu.mtu.simulation.SimulationProperties;
 
 /**
  * This class provides a model for photolysis based upon
@@ -14,7 +15,7 @@ import edu.mtu.simulation.ChemSim;
 public class Photolysis implements DecayModel {
 
 	private int time;
-	private long m;
+	private double m;
 	private long b;
 	
 	@Override
@@ -23,18 +24,17 @@ public class Photolysis implements DecayModel {
 	}
 
 	@Override
-	public long getDecayQuantity(int timeStep, String compound, long moleclues) {
+	public double getDecayQuantity(int timeStep, String compound, long moleclues) {
 		// TODO Adjust this for multiple compounds
 		
-		long y = m * timeStep + b;
-		long quantity = moleclues - y;
-		return quantity;
+		double y = m * timeStep + b;
+		return moleclues - y;
 	}
 
 	/**
 	 * Prepare for photolysis on the basis of the slope provided. Note that we
-	 * are assuming that the slope is being given as mM/L and will need to be
-	 * adjusted for the reactor.
+	 * are assuming that the slope is being given as mM/L/min and will need to 
+	 * be adjusted for the reactor and the model time span.
 	 */
 	@Override
 	public void prepare(String fileName) throws IOException {
@@ -48,27 +48,25 @@ public class Photolysis implements DecayModel {
 
 		// Note the scaling factor for mols to molecules
 		double scaling = ChemSim.getProperties().getMoleculeToMol();
-		
-		// Prepare the adjustment for mM/L to mols/reactor
-		double adjustment = volume * 0.001;
-		
-		// Update the adjustment if the time step is not in minutes
-		int timeStep = ChemSim.getProperties().getTimeStepLength();
-		if (timeStep != 60) {
-			
-		}
+				
+		// Note the current time step duration
+		int timeStep = SimulationProperties.getInstance().getTimeStepLength();
 		
 		// Hydrogen peroxide is a linear decay, or f(x) = C - r * t 
 		// this means we need to determine the odds that any individual 
 		// hydrogen peroxide agent will be removed each time step based upon
 		// the new population which requires us knowing the initial decay
-		m = (int)Math.ceil(rate * adjustment * scaling);
+		m = (rate * volume * 0.001 * scaling * timeStep) / 60;
+		m = Math.round(m * 100.0) / 100.0;
+		if (m == 0) {
+			throw new IllegalStateException("Calculated decay is zero, adjust inputs.");
+		}
 		
 		// If a b is supplied, then convert it to model units and use it
 		double intercept = Parser.parseIntercept(fileName);
 		if (intercept != Parser.INVALID_ENTRY_VALUE) {
 			// Convert to model units
-			b = (int)Math.ceil(Math.abs(intercept * adjustment * scaling));
+			b = (int)Math.ceil(Math.abs(intercept * volume * 0.001 * scaling));
 		} else {
 			b = count;
 		}

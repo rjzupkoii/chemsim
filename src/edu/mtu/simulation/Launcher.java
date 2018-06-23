@@ -89,6 +89,15 @@ public final class Launcher {
 				int limit = Integer.parseInt(args[ndx + 1]);
 				properties.setMoleculeLimit(limit);
 				break;
+			case "-s":
+			case "--step":
+				int value = Integer.parseInt(args[ndx + 1]);
+				if (value > 60) {
+					System.err.println("Time step cannot exceed 60 seconds.");
+					System.exit(-1);
+				}
+				properties.setTimeStepLength(value);
+				break;
 			case "-t":
 			case "--terminate":
 				properties.addTerminationOn(args[ndx + 1]);
@@ -123,7 +132,8 @@ public final class Launcher {
 		System.err.printf(format, "-e, --experimental [file]", "CSV file with the known experimental results for photolysis decay");
 		System.err.printf(format, "-l", "--limit [number]", "The maximum number of molecules to generate at initlization.");
 		System.err.printf(format, "-n", "--run [number]", "The run number to apply to results files");
-		System.err.printf(format, "-p", "--print [number]", "The step interval to print / save status on");
+		System.err.printf(format, "-p", "--print [number]", "The minute interval to print / save status on, default 100");
+		System.err.printf(format, "-s", "--step [number", "The duration of the time step in seconds, default 60");
 		System.err.printf(format, "-t, --terminate [formula]", "Terminate the model when the given molecule has zero entities");
 		System.err.println("\nNOTE:");
 		System.err.println("JAVAGENT initialization is required, -javaagent:lib/SizeOf.jar");

@@ -25,6 +25,9 @@ public class SimulationProperties {
 	// Interval to report to the console and save data on
 	private int reportInterval = 100;
 	
+	// Length of one time step in seconds
+	private int timeStepLength = 60;
+	
 	// List of entities to terminate when zero
 	private List<String> terminateOn = new ArrayList<String>(); 
 	
@@ -95,6 +98,10 @@ public class SimulationProperties {
 		return terminateOn;
 	}
 	
+	public int getTimeStepLength() {
+		return timeStepLength;
+	}
+	
 	public void setChemicalsFileName(String value) {
 		chemicalsFileName = value;
 	}
@@ -129,5 +136,9 @@ public class SimulationProperties {
 	
 	public void setResultsFileName(String value) {
 		resultsFileName = value;
+	}
+	
+	public void setTimeStepLength(int value) {
+		timeStepLength = value;
 	}
 }
