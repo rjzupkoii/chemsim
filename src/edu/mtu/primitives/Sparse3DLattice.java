@@ -79,6 +79,18 @@ public class Sparse3DLattice {
 		lattice.latticeMap = new Int2ObjectOpenHashMap<Bag>(maxEntities * ENTITY_MULTIPLIER);
 		return lattice;
 	}
+	
+	/**
+	 * Find the first entity within the sphere defined by the radius with the given tag.
+	 * 
+	 * @param tags to search for.
+	 * @param radius defining the sphere.
+	 * @return The first entity with a matching tag in the sphere.
+	 */
+	public Entity findFirstByTag(int[] tags, int radius) {
+		// TODO write me...
+		return null;
+	}
 
 	/**
 	 * Get all of the objects in the lattice.
@@ -160,7 +172,7 @@ public class Sparse3DLattice {
 		// Return the location
 		return lai.location;		
 	}
-			
+		
 	/**
 	 * Add or update the location of the object in the lattice.
 	 * 

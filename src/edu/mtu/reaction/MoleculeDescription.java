@@ -8,5 +8,5 @@ public class MoleculeDescription {
 	public boolean hasReactants;
 	public boolean hasDissolvedReactants;
 	
-	public String[] reactsWith;
+	public int[] reactsWithHash;
 }

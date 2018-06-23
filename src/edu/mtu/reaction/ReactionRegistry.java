@@ -241,7 +241,7 @@ public class ReactionRegistry {
 			md.hasUnimolecular = unimolecular.containsKey(formula);			
 			md.hasReactants = (md.hasBimolecular || md.hasPhotolysis || md.hasUnimolecular);
 			md.hasDissolvedReactants = checkDissolvedReactants(formula);
-			md.reactsWith = extractReactants(formula);
+			md.reactsWithHash = extractReactants(formula);
 			moleculeDescriptions.put(formula, md);
 		}
 	}
@@ -268,31 +268,35 @@ public class ReactionRegistry {
 	/**
 	 * Get the list of reactants this compound reacts with
 	 */
-	private String[] extractReactants(String formula) {
+	private int[] extractReactants(String formula) {
 		ReactionDescription[] rds = bimolecular.get(formula);
 		if (rds == null) {
-			return new String[0];
+			return new int[0];
 		}
 		
-		HashSet<String> entities = new HashSet<String>();
+		HashSet<Integer> entities = new HashSet<Integer>();
 		for (ReactionDescription rd : rds) {
 			String[] products = rd.getReactants();
 			
 			// Check for reactions with self
 			if (products[0].equals(products[1])) {
-				entities.add(products[0]);
+				entities.add(products[0].hashCode());
 			}
 			
 			// Otherwise add the other compound
 			if (products[0].equals(formula)) {
-				entities.add(products[1]);
+				entities.add(products[1].hashCode());
 			} else {
-				entities.add(products[0]);
+				entities.add(products[0].hashCode());
 			}
 		}
 		
-		String[] results = new String[entities.size()];
-		results = entities.toArray(results);
+		// Java idiosyncrasy, going to a primitive array isn't that easy 
+		int[] results = new int[entities.size()];
+		int ndx = 0;
+		for (int entity : entities) {
+			results[ndx++] = entity;
+		}
 		return results;
 	}
 	

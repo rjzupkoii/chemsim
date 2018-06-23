@@ -108,6 +108,10 @@ public class Molecule extends Steppable{
 		return md.hasDissolvedReactants;
 	}
 	
+	public int[] getReactantHashes() {
+		return md.reactsWithHash;
+	}
+	
 	/**
 	 * Calculate the new location for this molecule.
 	 */

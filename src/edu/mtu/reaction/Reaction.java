@@ -172,16 +172,24 @@ public class Reaction {
 		// Check to see what other species at this location react with the given one
 		int size = molecules.numObjs;
 		for (int ndx = 0; ndx < size; ndx++) {
-			if (molecules.get(ndx).equals(molecule)) {
+			Molecule checking = (Molecule)molecules.get(ndx);
+			if (checking.equals(molecule)) {
 				continue;
 			}
 			
-			// Get the reactions if we need them, then attempt to process
-			if (reactions == null) {
-				reactions = ReactionRegistry.getInstance().getBimolecularReaction(molecule);
-			}
-			if (process(molecule, (Molecule)molecules.get(ndx), reactions)) {
-				return true;
+			for (int formulaHash : molecule.getReactantHashes()) {
+				// Check and continue if the hashes don't match
+				if (!checking.sameEntity(formulaHash)) {
+					continue;
+				}
+				
+				// Get the reactions if we need them, then attempt to process
+				if (reactions == null) {
+					reactions = ReactionRegistry.getInstance().getBimolecularReaction(molecule);
+				}
+				if (process(molecule, (Molecule)molecules.get(ndx), reactions)) {
+					return true;
+				}				
 			}
 		}
 		
@@ -194,9 +202,12 @@ public class Reaction {
 			}
 		}
 				
+		// Nothing was found in in our exact location, search out to the interaction radius
+		
+		
 		return false;
 	}
-	
+		
 	/**
 	 * Attempt photolysis on the species.
 	 * 
@@ -232,6 +243,8 @@ public class Reaction {
 				matched.add(rd);
 			}
 		}
+		
+		// TODO This shouldn't happen now... figure out how to get dissolved molecules in
 		if (matched.isEmpty()) {
 			return false;
 		}

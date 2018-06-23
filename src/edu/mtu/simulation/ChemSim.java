@@ -28,7 +28,7 @@ public class ChemSim implements Simulation {
 	private final static NumberFormat scientific = new DecimalFormat("0.##E0");
 	
 	// Divisor for time steps to report on
-	private static final long REPORT = 1;
+	private static final long REPORT = 10;
 	
 	// Scale the decay by the given time unit, 1 = sec, 60 = minute
 	public static final int SCALING = 60;
