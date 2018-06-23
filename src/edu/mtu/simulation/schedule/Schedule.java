@@ -7,16 +7,17 @@ import java.util.ArrayDeque;
  * a marker node that ensures a callback is made to the simulation.  
  */
 public class Schedule {
-	
-	private class Escapement extends Steppable {
-		@Override
-		public void doAction() { } 
-	}
-	
+		
+	// Flags to indicate shutdown
 	private boolean stopping;
 	private boolean stop;
 	
+	// Current time step of the schedule
 	private int timeStep;
+	private int runTill;
+	
+	// Pointer to the simulation
+	private Simulation simulation;
 	
 	private ArrayDeque<Steppable> schedule;
 	
@@ -67,23 +68,20 @@ public class Schedule {
 			throw new IllegalArgumentException("The simulation cannot be null");
 		}
 		
-		// Prepare to run, set the flags, time step
+		// Set the relevant flags and pointers
 		stopping = false;
 		stop = false;
-		timeStep = 0;			
+		timeStep = 0;
+		this.runTill = runTill;
+		this.simulation = simulation;
+		
+		// Add the escapement as the final entry
 		schedule.add(new Escapement());
 		
+		// Run the schedule
 		while (schedule.size() > 0) {			
 			Steppable steppable = schedule.remove();			
-			if (steppable instanceof Escapement) {
-				timeStep++;
-				simulation.step(timeStep, runTill);
-				if (timeStep == runTill || stopping) {
-					schedule.clear();
-					break;
-				}
-				schedule.add(steppable);
-			} else if (steppable.isActive()) {
+			if (steppable.isActive()) {
 				steppable.doAction();
 				schedule.add(steppable);
 			}
@@ -106,5 +104,23 @@ public class Schedule {
 	public void terminate() {
 		stop = true;
 		schedule.clear();
+	}
+	
+	/**
+	 * Wrapper for the steppable that represents the end of a single time step.
+	 * 
+	 * This offers us a very minor performance gain under very large schedules
+	 * by avoid the instanceof check
+	 */
+	private class Escapement extends Steppable {
+		@Override
+		public void doAction() { 
+			timeStep++;
+			simulation.step(timeStep, runTill);
+			if (timeStep == runTill || stopping) {
+				schedule.clear();
+				deactivate();
+			}
+		} 
 	}
 }
