@@ -1,6 +1,7 @@
 package edu.mtu.reactor;
 
 import java.util.List;
+import java.util.Set;
 
 import edu.mtu.compound.Molecule;
 import edu.mtu.parser.ChemicalDto;
@@ -76,7 +77,7 @@ public class Reactor {
 	 * Returns all molecules present in the reactor.
 	 */
 	public Molecule[] getMolecules() {
-		List<Entity> objects = grid.getAllObjects();
+		Set<Entity> objects = grid.getAllObjects();
 		Molecule[] array = new Molecule[objects.size()];
 		objects.toArray(array);
 		return array;

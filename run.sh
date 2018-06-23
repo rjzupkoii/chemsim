@@ -21,7 +21,7 @@ mkdir data
 # Run the simulation
 for ndx in {1..1}
 do
-  java -javaagent:lib/SizeOf.jar -Xms4G -XX:+UseParallelGC -jar ChemSim.jar -n $ndx -r $reactions -c $chemicals -l 3.00E+06 -s 1 -p 1
+  java -javaagent:lib/SizeOf.jar -Xms4G -XX:+UseG1GC -jar ChemSim.jar -n $ndx -r $reactions -c $chemicals -l 2.00E+06 -s 1 -p 1
 done
 
 # Move the results, last console

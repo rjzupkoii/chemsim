@@ -213,21 +213,40 @@ public class ChemSim implements Simulation {
 		// Do all of the up-front calculations
 		calcluateParameters(chemicals);
 				
-		// Add the chemicals to the model
+		// Start by generating all of the initial molecules
+		int size = 0;
+		for (ChemicalDto chemical : chemicals) {
+			size += chemical.count;
+		}
+		int ndx = 0;
+		Molecule[] moleclues = new Molecule[size];
+		for (ChemicalDto chemical : chemicals) {
+			System.out.println("Generating " + chemical.count + " molecules of " + chemical.formula);
+			for (int count = 0; count < chemical.count; count++) {
+				moleclues[ndx++] = new Molecule(chemical.formula);
+			}
+			tracker.update(chemical.formula, chemical.count);
+		}
+		
+		// Use a Fisher–Yates shuffle them so we have a random distribution of activation in the schedule
+		System.out.println("Shuffleing moleclues...");
+		for (ndx = size - 1; ndx > 0; ndx--)
+	    {
+	      int index = random.nextInt(ndx + 1);
+	      Molecule swap = moleclues[index];
+	      moleclues[index] = moleclues[ndx];
+	      moleclues[ndx] = swap;
+	    }
+		
+		// Now add all of the molecules to the schedule
+		System.out.println("Adding moleclues to the schedule...");
 		Reactor reactor = Reactor.getInstance();
 		Int3D container = reactor.dimensions;
-		for (ChemicalDto chemical : chemicals) {
-	
-			System.out.println("Generating " + chemical.count + " molecules of " + chemical.formula);			
-			for (int ndx = 0; ndx < chemical.count; ndx++) {
-				int x = random.nextInt(container.x), y = random.nextInt(container.y), z = random.nextInt(container.z);
-				Molecule molecule = new Molecule(chemical.formula);
-				reactor.grid.setObjectLocation(molecule, x, y, z);
-				schedule.insert(molecule);
-			}
+		for (Molecule molecule : moleclues) {
+			int x = random.nextInt(container.x), y = random.nextInt(container.y), z = random.nextInt(container.z);
+			reactor.grid.setObjectLocation(molecule, x, y, z);
+			schedule.insert(molecule);
 			
-			// Set the baseline quantity
-			tracker.update(chemical.formula, chemical.count);
 		}
 	}
 	

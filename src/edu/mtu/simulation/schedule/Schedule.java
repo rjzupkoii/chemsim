@@ -110,7 +110,7 @@ public class Schedule {
 	 * Wrapper for the steppable that represents the end of a single time step.
 	 * 
 	 * This offers us a very minor performance gain under very large schedules
-	 * by avoid the instanceof check
+	 * by avoiding the instanceof check
 	 */
 	private class Escapement extends Steppable {
 		@Override
