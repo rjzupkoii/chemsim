@@ -23,8 +23,7 @@ public class Int3D {
 	}
 	
 	/**
-	 * Constructor, expects the hash to be provided but only asserts it
-	 * when hashCode() is called.
+	 * Constructor, expects the hash to be provided.
 	 */
 	public Int3D(int x, int y, int z, int hash) {
 		this.x = x;
@@ -38,7 +37,6 @@ public class Int3D {
 	 */
 	@Override
 	public int hashCode() {
-		assert (hash != 0);
         return hash;
 	}
 	
@@ -53,7 +51,7 @@ public class Int3D {
 		
 		if (obj instanceof Int3D) {
 			Int3D other = (Int3D)obj;
-			return (other.x == x && other.y == y && other.z == z);
+			return (other.x == x && other.y == y && other.z == z && other.hash == hash);
 		}
 		
 		return false;

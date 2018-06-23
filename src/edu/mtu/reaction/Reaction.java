@@ -11,7 +11,6 @@ import edu.mtu.primitives.Entity;
 import edu.mtu.primitives.Int3D;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;
-import sim.util.Bag;
 
 /**
  * This class provides a means for a chemical species to react with other species.
@@ -181,7 +180,7 @@ public class Reaction {
 			}
 		}
 								
-		// Use the lattice to search out to the interaction radius
+		// Use the lattice to search out to the interaction radius		
 		int radius = ChemSim.getProperties().getInteractionRadius();
 		for (int tag : hashes) {
 			Entity match = Reactor.getInstance().grid.findFirstByTag(molecule, tag, radius);

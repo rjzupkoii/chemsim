@@ -44,7 +44,6 @@ public class Reactor {
 	 * Get an instance of the reactor.
 	 */
 	public static Reactor getInstance() { 
-		assert (instance != null);
 		return instance;
 	}
 	
@@ -87,11 +86,7 @@ public class Reactor {
 	 * Get the molecules at the same location as the given molecule.
 	 */
 	public Bag getMolecules(Molecule molecule) {
-		Bag results = grid.getColocatedObjects(molecule);
-		
-		assert (results != null && results.numObjs > 0);
-		
-		return results;
+		return grid.getColocatedObjects(molecule);
 	}
 		
 	/**

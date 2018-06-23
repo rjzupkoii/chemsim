@@ -111,6 +111,9 @@ public class Sparse3DLattice {
 		// Scan all entities of the given type
 		Object2ObjectOpenHashMap<Entity, LocationAndIndex> map = entityMap.get(tag);
 		for (Entry<Entity, LocationAndIndex> entry : map.entrySet()) {
+			if (entry.getKey().equals(entity)) {
+				continue;
+			}
 			
 			// Get the location of the entity
 			Int3D point = entry.getValue().location;
@@ -204,7 +207,8 @@ public class Sparse3DLattice {
 		int key = object.getEntityTypeTag();
 		LocationAndIndex lai = entityMap.get(key).remove(object);
 		if (lai == null) {
-			return null;
+			// This should never actually occur
+			throw new IllegalStateException("Attempted to remove an object not in the entityMap.");
 		}
 				
 		// Remove from the the location lattice
@@ -247,7 +251,9 @@ public class Sparse3DLattice {
 	 */
 	public void setObjectLocation(final Entity object, final Int3D location) {
 		// Start by checking our conditions		
-		assert (object != null);
+		if (object == null) {
+			throw new IllegalStateException("Attempting to insert null into lattice.");
+		}
 		
 		// Check to see if the object already exists
 		int key = object.getEntityTypeTag();
