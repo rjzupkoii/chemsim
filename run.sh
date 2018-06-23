@@ -19,9 +19,9 @@ rm -rf data
 mkdir data
 
 # Run the simulation
-for ndx in {1..10}
+for ndx in {1..1}
 do
-  java -javaagent:lib/SizeOf.jar -jar ChemSim.jar -n $ndx -r $reactions -c $chemicals -t CH3COCH3 -l 1000000
+  java -javaagent:lib/SizeOf.jar -Xms4G -XX:+UseParallelGC -jar ChemSim.jar -n $ndx -r $reactions -c $chemicals -l 3.00E+06 -s 1 -p 1
 done
 
 # Move the results, last console
