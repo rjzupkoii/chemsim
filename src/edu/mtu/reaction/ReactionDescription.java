@@ -44,13 +44,32 @@ public class ReactionDescription implements Cloneable {
 	/**
 	 * Check to see if the reactants are part of this reaction description.
 	 */
-	public boolean checkReactants(Molecule one, Molecule two) {
-		//boolean partOne = one.getFormula().equals(reactants.get(0));
-		//boolean partTwo = (two != null) ? two.getFormula().equals(reactants.get(1)) : reactants.size() == 1;
+	public boolean checkReactants(Molecule a, Molecule b) {
+		// Invalid call
+		if (a == null && b == null) return false;
 		
-		boolean partOne = one.sameEntity(reactantHashes[0]);
-		boolean partTwo = (two != null) ? two.sameEntity(reactantHashes[1]) : reactants.length == 1;		
-		return partOne && partTwo;
+		// One reactant
+		if (reactants.length == 1) {											
+			// Two molecules are invalid
+			if (a != null && b != null) return false;							
+			// Check that a is equal, assume b is null
+			if (a != null && a.sameEntity(reactantHashes[0])) return true;		
+			// Check that b is equal, assume as is null
+			if (b.sameEntity(reactantHashes[0])) return true;					
+			
+			// Not a match
+			return false;														
+		}
+		
+		// Should have two molecules now
+		if (a == null || b == null) return false;
+		// Check same order as array
+		if (a.sameEntity(reactantHashes[0]) && b.sameEntity(reactantHashes[1])) return true;
+		// Check reverse order of array
+		if (b.sameEntity(reactantHashes[0]) && a.sameEntity(reactantHashes[1])) return true;
+		
+		// Not a match
+		return false;
 	}
 		
 	/**
