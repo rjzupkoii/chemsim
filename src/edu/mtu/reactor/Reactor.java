@@ -5,8 +5,10 @@ import java.util.Set;
 
 import edu.mtu.compound.Molecule;
 import edu.mtu.parser.ChemicalDto;
+import edu.mtu.primitives.Entity;
 import edu.mtu.primitives.Int3D;
 import edu.mtu.primitives.Sparse3DLattice;
+import edu.mtu.reaction.ReactionRegistry;
 import edu.mtu.simulation.SimulationProperties;
 import net.sourceforge.sizeof.SizeOf;
 import sim.util.Bag;
@@ -76,7 +78,7 @@ public class Reactor {
 	 * Returns all molecules present in the reactor.
 	 */
 	public Molecule[] getMolecules() {
-		Set<Object> objects = grid.getAllObjects();
+		List<Entity> objects = grid.getAllObjects();
 		Molecule[] array = new Molecule[objects.size()];
 		objects.toArray(array);
 		return array;
@@ -125,8 +127,11 @@ public class Reactor {
 			int dimension = calculateSize(compounds, count);
 			
 			// Create the reactor, set relevant values, and return
+			int[] hashes = ReactionRegistry.getInstance().getEntityHashList();
+			assert (hashes != null);
+			
 			instance = new Reactor(new Int3D(dimension, dimension, dimension));
-			instance.grid = Sparse3DLattice.create3DLattice(count, dimension);
+			instance.grid = Sparse3DLattice.create3DLattice(count, hashes);
 			instance.moleculeCount = count;
 			instance.moleculeSize = size;
 			

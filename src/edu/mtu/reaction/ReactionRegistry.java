@@ -126,7 +126,19 @@ public class ReactionRegistry {
 	public Set<String> getEntityList() {
 		return moleculeDescriptions.keySet();
 	}
-				
+		
+	/**
+	 * Get a list of all of the entity hashes in the registry.
+	 */
+	public int[] getEntityHashList() {
+		int[] hashes = new int[moleculeDescriptions.keySet().size()];
+		int ndx = 0;
+		for (String key : moleculeDescriptions.keySet()) {
+			hashes[ndx++] = key.hashCode();
+		}
+		return hashes;
+	}
+	
 	/**
 	 * Returns the photolysis products for the chemical species or null.
 	 */

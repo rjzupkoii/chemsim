@@ -70,6 +70,11 @@ public final class Launcher {
 				properties.setExperimentalDataFileName(args[ndx + 1]);
 				experimentalDecay = true;
 				break;
+			case "-p":
+			case "--print":
+				int interval = Integer.parseInt(args[ndx + 1]);
+				properties.setReportInterval(interval);
+				break;
 			case "-r":
 			case "--reactions":
 				properties.setReactionsFileName(args[ndx + 1]);
@@ -117,7 +122,8 @@ public final class Launcher {
 		System.err.println("\nOptional: ");
 		System.err.printf(format, "-e, --experimental [file]", "CSV file with the known experimental results for photolysis decay");
 		System.err.printf(format, "-l", "--limit [number]", "The maximum number of molecules to generate at initlization.");
-		System.err.printf(format, "-n, --run [number]", "The run number to apply to results files");
+		System.err.printf(format, "-n", "--run [number]", "The run number to apply to results files");
+		System.err.printf(format, "-p", "--print [number]", "The step interval to print / save status on");
 		System.err.printf(format, "-t, --terminate [formula]", "Terminate the model when the given molecule has zero entities");
 		System.err.println("\nNOTE:");
 		System.err.println("JAVAGENT initialization is required, -javaagent:lib/SizeOf.jar");

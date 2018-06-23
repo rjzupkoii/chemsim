@@ -22,6 +22,9 @@ public class SimulationProperties {
 	// Limit to the number of molecules in the model, -1 means no limit
 	private int moleculeLimit = NO_LIMIT;
 				
+	// Interval to report to the console and save data on
+	private int reportInterval = 100;
+	
 	// List of entities to terminate when zero
 	private List<String> terminateOn = new ArrayList<String>(); 
 	
@@ -80,6 +83,10 @@ public class SimulationProperties {
 		return reactionsFileName;
 	}
 	
+	public int getReportInterval() {
+		return reportInterval;
+	}
+	
 	public String getResultsFileName() {
 		return resultsFileName;
 	}
@@ -114,6 +121,10 @@ public class SimulationProperties {
 	
 	public void setReactionsFileName(String value) {
 		reactionsFileName = value;
+	}
+	
+	public void setReportInterval(int value) {
+		reportInterval = value;
 	}
 	
 	public void setResultsFileName(String value) {

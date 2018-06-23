@@ -26,19 +26,18 @@ public class ChemSim implements Simulation {
 		
 	// Format the number in scientific notation, two significant digits
 	private final static NumberFormat scientific = new DecimalFormat("0.##E0");
-	
-	// Divisor for time steps to report on
-	private static final long REPORT = 10;
-	
+		
 	// Scale the decay by the given time unit, 1 = sec, 60 = minute
 	public static final int SCALING = 60;
 	
-	// The properties for the simulation
-	private ModelProperities properties;
 	
 	// Singleton instance of the simulation and schedule
 	private static ChemSim instance = new ChemSim();
 	private Schedule schedule = new Schedule();
+	
+	// The properties for the simulation
+	private ModelProperities properties;
+	private int report;
 	
 	// Entity count tracker for the simulation
 	private CensusTracking census;
@@ -63,6 +62,7 @@ public class ChemSim implements Simulation {
 		try {
 			// Note the properties
 			SimulationProperties simulation = SimulationProperties.getInstance();
+			report = simulation.getReportInterval();
 
 			// Import the reactions into the model
 			ReactionRegistry instance = ReactionRegistry.getInstance();
@@ -134,7 +134,7 @@ public class ChemSim implements Simulation {
 		}
 		
 		// Reset the tracker and note the step
-		boolean flush = (count % REPORT == 0);
+		boolean flush = (count % report == 0);
 		tracker.reset(flush);
 		if (flush) {
 			System.out.println(LocalDateTime.now() + ": " + count + " of " + total);

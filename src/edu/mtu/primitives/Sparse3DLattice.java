@@ -1,7 +1,9 @@
 package edu.mtu.primitives;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -34,69 +36,116 @@ public class Sparse3DLattice {
 	private final static int REPLACEMENT_BAG_RATIO = 2;
 
 	// This map allows us to find where the entity is and colocated entities in O(c)
-	private Map<Object, LocationAndIndex> entityMap;
+	private Map<Integer, Object2ObjectOpenHashMap<Entity, LocationAndIndex>> entityMap;
 
 	// This map allows us to search for other entities by probing the space, since we are hashing
 	// the coordinates we really only need that hash value to find entities
 	private Map<Integer, Bag> latticeMap;
 	
 	// The size of the partitioned hash tables, used for hashing
-	private static int allocation;
+	private int allocation;
 		
 	/**
 	 * Private constructor.
 	 */
 	private Sparse3DLattice() {	}
-	
-	/**
-	 * Create a sparse 3d lattice structure for use.
-	 * 
-	 * @param maxEntities The maximum number of entities the lattice is expected to contain.
-	 * @param dimension The size of the lattice along all three dimensions.
-	 * @return The initialized lattice.
-	 */
-	public static Sparse3DLattice create3DLattice(int maxEntities, int dimension) {
-		return create3DLattice(maxEntities, dimension, dimension, dimension);
-	}
-	
+		
 	/**
 	 * Create a new sparse 3d lattice structure for use.
 	 * 
 	 * @param maxEntities The maximum number of entities the lattice is expected to contain.
-	 * @param x The size of the lattice along the x dimension. 
-	 * @param y The size of the lattice along the y dimension.
-	 * @param y The size of the lattice along the z dimension.
 	 * @return The initialized lattice.
 	 */
-	public static Sparse3DLattice create3DLattice(int maxEntities, int x, int y, int z) {
+	public static Sparse3DLattice create3DLattice(int maxEntities, int[] tags) {
 		Sparse3DLattice lattice = new Sparse3DLattice();
 		
 		// Assume a uniform distribution of entities
-		allocation = maxEntities * ENTITY_MULTIPLIER;
+		lattice.allocation = maxEntities * ENTITY_MULTIPLIER;
 				
-		// Allocate and return
-		lattice.entityMap = new Object2ObjectOpenHashMap<Object, LocationAndIndex>(maxEntities * ENTITY_MULTIPLIER);
+		// Allocate the entity map, note that while we know exactly how many tags we
+		// can expect to see, we need to be pessimistic about the allocation of the 
+		// tagged entity maps
+		lattice.entityMap = new Int2ObjectOpenHashMap<Object2ObjectOpenHashMap<Entity, LocationAndIndex>>(tags.length);
+		for (int key : tags) {
+			if (lattice.entityMap.containsKey(key)) {
+				throw new IllegalAccessError("Key collision while allocating the entityMap.");
+			}
+			lattice.entityMap.put(key, new Object2ObjectOpenHashMap<Entity, LocationAndIndex>(lattice.allocation));
+		}
 		lattice.latticeMap = new Int2ObjectOpenHashMap<Bag>(maxEntities * ENTITY_MULTIPLIER);
 		return lattice;
 	}
-	
+		
 	/**
-	 * Find the first entity within the sphere defined by the radius with the given tag.
+	 * Find the first entity with the given tag in the radius from the given entity
 	 * 
-	 * @param tags to search for.
+	 * @param entity to base the search on.
+	 * @param tag to search for.
 	 * @param radius defining the sphere.
-	 * @return The first entity with a matching tag in the sphere.
+	 * @return The first entity with a matching tag in the sphere, or null.
 	 */
-	public Entity findFirstByTag(int[] tags, int radius) {
-		// TODO write me...
+	public Entity findFirstByTag(Entity entity, int tag, int radius) {
+		
+		// Start by getting our location and checking this bag
+		int key = entity.getEntityTypeTag();
+		LocationAndIndex lai = entityMap.get(key).get(entity);
+		int size = lai.colocated.numObjs;
+		for (int ndx = 0; ndx < size; ndx++) {
+			Entity checking = (Entity)lai.colocated.objs[ndx];
+			if (checking.equals(entity)) {
+				continue;
+			}
+			if (checking.getEntityTypeTag() == tag) {
+				return checking;
+			}
+		}
+		
+		// Return if the radius is zero, this indicates the colocated entities
+		if (radius == 0) {
+			return null;
+		}
+		
+		// Note the variables, slightly faster
+		int x1 = lai.location.x, y1 = lai.location.y, z1 = lai.location.z;
+				
+		// Scan all entities of the given type
+		Object2ObjectOpenHashMap<Entity, LocationAndIndex> map = entityMap.get(tag);
+		for (Entry<Entity, LocationAndIndex> entry : map.entrySet()) {
+			
+			// Get the location of the entity
+			Int3D point = entry.getValue().location;
+			
+			// Calculate the Euclidean distance, d = sqrt((x1 - x2)^2 + (y1 - y2)^2 + (z1 - z2)^2)
+			int x = x1 - point.x;
+			int y = y1 - point.y;
+			int z = z1 - point.z;
+			double d = Math.sqrt(x*x + y*y + z*z);
+			
+			// Check and return if we are good
+			if (d <= radius) {
+				return entry.getKey();
+			}
+		}
+		
+		// Nothing found
 		return null;
 	}
-
+	
 	/**
 	 * Get all of the objects in the lattice.
 	 */
-	public Set<Object> getAllObjects() {
-		return entityMap.keySet();
+	public List<Entity> getAllObjects() {
+		int size = 0;
+		for (int key : entityMap.keySet()) {
+			size += entityMap.get(key).size();
+		}
+		
+		List<Entity> results = new ArrayList<Entity>(size);
+		for (int key : entityMap.keySet()) {
+			results.addAll(entityMap.get(key).keySet());
+		}
+		
+		return results;		
 	}
 	
 	/**
@@ -105,8 +154,9 @@ public class Sparse3DLattice {
 	 * @param object To base the location on.
 	 * @return The bag of objects, or null if the original object was not found.
 	 */
-	public Bag getColocatedObjects(final Object object) {
-		LocationAndIndex lai = entityMap.get(object);
+	public Bag getColocatedObjects(final Entity object) {
+		int key = object.getEntityTypeTag();		
+		LocationAndIndex lai = entityMap.get(key).get(object);
 		return (lai == null) ? null : lai.colocated;
 	}
 	
@@ -116,8 +166,9 @@ public class Sparse3DLattice {
 	 * @param object To retrieve the location of.
 	 * @return The location as Int3D or null if it does not exist.e
 	 */
-	public Int3D getObjectLocation(final Object object) {
-		LocationAndIndex lai = entityMap.get(object);
+	public Int3D getObjectLocation(final Entity object) {
+		int key = object.getEntityTypeTag();
+		LocationAndIndex lai = entityMap.get(key).get(object);
 		return (lai == null) ? null : lai.location;
 	}
 	
@@ -132,10 +183,11 @@ public class Sparse3DLattice {
 	}
 	
 	/**
-	 * Hash the x, y, z coordinates provided based upon the internal hash table allocation. 
+	 * Hash the x, y, z coordinates provided based upon the internal hash table allocation.
+	 * 
+	 *  Based upon Teschner et al., 2003
 	 */
-	private static int hashCoordinates(int x, int y, int z) {
-		// TODO Evaluate this for performance
+	private int hashCoordinates(int x, int y, int z) {
 		final int p1 = 73856093, p2 = 19349663, p3 = 83492791;
 		return (x * p1 ^ y * p2 ^ z * p3) % allocation;
 	}
@@ -146,10 +198,11 @@ public class Sparse3DLattice {
 	 * @param object to be removed.
 	 * @return The location of the object, or null if it doesn't exist.
 	 */
-	public Int3D remove(final Object object) {
+	public Int3D remove(final Entity object) {
 		
 		// Start by removing the object finding out where it is located
-		LocationAndIndex lai = entityMap.remove(object);
+		int key = object.getEntityTypeTag();
+		LocationAndIndex lai = entityMap.get(key).remove(object);
 		if (lai == null) {
 			return null;
 		}
@@ -181,7 +234,7 @@ public class Sparse3DLattice {
 	 * @param y coordinate of the object.
 	 * @param z coordinate of the object.
 	 */
-	public void setObjectLocation(final Object object, int x, int y, int z) {
+	public void setObjectLocation(final Entity object, int x, int y, int z) {
 		Int3D location = new Int3D(x, y, z, hashCoordinates(x, y, z));
 		setObjectLocation(object, location);
 	}
@@ -192,12 +245,13 @@ public class Sparse3DLattice {
 	 * @param object to be added or updated.
 	 * @param location of the object in the lattice.
 	 */
-	public void setObjectLocation(final Object object, final Int3D location) {
+	public void setObjectLocation(final Entity object, final Int3D location) {
 		// Start by checking our conditions		
 		assert (object != null);
 		
 		// Check to see if the object already exists
-		LocationAndIndex lai = entityMap.get(object);
+		int key = object.getEntityTypeTag();
+		LocationAndIndex lai = entityMap.get(key).get(object);
 				
 		// Create an empty bag
 		Bag bag = null;
@@ -206,7 +260,7 @@ public class Sparse3DLattice {
 			// No location returned, must be a new object
 			lai = new LocationAndIndex();
 			lai.location = location;
-			entityMap.put(object, lai);
+			entityMap.get(key).put(object, lai);
 		} else {
 			// Return if there is no update
 			if (lai.location.equals(location)) {

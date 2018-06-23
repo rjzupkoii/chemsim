@@ -16,8 +16,8 @@ public class ModelProperities {
 	// The expected duration of the model in time steps
 	private int timeSteps;
 	
-	// Lenght of one time step in seconds
-	private int timeStepLength = 1;
+	// Length of one time step in seconds
+	private int timeStepLength = 60;
 	
 	// Values needed to ensure hydrogen peroxide exhibits a linear decay based upon the UV intensity
 	private double hydrogenPeroxideDecay = 0;

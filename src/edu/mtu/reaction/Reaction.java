@@ -7,6 +7,7 @@ import edu.mtu.compound.DisproportionatingMolecule;
 import edu.mtu.compound.DissolvedMolecule;
 import edu.mtu.compound.Molecule;
 import edu.mtu.compound.MoleculeFactory;
+import edu.mtu.primitives.Entity;
 import edu.mtu.primitives.Int3D;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;
@@ -142,12 +143,8 @@ public class Reaction {
 	 */
 	public boolean react(Molecule molecule) {
 		// First, see if there are any bimolecular reactions to take place
-		if (molecule.hasBimoleculear()) {
-			Bag molecules = Reactor.getInstance().getMolecules(molecule);
-			int size = molecules.numObjs;
-			if (size > 1 && bimolecularReaction(molecule, molecules)) {
-				return true;
-			}
+		if (molecule.hasBimoleculear() && bimolecularReaction(molecule)) {
+			return true;
 		}
 		
 		// Second, see if unimolecular decay needs to take place
@@ -166,44 +163,32 @@ public class Reaction {
 	/**
 	 * Perform a bimolecular reaction on the given species.
 	 */
-	private boolean bimolecularReaction(Molecule molecule, final Bag molecules) {
-		ReactionDescription[] reactions = null;
+	private boolean bimolecularReaction(Molecule molecule) {
 		
-		// Check to see what other species at this location react with the given one
-		int size = molecules.numObjs;
-		for (int ndx = 0; ndx < size; ndx++) {
-			Molecule checking = (Molecule)molecules.get(ndx);
-			if (checking.equals(molecule)) {
-				continue;
-			}
-			
-			for (int formulaHash : molecule.getReactantHashes()) {
-				// Check and continue if the hashes don't match
-				if (!checking.sameEntity(formulaHash)) {
-					continue;
-				}
-				
-				// Get the reactions if we need them, then attempt to process
-				if (reactions == null) {
-					reactions = ReactionRegistry.getInstance().getBimolecularReaction(molecule);
-				}
-				if (process(molecule, (Molecule)molecules.get(ndx), reactions)) {
-					return true;
-				}				
-			}
-		}
+		// Get the possible hashes
+		int[] hashes = molecule.getReactantHashes(); 
 		
-		// Check to see if there are any dissolved molecule we should be aware of
+		// Check to see if there are any dissolved molecule we should be aware of,
+		// this comes first since a molecule that reacts with dissolved molecules
+		// is unlikely to do anything else
 		if (molecule.hasDissolvedReactants()) {		
 			for (DissolvedMolecule reactant : ReactionRegistry.DissolvedMoleclues) {
-				if (process(molecule, reactant, reactions)) {
-					return true;
+				for (int formulaHash : hashes) {
+					if (reactant.sameEntity(formulaHash)) {
+						return process(molecule, reactant);
+					}
 				}
 			}
 		}
-				
-		// Nothing was found in in our exact location, search out to the interaction radius
-		
+								
+		// Use the lattice to search out to the interaction radius
+		int radius = ChemSim.getProperties().getInteractionRadius();
+		for (int tag : hashes) {
+			Entity match = Reactor.getInstance().grid.findFirstByTag(molecule, tag, radius);
+			if (match != null) {
+				return process(molecule, (Molecule)match);
+			}
+		}		
 		
 		return false;
 	}
@@ -232,25 +217,31 @@ public class Reaction {
 	}	
 		
 	/**
+	 * Wrapper method, we just know the molelcues.
+	 */
+	private boolean process(Molecule one, Molecule two) {
+		Int3D location = Reactor.getInstance().grid.getObjectLocation(one);
+		ReactionDescription[] reactions = ReactionRegistry.getInstance().getBimolecularReaction(one);
+		return process(one, two, location, reactions);
+	}
+	
+	/**
 	 * Process the reactions that are possible for this entity.
 	 */
-	private boolean process(Molecule molecule, Molecule reactant, ReactionDescription[] reactions) {
+	private boolean process(Molecule molecule, Molecule reactant, Int3D location, ReactionDescription[] reactions) {
 		
-		// Can this reaction occur?
+		// Find the correct reaction(s)
 		List<ReactionDescription> matched = new ArrayList<ReactionDescription>();
 		for (ReactionDescription rd : reactions) {
 			if (rd.checkReactants(molecule, reactant)) {
 				matched.add(rd);
 			}
 		}
-		
-		// TODO This shouldn't happen now... figure out how to get dissolved molecules in
-		if (matched.isEmpty()) {
-			return false;
+		if (matched.size() == 0) {
+			throw new IllegalAccessError(String.format("No matches found for %s, %s", molecule, reactant));
 		}
-		
+				
 		// Add the molecules to the model
-		Int3D location = Reactor.getInstance().getLocation(molecule);
 		if (matched.size() > 1) {
 			// Disproportion is occurring
 			MoleculeFactory.create(molecule, reactant, matched, location);
@@ -264,7 +255,7 @@ public class Reaction {
 			reactant.dispose();
 		}
 		
-		// The molecule will be disposed of by itself
+		// The molecule will be dispose itself
 		return true;
 	}
 		
@@ -272,7 +263,8 @@ public class Reaction {
 	 * Perform a unimolecular reaction on the given species.
 	 */
 	private boolean unimolecularDecay(Molecule molecule) {
+		Int3D location = Reactor.getInstance().grid.getObjectLocation(molecule);
 		ReactionDescription[] reactions = ReactionRegistry.getInstance().getUnimolecularReaction(molecule);
-		return process(molecule, null, reactions);
+		return process(molecule, null, location, reactions);
 	}
 }

@@ -3,6 +3,7 @@ package edu.mtu.compound;
 import edu.mtu.reaction.MoleculeDescription;
 import edu.mtu.reaction.Reaction;
 import edu.mtu.reaction.ReactionRegistry;
+import edu.mtu.primitives.Entity;
 import edu.mtu.primitives.Int3D;
 import edu.mtu.primitives.Sparse3DLattice;
 import edu.mtu.reactor.Reactor;
@@ -10,7 +11,7 @@ import edu.mtu.simulation.ChemSim;
 import edu.mtu.simulation.schedule.Steppable;
 import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 
-public class Molecule extends Steppable{
+public class Molecule extends Steppable implements Entity {
 
 	private MoleculeDescription md;
 	
@@ -147,7 +148,7 @@ public class Molecule extends Steppable{
 		z = (z < 0) ? 0 : z;
 		
 		// Set the new location		
-		grid.setObjectLocation((Object)this, x, y, z);
+		grid.setObjectLocation(this, x, y, z);
 	}
 
 	/**
@@ -171,5 +172,15 @@ public class Molecule extends Steppable{
 	 */
 	public boolean sameEntity(int formulaHash) {
 		return (this.formulaHash == formulaHash);
+	}
+
+	@Override
+	public int getEntityTypeTag() {
+		return formulaHash;
+	}
+	
+	@Override
+	public String toString() {
+		return formula;
 	}
 }
