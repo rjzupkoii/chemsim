@@ -92,11 +92,10 @@ public class Sparse3DLattice {
 	 * @return The first entity with a matching tag in the sphere, or null.
 	 */
 	public Entity findFirstByTag(Entity entity, int tag, int radius) {
-		
 		// Check for any entities of the given tag
 		ArrayDeque<Entity> entities = tagMap.get(tag);
-		Entity first = entities.peek();
-		if (first == null) {
+		Entity last = entities.peek();						// O(1) look-up
+		if (last == null) {
 			return null;
 		}
 				
@@ -126,7 +125,7 @@ public class Sparse3DLattice {
 		// will know if we are looking at one because it will not be present
 		// in the entity map any more.
 		Entity current = null;
-		while (!first.equals(current)) {
+		while (!last.equals(current)) {
 			// Get an entity to check
 			current = entities.pop();
 			
@@ -136,8 +135,8 @@ public class Sparse3DLattice {
 				// Make sure valid entities are restored
 				entities.add(current);
 				
-				// Press on if we are trying to check ourself
-				if (current.equals(entity)) {
+				// Press on if we are looking at the parent entity
+				if (entity.equals(current)) {
 					continue;
 				}
 				
@@ -154,6 +153,7 @@ public class Sparse3DLattice {
 			}
 		}
 		
+		// Nothing found
 		return null;
 	}
 	
