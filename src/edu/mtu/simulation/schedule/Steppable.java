@@ -7,7 +7,7 @@ public abstract class Steppable {
 
 	private boolean active = true;
 	
-	public abstract void doAction();
+	public abstract void doAction(int step);
 
 	public boolean isActive() {
 		return active;

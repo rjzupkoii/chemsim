@@ -37,7 +37,7 @@ public class ChemSim implements Simulation {
 	// The properties for the simulation
 	private ModelProperities properties;
 	private int reportInterval;
-	private int sampleInterval;
+	private double sampleInterval;
 	
 	// Entity count tracker for the simulation
 	private CensusTracking census;
@@ -65,7 +65,7 @@ public class ChemSim implements Simulation {
 			
 			// Calculate the report interval, we only echo on the minute
 			sampleInterval = (60 / simulation.getTimeStepLength());
-			reportInterval = sampleInterval * simulation.getReportInterval();
+			reportInterval = (int)sampleInterval * simulation.getReportInterval();
 
 			// Import the reactions into the model
 			ReactionRegistry instance = ReactionRegistry.getInstance();
@@ -137,7 +137,7 @@ public class ChemSim implements Simulation {
 		if (census != null) {
 			census.count();
 		}
-		
+						
 		// Sample the count and report if need be
 		if (count % sampleInterval == 0) {
 			boolean flush = (count % reportInterval == 0);

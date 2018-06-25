@@ -3,12 +3,15 @@ package edu.mtu.simulation;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
+import edu.mtu.simulation.tracking.Converter;
 import edu.mtu.system.EchoStream;
 import net.sourceforge.sizeof.SizeOf;
 
 public final class Launcher {
+	
 	/**
 	 * Main entry point for the simulation.
 	 */
@@ -23,6 +26,7 @@ public final class Launcher {
 		FileOutputStream out = new FileOutputStream(filename);
 		EchoStream echo = new EchoStream(out);
 		System.setOut(echo);
+		System.setErr(echo);
 		
 		// Configure SizeOf, note that the program MUST be invoked with -javaagent:lib/SizeOf.jar
 		SizeOf.skipStaticField(true);
@@ -40,19 +44,37 @@ public final class Launcher {
 			System.exit(-1);
 		}
 		
+		// Set the shutdown hook so we can gracefully cleanup
+		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
+		
 		// Initialize the simulation
 		long seed = System.currentTimeMillis();
 		ChemSim instance = ChemSim.getInstance();
 		instance.initialize(seed);
 				
-		// Run the simulation and exit
-		int timeSteps = ChemSim.getProperties().getTimeSteps();
-		instance.start(timeSteps);
+		try {
+			// Run the simulation and exit
+			int timeSteps = ChemSim.getProperties().getTimeSteps();
+			instance.start(timeSteps);
+		} catch (OutOfMemoryError ex) {
+			// Attempt to gracefully fail when we run out of memory
+			System.err.println("Ran out of memory while executing the model!");
+			System.err.println(ex.getMessage());
+			ex.printStackTrace();
+			
+			// Still format the mols though
+			System.err.println("Results and molar files saved.");
+			String moleculear = properties.getResultsFileName();
+			String mols = properties.getMolarFileName();
+			Converter.Convert(moleculear, mols, ChemSim.getProperties().getMoleculeToMol());
+		}
 	}
 
 	private static void ParseArguments(String[] args) {
 		boolean chemicals = false, reactions = false;
 		boolean experimentalDecay = false;
+		
+		ArrayList<String> terminateOn = new ArrayList<String>();
 		
 		SimulationProperties properties = SimulationProperties.getInstance();
 		String iteration = "";
@@ -70,11 +92,6 @@ public final class Launcher {
 				properties.setExperimentalDataFileName(args[ndx + 1]);
 				experimentalDecay = true;
 				break;
-			case "-p":
-			case "--print":
-				int interval = Integer.parseInt(args[ndx + 1]);
-				properties.setReportInterval(interval);
-				break;
 			case "-r":
 			case "--reactions":
 				properties.setReactionsFileName(args[ndx + 1]);
@@ -84,6 +101,10 @@ public final class Launcher {
 			case "--run":
 				iteration = "-" + args[ndx + 1];
 				break;
+			case "-p":
+			case "--padding":
+				properties.setPadding(Integer.parseInt(args[ndx + 1]));
+				break;
 			case "-l":
 			case "--limit":
 				int limit = Double.valueOf(args[ndx + 1]).intValue();
@@ -91,7 +112,7 @@ public final class Launcher {
 				break;
 			case "-s":
 			case "--step":
-				int value = Integer.parseInt(args[ndx + 1]);
+				double value = Double.parseDouble(args[ndx + 1]);
 				if (value > 60) {
 					System.err.println("Time step cannot exceed 60 seconds.");
 					System.exit(-1);
@@ -100,7 +121,11 @@ public final class Launcher {
 				break;
 			case "-t":
 			case "--terminate":
-				properties.addTerminationOn(args[ndx + 1]);
+				terminateOn.add(args[ndx + 1]);
+				break;
+			case "-w":
+			case "--write":
+				properties.setReportInterval(Integer.parseInt(args[ndx + 1]));
 				break;
 			default:
 				System.err.println("Unknown argument, " + args[ndx]);
@@ -116,6 +141,11 @@ public final class Launcher {
 		}
 		
 		// Apply the settings
+		if (terminateOn.size() > 0) {
+			String[] value = new String[terminateOn.size()];
+			value = terminateOn.toArray(value);
+			properties.setTerminateOn(value);
+		}
 		properties.setExperimentalDecay(experimentalDecay);
 		properties.setMolarFileName(String.format(properties.getMolarFileName(), iteration));
 		properties.setResultsFileName(String.format(properties.getResultsFileName(), iteration));
@@ -132,10 +162,22 @@ public final class Launcher {
 		System.err.printf(format, "-e, --experimental [file]", "CSV file with the known experimental results for photolysis decay");
 		System.err.printf(format, "-l, --limit [number]", "The maximum number of molecules to generate at initlization.");
 		System.err.printf(format, "-n, --run [number]", "The run number to apply to results files");
-		System.err.printf(format, "-p, --print [number]", "The minute interval to print / save status on, default 100");
+		System.err.printf(format, "-p, --padding [number]", "The number of minutes to pad the estimated time by");
+		System.err.printf(format, "-w, --write [number]", "The minute interval to print / save status on, default 100");
 		System.err.printf(format, "-s, --step [number", "The duration of the time step in seconds, default 60");
 		System.err.printf(format, "-t, --terminate [formula]", "Terminate the model when the given molecule has zero entities");
 		System.err.println("\nNOTE:");
 		System.err.println("JAVAGENT initialization is required, -javaagent:lib/SizeOf.jar");
+	}
+	
+	private static class ShutdownHook extends Thread {
+		@Override
+		public void run() {
+			if (ChemSim.getSchedule().stopped()) {
+				return;
+			}
+			System.err.println("Hard shutdown hook noted, terminating simulation!");
+			ChemSim.getSchedule().halt();
+		}
 	}
 }

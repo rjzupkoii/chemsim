@@ -236,8 +236,10 @@ public class Sparse3DLattice {
         	bag.shrink(count * REPLACEMENT_BAG_RATIO); 
 		}
 		
-		// Return the location
-		return lai.location;		
+		// Return the location, be sure to release memory
+        Int3D location = lai.location;
+        lai = null;
+        return location;
 	}
 		
 	/**

@@ -281,6 +281,7 @@ public class ReactionRegistry {
 			md.hasUnimolecular = unimolecular.containsKey(formula);			
 			md.hasReactants = (md.hasBimolecular || md.hasPhotolysis || md.hasUnimolecular);
 			md.hasDissolvedReactants = checkDissolvedReactants(formula);
+			md.isRadical = formula.startsWith("*") || formula.endsWith("*");
 			md.reactsWithHash = extractReactants(formula);
 			moleculeDescriptions.put(formula, md);
 		}

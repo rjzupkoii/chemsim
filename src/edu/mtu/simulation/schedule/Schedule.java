@@ -9,8 +9,9 @@ import java.util.ArrayDeque;
 public class Schedule {
 		
 	// Flags to indicate shutdown
-	private boolean stopping;
-	private boolean stop;
+	private boolean stopping;			// Shut down at end of time step
+	private boolean stop;				// Shut down now
+	private boolean stopped;			// Schedule is complete
 	
 	// Current time step of the schedule
 	private int timeStep;
@@ -26,7 +27,7 @@ public class Schedule {
 	 */
 	public Schedule() {
 		schedule = new ArrayDeque<Steppable>();
-		stop = true;
+		stopped = true;
 	}
 	
 	/**
@@ -41,6 +42,14 @@ public class Schedule {
 	 */
 	public int getTimeStep() {
 		return timeStep;
+	}
+	
+	/**
+	 * Clears the schedule completely, simulation finish will be called.
+	 */
+	public void halt() {
+		stop = true;
+		schedule.clear();
 	}
 	
 	/**
@@ -69,8 +78,9 @@ public class Schedule {
 		}
 		
 		// Set the relevant flags and pointers
-		stopping = false;
 		stop = false;
+		stopped = false;
+		stopping = false;
 		timeStep = 0;
 		this.runTill = runTill;
 		this.simulation = simulation;
@@ -82,13 +92,14 @@ public class Schedule {
 		while (schedule.size() > 0) {			
 			Steppable steppable = schedule.remove();			
 			if (steppable.isActive()) {
-				steppable.doAction();
+				steppable.doAction(timeStep);
 				schedule.add(steppable);
 			}
 		}
 	
 		// Perform clean-up operations
 		simulation.finish(stop);
+		stopped = true;
 	}
 	
 	/**
@@ -99,13 +110,12 @@ public class Schedule {
 	}
 	
 	/**
-	 * Signals that the schedule should immediately terminate operation.
+	 * Returns true if the schedule is stopped, false otherwise.
 	 */
-	public void terminate() {
-		stop = true;
-		schedule.clear();
+	public boolean stopped() {
+		return stopped;
 	}
-	
+		
 	/**
 	 * Wrapper for the steppable that represents the end of a single time step.
 	 * 
@@ -114,7 +124,7 @@ public class Schedule {
 	 */
 	private class Escapement extends Steppable {
 		@Override
-		public void doAction() { 
+		public void doAction(int step) { 
 			timeStep++;
 			simulation.step(timeStep, runTill);
 			if (timeStep == runTill || stopping) {

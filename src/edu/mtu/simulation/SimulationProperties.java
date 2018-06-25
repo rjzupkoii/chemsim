@@ -1,8 +1,5 @@
 package edu.mtu.simulation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * This class contains various properties related to how the simulation should run 
  * and be managed. Note that the should not change once the application has been
@@ -21,15 +18,18 @@ public class SimulationProperties {
 	
 	// Limit to the number of molecules in the model, -1 means no limit
 	private int moleculeLimit = NO_LIMIT;
-				
+	
+	// The time, in minutes, to pad the model by 
+	private int timePadding = 60;
+	
 	// Interval to report to the console and save data on
 	private int reportInterval = 100;
 	
 	// Length of one time step in seconds
-	private int timeStepLength = 60;
+	private double timeStepLength = 60;
 	
 	// List of entities to terminate when zero
-	private List<String> terminateOn = new ArrayList<String>(); 
+	private String[] terminateOn = new String[0]; 
 	
 	// Default paths to experiments
 	private String chemicalsFileName = "";
@@ -54,8 +54,8 @@ public class SimulationProperties {
 		return instance;
 	}
 	
-	public void addTerminationOn(String value) {
-		terminateOn.add(value);
+	public void setTerminateOn(String[] value) {
+		terminateOn = value;
 	}
 	
 	public String getChemicalsFileName() {
@@ -82,6 +82,10 @@ public class SimulationProperties {
 		return overWriteResults;
 	}
 	
+	public int getPadding() {
+		return timePadding;
+	}
+	
 	public String getReactionsFileName() {
 		return reactionsFileName;
 	}
@@ -94,11 +98,11 @@ public class SimulationProperties {
 		return resultsFileName;
 	}
 	
-	public List<String> getTerminationOn() {
+	public String[] getTerminationOn() {
 		return terminateOn;
 	}
 	
-	public int getTimeStepLength() {
+	public double getTimeStepLength() {
 		return timeStepLength;
 	}
 	
@@ -126,6 +130,10 @@ public class SimulationProperties {
 		moleculeLimit = value;
 	}
 	
+	public void setPadding(int value) {
+		timePadding = value;
+	}
+	
 	public void setReactionsFileName(String value) {
 		reactionsFileName = value;
 	}
@@ -138,7 +146,7 @@ public class SimulationProperties {
 		resultsFileName = value;
 	}
 	
-	public void setTimeStepLength(int value) {
+	public void setTimeStepLength(double value) {
 		timeStepLength = value;
 	}
 }

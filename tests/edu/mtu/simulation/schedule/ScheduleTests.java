@@ -16,7 +16,7 @@ public class ScheduleTests implements Simulation {
 		}
 		
 		@Override
-		public void doAction() {
+		public void doAction(int step) {
 			System.out.println(number);
 			if (number == 2) {
 				schedule.remove(this);

@@ -50,7 +50,7 @@ public class Photolysis implements DecayModel {
 		double scaling = ChemSim.getProperties().getMoleculeToMol();
 				
 		// Note the current time step duration
-		int timeStep = SimulationProperties.getInstance().getTimeStepLength();
+		double timeStep = SimulationProperties.getInstance().getTimeStepLength();
 		
 		// Hydrogen peroxide is a linear decay, or f(x) = C - r * t 
 		// this means we need to determine the odds that any individual 

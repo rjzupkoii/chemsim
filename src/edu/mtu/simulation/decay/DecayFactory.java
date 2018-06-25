@@ -6,10 +6,7 @@ import edu.mtu.simulation.ModelProperities;
 import edu.mtu.simulation.SimulationProperties;
 
 public class DecayFactory {
-	
-	// Padding to add to the time steps to act as a buffer, in minutes
-	private static final int PADDING = 60;
-	
+		
 	/**
 	 * Create the decay model that should be used, resulting model will be injected into
 	 * the ModelProperties object provided.
@@ -27,7 +24,8 @@ public class DecayFactory {
 		}
 		
 		int time = properties.getTimeSteps();
-		int padding = PADDING * (60 / SimulationProperties.getInstance().getTimeStepLength());
+		int padding = SimulationProperties.getInstance().getPadding();
+		padding = (int)(padding * (60 / SimulationProperties.getInstance().getTimeStepLength()));
 		System.out.println("Estimated running time of " + (time - padding) + " time steps, padded to " + time);
 	}
 	
@@ -42,7 +40,8 @@ public class DecayFactory {
 		decay.initialize();
 		properties.setDecayModel(decay);
 		
-		int time = decay.estimateRunningTime() + PADDING * (SimulationProperties.getInstance().getTimeStepLength() / 60);
+		int padding = SimulationProperties.getInstance().getPadding();
+		int time = (int)(decay.estimateRunningTime() + padding * (SimulationProperties.getInstance().getTimeStepLength() / 60));
 		properties.setTimeSteps(time);
 		
 		System.out.println("Using experimental decay data.");
@@ -57,7 +56,8 @@ public class DecayFactory {
 		decay.prepare(fileName);
 		properties.setDecayModel(decay);
 		
-		int time = decay.estimateRunningTime() + PADDING * (SimulationProperties.getInstance().getTimeStepLength() / 60);
+		int padding = SimulationProperties.getInstance().getPadding();
+		int time = (int)(decay.estimateRunningTime() + padding * (SimulationProperties.getInstance().getTimeStepLength() / 60));
 		properties.setTimeSteps(time);
 	}
 }

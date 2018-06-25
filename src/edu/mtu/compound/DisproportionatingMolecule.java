@@ -42,7 +42,7 @@ public class DisproportionatingMolecule extends Molecule {
 	}
 	
 	@Override
-	public void doAction() {
+	public void doAction(int step) {
 		// Check for any valid reactions
 		int size = reactions.length;
 		for (int ndx = 0; ndx < size; ndx++) {

@@ -14,7 +14,7 @@ public class DissolvedMolecule extends Molecule {
 	public void dispose() { }
 	
 	@Override
-	public void doAction() {
+	public void doAction(int step) {
 		throw new IllegalAccessError("doAction called on DissolvedMolecule");
 	}
 }
