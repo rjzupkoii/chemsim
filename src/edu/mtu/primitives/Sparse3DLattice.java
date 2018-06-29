@@ -92,12 +92,6 @@ public class Sparse3DLattice {
 	 * @return The first entity with a matching tag in the sphere, or null.
 	 */
 	public Entity findFirstByTag(Entity entity, int tag, int radius) {
-		// Check for any entities of the given tag
-		ArrayDeque<Entity> entities = tagMap.get(tag);
-		Entity last = entities.peek();						// O(1) look-up
-		if (last == null) {
-			return null;
-		}
 				
 		// Get our location and check this bag		
 		LocationAndIndex lai = entityMap.get(entity);
@@ -112,14 +106,28 @@ public class Sparse3DLattice {
 			}
 		}
 		
-		// Return if the radius is zero, this indicates the colocated entities
+		// Return if the radius is zero, this indicates the colocated entities only
 		if (radius == 0) {
 			return null;
 		}
 		
-		// Note the variables, slightly faster
-		int x1 = lai.location.x, y1 = lai.location.y, z1 = lai.location.z;
-				
+		// Calculate how big the search space is for a geometric search
+		// and chose our approach accordingly
+		int points = (int)((4 / 3) * Math.PI * Math.pow(radius, 3));
+		if (points > tagMap.get(tag).size()) {
+			return distanceBasedSearch(entity, tag, radius, lai.location.x, lai.location.y, lai.location.z);
+		}
+		return tagBasedSearch(entity, tag, radius, lai.location.x, lai.location.y, lai.location.z);
+	}
+	
+	/**
+	 * Search for an entity with the given tag, using the tags hash. 
+	 */
+	protected Entity tagBasedSearch(Entity entity, int tag, int radius, int x1, int y1, int z1) {
+		// Get the last entity so when know when to stop
+		ArrayDeque<Entity> entities = tagMap.get(tag);
+		Entity last = entities.peekLast();
+		
 		// Scan all entities of the given type, since we are using the queue
 		// we need to be aware that it may contain stale entities in it. We
 		// will know if we are looking at one because it will not be present
@@ -130,7 +138,7 @@ public class Sparse3DLattice {
 			current = entities.pop();
 			
 			// Get it's location, if the location is null then do nothing
-			lai = entityMap.get(current);
+			LocationAndIndex lai = entityMap.get(current);
 			if (lai != null) {
 				// Make sure valid entities are restored
 				entities.add(current);
@@ -152,18 +160,125 @@ public class Sparse3DLattice {
 				}
 			}
 		}
-		
-		// Nothing found
 		return null;
 	}
 	
+	/**
+	 * Search for an entity with the given tag, based upon the geometry of the system. 
+	 * 
+	 * Overall this code is O(n^3) where n is the number of points in the integer sphere,
+	 * but in practice, it may return faster if there is a match close to the origin.
+	 */
+	protected Entity distanceBasedSearch(Entity entity, int tag, int radius, int x1, int y1, int z1) {
+		// The first search is based upon a cube around the entity's point in 
+		// space, so we need to find how big the cube that can fit in the circle
+		double hypotenuse = Math.sqrt(radius * radius + radius * radius);
+		int limit = radius - (int)Math.sqrt(Math.pow(hypotenuse - radius, 2) / 2);
+			
+		// Check increasing cubes based on the origin until the limit, the step loop
+		// defines the cube's size, while the inner two loops trace the surfaces
+		for (int step = 1; step < limit; step++) {
+			int x2 = x1 + step;
+			for (int y2 = y1 + 1; y2 < y1 + step; y2++) {
+				for (int z2 = z1 + 1; z2 < z1 + step; z2++) {
+					
+					// These next three loops allow us to translate along 
+					// all of the quadrants of the cube
+					for (int xsign = -1; xsign <= 1; xsign += 2) {
+						for (int ysign = -1; ysign <= 1; ysign += 2) {
+							for (int zsign = -1; zsign <= 1; zsign += 2) {
+								
+								// Now we get to actually check the point
+								Entity result = checkPoint(entity, tag, x2 * xsign, y2 * ysign, z2 * zsign);
+								if (result != null) {
+									return result;
+								}			
+							}	
+						}	
+					}
+					
+				}
+			}
+		}
+		
+		// Pre-build the list of points defining the geometry
+		int size = 2 * (radius - limit);
+		int values[] = new int[size];
+		int index = 0;
+		for (int value = limit; value <= radius; value++) {
+			values[index++] = value;
+			values[index++] = -value;
+		}
+		
+		// Check the remainder of the sphere, we need to check the points to 
+		// make sure they are part of the sphere though
+		for (int x2 = 0; x2 < size; x2++) {
+			for (int y2 = 0; y2 < size; y2++) {
+				for(int z2 = 0; z2 < size; z2++) {
+					
+					// First we need to know if the point is in the sphere, 
+					// check this by the Euclidean distance
+					int x = x1 - values[x2];
+					int y = y1 - values[y2];
+					int z = z1 - values[z2];
+					double d = Math.sqrt(x*x + y*y + z*z);
+					
+					// It's not, so press on
+					if (d > radius) {
+						continue;
+					}
+					
+					// It is, so check the point
+					Entity result = checkPoint(entity, tag, x2, y2, z2);
+					if (result != null) {
+						return result;
+					}
+				}
+			}
+		}
+		
+		// Nothing was found
+		return null;
+	}
+
+	/**
+	 * Check that the entity at the given point is a valid match, returns true if it is, false otherwise.
+	 */
+	private Entity checkPoint(Entity entity, int tag, int x, int y, int z) {
+		int hash = hashCoordinates(x, y, z);
+		Bag bag = latticeMap.get(hash);
+		
+		// Must be something there
+		if (bag == null) {
+			return null;
+		}
+		
+		// Check the entities in the location
+		int size = bag.numObjs;
+		for (int ndx = 0; ndx < size; ndx++) {
+			// Can't be the same entity
+			Entity check = (Entity)bag.get(ndx);
+			if (check.equals(entity)) {
+				continue;
+			}
+			
+			// Do the tags match?			
+			if (check.getEntityTypeTag() == tag) {
+				return check;
+			}
+		}
+		
+		// Nothing found
+		return null;		
+	}
+
 	/**
 	 * Get all of the objects in the lattice.
 	 */
 	public Set<Entity> getAllObjects() {
 		return entityMap.keySet();	
 	}
-	
+			
 	/**
 	 * Get the all of the objects that share the location of the given object.
 	 * 
