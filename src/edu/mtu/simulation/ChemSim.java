@@ -233,7 +233,7 @@ public class ChemSim implements Simulation {
 		}
 		
 		// Use a Fisher–Yates shuffle them so we have a random distribution of activation in the schedule
-		System.out.println("Shuffleing moleclues...");
+		System.out.println("Shuffling molecules...");
 		for (ndx = size - 1; ndx > 0; ndx--)
 	    {
 	      int index = random.nextInt(ndx + 1);
@@ -243,7 +243,7 @@ public class ChemSim implements Simulation {
 	    }
 		
 		// Now add all of the molecules to the schedule
-		System.out.println("Adding moleclues to the schedule...");
+		System.out.println("Adding molecules to the schedule...");
 		Reactor reactor = Reactor.getInstance();
 		Int3D container = reactor.dimensions;
 		for (Molecule molecule : moleclues) {

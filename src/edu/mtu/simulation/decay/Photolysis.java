@@ -75,7 +75,7 @@ public class Photolysis implements DecayModel {
 		time = (int)Math.abs(-b / m);
 		
 		// Note the estimated decay
-		System.out.println("H2O2 photolysis decay rate: " + m + " moleclules/timestep");
+		System.out.println("H2O2 photolysis decay rate: " + m + " molecules/timestep");
 	}
 	
 	// TODO Update this form more moleclues
