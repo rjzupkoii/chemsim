@@ -57,24 +57,17 @@ public class Molecule extends Steppable implements Entity {
 	}
 		
 	@Override
-	public void doAction(int step) {	
-		if (formulaHash == 306217752) {
-			if (react()) {
-				// If a reaction occurred, dispose of this molecule
-				dispose();
-			} else {
-				move();
-			}
-			return;
-		}
+	public void doAction(int step) {
+		// To save some time the model simplifies things a bit,
+		// 1. Everything tries to react
+		// 2. Radicals will always move if they don't react
+		// 3. Everything else moves every minute of simulation time
 		
-		if (md.isRadical) {			
-			// Radicals move, but don't react which saves some
-			move();
-		} else if (react()) {
+		if (react()) {
 			dispose();
+		} else if (md.isRadical) {
+			move();
 		} else if (step % 60 == 0) {
-			// Allow the remaining molecules to move periodically to randomize things
 			move();
 		}
 	}

@@ -216,6 +216,7 @@ public class ChemSim implements Simulation {
 		// Calculate and note the scaling factor to from molecules back to mols 
 		double scaling = findIntitalCount(chemicals);
 		properties.setMoleculeToMol(scaling);
+		System.out.println("Molecule to mol scalar: " + scaling + "\n");
 						
 		// Start by generating all of the initial molecules
 		int size = 0;
@@ -307,7 +308,6 @@ public class ChemSim implements Simulation {
 		// Print the reactor information
 		Int3D container = Reactor.getInstance().dimensions;
 		System.out.println("Reactor Dimensions (nm): " + container.x + ", " + container.x + ", " + container.x);
-		System.out.println("Molecule to mol scalar: " + properties.getMoleculeToMol() + "\n");
 		
 		// Print report of reactions
 		System.out.println("Reactions: \n" + report);
