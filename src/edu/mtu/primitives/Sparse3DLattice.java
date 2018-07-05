@@ -93,6 +93,11 @@ public class Sparse3DLattice {
 	 */
 	public Entity findFirstByTag(Entity entity, int tag, int radius) {
 				
+		// Start by peeking to see if there are any entities wtih the given tag
+		if (tagMap.get(tag).size() == 0) {
+			return null;
+		}
+		
 		// Get our location and check this bag		
 		LocationAndIndex lai = entityMap.get(entity);
 		int size = lai.colocated.numObjs;
@@ -114,7 +119,7 @@ public class Sparse3DLattice {
 		// Calculate how big the search space is for a geometric search
 		// and chose our approach accordingly
 		int points = (int)((4 / 3) * Math.PI * Math.pow(radius, 3));
-		if (points > tagMap.get(tag).size()) {
+		if (tagMap.get(tag).size() > points) {
 			return distanceBasedSearch(entity, tag, radius, lai.location.x, lai.location.y, lai.location.z);
 		}
 		return tagBasedSearch(entity, tag, radius, lai.location.x, lai.location.y, lai.location.z);
@@ -170,6 +175,8 @@ public class Sparse3DLattice {
 	 * but in practice, it may return faster if there is a match close to the origin.
 	 */
 	protected Entity distanceBasedSearch(Entity entity, int tag, int radius, int x1, int y1, int z1) {
+		System.out.println("distanceBasedSearch");
+		
 		// The first search is based upon a cube around the entity's point in 
 		// space, so we need to find how big the cube that can fit in the circle
 		double hypotenuse = Math.sqrt(radius * radius + radius * radius);
@@ -202,7 +209,7 @@ public class Sparse3DLattice {
 		}
 		
 		// Pre-build the list of points defining the geometry
-		int size = 2 * (radius - limit);
+		int size = 2 * (radius - limit) + 2;
 		int values[] = new int[size];
 		int index = 0;
 		for (int value = limit; value <= radius; value++) {

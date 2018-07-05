@@ -38,9 +38,6 @@ public class Reaction {
 	 * @param cell where the reaction should take place.
 	 */
 	public void disproportionate(DisproportionatingMolecule molecule) {
-
-		// Note the age
-		int age = molecule.updateAge();
 		
 		// Local pointer to the reactions
 		ReactionDescription[] reactions = molecule.getReactions();
@@ -57,15 +54,9 @@ public class Reaction {
 			if (reactions[ndx] == null) {
 				continue;
 			}
-			
-			// Check to see if this reaction shouldn't occur yet
-			ReactionDescription reaction = reactions[ndx];
-			if (reaction.getReactionRate() > age) {
-				continue;
-			}
-			
+						
 			// Note the odds
-			double odds = reaction.getReactionOdds();
+			double odds = reactions[ndx].getReactionOdds();
 			probabilistic = probabilistic || (odds < 1);
 			reactionOdds.add(odds);			
 			
@@ -180,10 +171,12 @@ public class Reaction {
 			}
 		}
 								
+		// Get the possible interaction radii
+		int[] radii = molecule.getInteractionRadii();
+		
 		// Use the lattice to search out to the interaction radius		
-		int radius = ChemSim.getProperties().getInteractionRadius();
-		for (int tag : hashes) {
-			Entity match = Reactor.getInstance().grid.findFirstByTag(molecule, tag, radius);
+		for (int ndx = 0; ndx < hashes.length; ndx++) {
+			Entity match = Reactor.getInstance().grid.findFirstByTag(molecule, hashes[ndx], radii[ndx]);
 			if (match != null) {
 				return process(molecule, (Molecule)match);
 			}

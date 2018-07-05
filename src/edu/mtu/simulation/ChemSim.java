@@ -22,6 +22,9 @@ import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 
 public class ChemSim implements Simulation {
 				
+	// TDOO Come up with a better way of doing this
+	public final static double VERSION = 0.1; 
+	
 	private static final boolean CENSUS = false;
 		
 	// Format the number in scientific notation, two significant digits
@@ -70,7 +73,7 @@ public class ChemSim implements Simulation {
 			// Import the reactions into the model
 			ReactionRegistry instance = ReactionRegistry.getInstance();
 			instance.clear();
-			instance.load(simulation.getReactionsFileName());
+			String report = instance.load(simulation.getReactionsFileName());
 			
 			// Load the experimental parameters for the model
 			String fileName = SimulationProperties.getInstance().getChemicalsFileName();
@@ -87,7 +90,7 @@ public class ChemSim implements Simulation {
 			// Initialize the model
 			random = new XoRoShiRo128PlusRandom(seed);
 			Reactor.initalize(compounds);
-			printHeader();
+			printHeader(report);
 			
 			// Load the compounds and decay model
 			initializeModel(compounds);
@@ -210,9 +213,10 @@ public class ChemSim implements Simulation {
 	 */
 	private void initializeModel(List<ChemicalDto> chemicals) throws IOException {
 		
-		// Do all of the up-front calculations
-		calcluateParameters(chemicals);
-				
+		// Calculate and note the scaling factor to from molecules back to mols 
+		double scaling = findIntitalCount(chemicals);
+		properties.setMoleculeToMol(scaling);
+						
 		// Start by generating all of the initial molecules
 		int size = 0;
 		for (ChemicalDto chemical : chemicals) {
@@ -249,30 +253,7 @@ public class ChemSim implements Simulation {
 			
 		}
 	}
-	
-	private void calcluateParameters(List<ChemicalDto> input) {
-		final double k = 1.00E+08;
-		final double k_diff = 1.10E+10;
 		
-		// Starting by calculating out our constants, k_chem and r which is based on Pogson et al., 2006
-		double k_chem = (k * k_diff) / (k + k_diff);
-		double delta_t = SimulationProperties.getInstance().getTimeStepLength();
-		double r = Math.cbrt((3 * k_chem * delta_t) / (4 * Math.PI * Math.pow(10, 3) * Reactor.AvogadrosNumber));	// meters
-		int r_nm = (int)(r * 1E+9);
-		properties.setInteractionRadius(r_nm);
-		
-		// Calculate and note the scaling factor to from molecules back to mols 
-		double scaling = findIntitalCount(input);
-		properties.setMoleculeToMol(scaling);
-		
-		// Print all of the parameters to the console
-		Int3D container = Reactor.getInstance().dimensions;
-		System.out.println("k_chem: " + scientific.format(k_chem) + "\t\tΔt (sec): " + delta_t);
-		System.out.println("Interaction radius (nm): " + r_nm );	
-		System.out.println("Reactor Dimensions (nm): " + container.x + ", " + container.x + ", " + container.x);
-		System.out.println("Molecule to mol scalar: " + scaling + "\n");
-	}
-	
 	/**
 	 * Find the proportions for the chemicals input, return the scaling applied.
 	 */
@@ -306,17 +287,30 @@ public class ChemSim implements Simulation {
 	} 
 
 	/**
-	 * Display basic system / JVM information.
+	 * Display ChemSim header along with simulation information.
 	 */
-	private void printHeader() {
+	private void printHeader(String report) {
+		
+		// Application versioning information
+		System.out.println("ChemSim, version " + VERSION + "\n");
+		
+		// System and molecule information
 		long size = Reactor.getInstance().getMoleculeSize();
 		long maxMolecules = Reactor.getInstance().getMaximumMolecules();
-		System.out.println("\n" + LocalDateTime.now());		
 		if (SimulationProperties.getInstance().getMoleculeLimit() != SimulationProperties.NO_LIMIT) {
 			System.out.println("WARNING: Molecule count limited by configuration");
 		}
 		System.out.println("Max Memory:         " + Runtime.getRuntime().maxMemory() + "b");
 		System.out.println("Molecule Size:      " + size + "b");
 		System.out.println("Staring Molecule Limit: " + scientific.format(maxMolecules) + " (" + size * maxMolecules + "b)\n");		
+		
+		// Print the reactor information
+		Int3D container = Reactor.getInstance().dimensions;
+		System.out.println("Reactor Dimensions (nm): " + container.x + ", " + container.x + ", " + container.x);
+		System.out.println("Molecule to mol scalar: " + properties.getMoleculeToMol() + "\n");
+		
+		// Print report of reactions
+		System.out.println("Reactions: \n" + report);
+				
 	}
 }

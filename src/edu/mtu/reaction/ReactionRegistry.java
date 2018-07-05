@@ -175,8 +175,9 @@ public class ReactionRegistry {
 	 * Load the contents of the indicated file into the registry.
 	 * 
 	 * @param fileName The name and path of the file to be loaded.
+	 * @return Returns a report of what was loaded.
 	 */
-	public void load(String fileName) throws IOException {
+	public String load(String fileName) throws IOException {
 		
 		// Define our working maps
 		Map<String, List<ReactionDescription>> bimolecular = new HashMap<String, List<ReactionDescription>>();
@@ -187,11 +188,12 @@ public class ReactionRegistry {
 		HashSet<String> disproportionationCheck = new HashSet<String>();
 		HashSet<Integer> disproportationHash = new HashSet<Integer>(); 
 		
+		StringBuilder message = new StringBuilder();
 		List<ReactionDescription> reactions = Parser.parseReactions(fileName); 
 		for (ReactionDescription reaction : reactions) {
 			// Note what we are currently loading
 			String check;
-			StringBuilder message = new StringBuilder("Loading " + reaction.toString() + " (");						
+			message.append(reaction.toString() + " (");						
 			if (reaction.getReactants().length == 1) {
 				// This is a unimolecular reaction
 				check = addUnimolecularReaction(reaction, unimolecular);
@@ -208,8 +210,7 @@ public class ReactionRegistry {
 			if (reaction.getReactionOdds() != 1.0) {
 				message.append(", " + reaction.getReactionOdds());
 			}
-			message.append(")");
-			System.out.println(message);
+			message.append(")\n");
 			
 			// Check to see if we've seen this reaction before
 			if (!disproportionationCheck.add(check)) {
@@ -225,6 +226,9 @@ public class ReactionRegistry {
 		// Build the molecule descriptions
 		buildMoleculeDescriptions();
 		buildEntityHash(disproportationHash);
+		
+		// Return the report
+		return message.toString();
 	}
 	
 	/**
@@ -282,7 +286,7 @@ public class ReactionRegistry {
 			md.hasReactants = (md.hasBimolecular || md.hasPhotolysis || md.hasUnimolecular);
 			md.hasDissolvedReactants = checkDissolvedReactants(formula);
 			md.isRadical = formula.startsWith("*") || formula.endsWith("*");
-			md.reactsWithHash = extractReactants(formula);
+			extractReactants(formula, md);
 			moleculeDescriptions.put(formula, md);
 		}
 	}
@@ -309,36 +313,38 @@ public class ReactionRegistry {
 	/**
 	 * Get the list of reactants this compound reacts with
 	 */
-	private int[] extractReactants(String formula) {
+	private void extractReactants(String formula, MoleculeDescription md) {
 		ReactionDescription[] rds = bimolecular.get(formula);
 		if (rds == null) {
-			return new int[0];
+			md.reactsWithHash = new int[0];
+			md.interactionRadius = new int[0];
+			return;
 		}
 		
-		HashSet<Integer> entities = new HashSet<Integer>();
+		ArrayList<Integer> entities = new ArrayList<Integer>();
+		ArrayList<Integer> radii = new ArrayList<Integer>();
 		for (ReactionDescription rd : rds) {
 			String[] products = rd.getReactants();
+
+			// Note the hash to use
+			int index = (products[0].equals(formula)) ? 1 : 0;
+			int hash = products[index].hashCode();
 			
-			// Check for reactions with self
-			if (products[0].equals(products[1])) {
-				entities.add(products[0].hashCode());
-			}
-			
-			// Otherwise add the other compound
-			if (products[0].equals(formula)) {
-				entities.add(products[1].hashCode());
-			} else {
-				entities.add(products[0].hashCode());
-			}
+			// TODO Either add a switch or remove this code depending on how pathways are handled
+			// Set the values
+			if (!entities.contains(hash)) {
+				entities.add(hash);
+				radii.add(rd.getInteractionRadius());	
+			}			
 		}
 		
 		// Java idiosyncrasy, going to a primitive array isn't that easy 
-		int[] results = new int[entities.size()];
-		int ndx = 0;
-		for (int entity : entities) {
-			results[ndx++] = entity;
-		}
-		return results;
+		md.reactsWithHash = new int[entities.size()];
+		md.interactionRadius = new int[entities.size()];
+		for (int ndx = 0; ndx < entities.size(); ndx++) {
+			md.reactsWithHash[ndx] = entities.get(ndx);
+			md.interactionRadius[ndx] = radii.get(ndx);
+		}		
 	}
 	
 	/**

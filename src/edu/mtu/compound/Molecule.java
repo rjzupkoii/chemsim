@@ -122,6 +122,10 @@ public class Molecule extends Steppable implements Entity {
 		return md.hasDissolvedReactants;
 	}
 	
+	public int[] getInteractionRadii() {
+		return md.interactionRadius;
+	}
+	
 	public int[] getReactantHashes() {
 		return md.reactsWithHash;
 	}

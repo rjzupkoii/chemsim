@@ -32,8 +32,14 @@ public final class Launcher {
 		SizeOf.skipStaticField(true);
 		SizeOf.setMinSizeToLog(10);
 
-		// Load the arguments
-		ParseArguments(args);
+		try {
+			// Load the arguments
+			ParseArguments(args);
+		} catch (Exception ex) {
+			// This might get better, but for now just echo and exit
+			System.err.println(ex.getMessage());
+			System.exit(-1);
+		}
 		SimulationProperties properties = SimulationProperties.getInstance();
 		if (properties.getChemicalsFileName().equals("")) {
 			System.err.println("Chemicals file not provided!");

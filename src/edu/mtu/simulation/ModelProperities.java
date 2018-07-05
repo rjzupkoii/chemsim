@@ -22,10 +22,6 @@ public class ModelProperities {
 	// Scalar needed to convert molecules to molar values
 	private double moleculeToMol = 0;
 	
-	// Distance to search around molecules for a reaction, realistically this 
-	// should be a double, but we are using an integer lattice, so use an int
-	private int interactionRadius = 0;
-	
 	// Decay model to use for the model, may be null
 	private DecayModel decayModel = null;
 	
@@ -39,10 +35,6 @@ public class ModelProperities {
 	
 	public double getHydrogenPeroxideDecay() {
 		return hydrogenPeroxideDecay;
-	}
-	
-	public int getInteractionRadius() {
-		return interactionRadius;
 	}
 	
 	public int getMediumPathway() {
@@ -71,10 +63,6 @@ public class ModelProperities {
 			
 	public void setHydrogenPeroxideDecay(double value) {
 		hydrogenPeroxideDecay = value;
-	}
-	
-	public void setInteractionRadius(int value) {
-		interactionRadius = value;
 	}
 				
 	public void setMediumPathway(int value) {

@@ -4,17 +4,22 @@ import java.util.Arrays;
 import java.util.List;
 
 import edu.mtu.compound.Molecule;
+import edu.mtu.reactor.Reactor;
+import edu.mtu.simulation.SimulationProperties;
 
 /**
  * This class represents a single chemical equation.
  */
 public class ReactionDescription implements Cloneable {
 		
+	public final double k_diff = 1.10E+10;
+	
 	private String[] products;
 	private String[] reactants;
 	private int[] reactantHashes;
 	
-	private double reactionRate = 0.0;
+	private double k = 0.0;
+	private int interactionRadius = 0;
 	private double reactionOdds = 1.0;	// Default is one to allow the field to be optional
 				
 	/**
@@ -28,7 +33,8 @@ public class ReactionDescription implements Cloneable {
 	public ReactionDescription(List<String> reactants, List<String> products, double reactionRate) {
 		setReactants(reactants);
 		setProducts(products);
-		this.reactionRate = reactionRate;
+		k = reactionRate;
+		interactionRadius = calcluateInteractionRadius();
 	}
 	
 	/**
@@ -37,8 +43,29 @@ public class ReactionDescription implements Cloneable {
 	public ReactionDescription(List<String> reactants, List<String> products, double reactionRate, double reactionOdds) {
 		setReactants(reactants);
 		setProducts(products);
-		this.reactionRate = reactionRate;
+		k = reactionRate;
 		this.reactionOdds = reactionOdds;
+		interactionRadius = calcluateInteractionRadius();
+	}
+	
+	/**
+	 * Calculate the interaction radius for the reaction which is modeled as 
+	 * the distance to search around molecules for a reaction, realistically 
+	 * this should be a double, but we are using an integer lattice, so we 
+	 * are using an integer instead.
+	 * 
+	 * Source: Pogson et al., 2006
+	 */
+	private int calcluateInteractionRadius() {
+		if (k <= 0) {
+			return 0;
+		}
+		
+		double k_chem = (k * k_diff) / (k + k_diff);
+		double delta_t = SimulationProperties.getInstance().getTimeStepLength();
+		double r = Math.cbrt((3 * k_chem * delta_t) / (4 * Math.PI * Math.pow(10, 3) * Reactor.AvogadrosNumber));	// meters
+		int r_nm = (int)(r * 1E+9);
+		return r_nm;
 	}
 	
 	/**
@@ -71,7 +98,14 @@ public class ReactionDescription implements Cloneable {
 		// Not a match
 		return false;
 	}
-		
+			
+	/**
+	 * Get the interaction radius for this reaction in an integer lattice.
+	 */
+	public int getInteractionRadius() {
+		return interactionRadius;
+	}
+	
 	/**
 	 * Get the products of this equation.
 	 */
@@ -90,7 +124,7 @@ public class ReactionDescription implements Cloneable {
 	 * Get the reaction rate.
 	 */
 	public double getReactionRate() {
-		return reactionRate;
+		return k;
 	}
 	
 	/**
@@ -132,7 +166,7 @@ public class ReactionDescription implements Cloneable {
 		copy.reactants = this.reactants.clone();
 		copy.reactantHashes = this.reactantHashes.clone();		
 		copy.reactionOdds = this.reactionOdds;
-		copy.reactionRate = this.reactionRate;
+		copy.k = this.k;
 		return copy;
 	}
 	
@@ -156,7 +190,7 @@ public class ReactionDescription implements Cloneable {
 		if (!Arrays.equals(this.reactants, rd.reactants)) {
 			return false;
 		}
-		return (reactionRate == rd.reactionRate);
+		return (k == rd.k);
 	}
 	
 	@Override
@@ -175,6 +209,7 @@ public class ReactionDescription implements Cloneable {
 				message.append(" + ");
 			}
 		}
+		message.append(", r = " + interactionRadius);
 		return message.toString();
 	}
 }

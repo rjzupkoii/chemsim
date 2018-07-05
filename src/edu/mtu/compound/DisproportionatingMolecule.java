@@ -4,11 +4,11 @@ import edu.mtu.reaction.Reaction;
 import edu.mtu.reaction.ReactionDescription;
 
 /**
- * This class represents a disproportionating chemical entity.
+ * This class represents a disproportionating chemical entity and is used to support
+ * reaction pathways with probability involved.
  */
 public class DisproportionatingMolecule extends Molecule {
 
-	private int age = 0;
 	private ReactionDescription[] reactions;
 	
 	/**
@@ -55,26 +55,11 @@ public class DisproportionatingMolecule extends Molecule {
 		// If we are here, all of the reactions are gone
 		dispose();
 	}
-	
-	/**
-	 * Get how old this species is in time steps.
-	 */
-	public int getAge() {
-		return age;
-	}
-		
+			
 	/**
 	 * Get the reactions for this entity.
 	 */
 	public ReactionDescription[] getReactions() {
 		return reactions;
-	}
-		
-	/**
-	 * Updates and returns the age.s
-	 */
-	public int updateAge() {
-		age++;
-		return age;
 	}
 }

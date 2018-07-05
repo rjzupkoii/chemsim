@@ -148,6 +148,7 @@ public class Parser {
 	 * @param fileName The full path to the file.
 	 * @return A list of reactions.
 	 */
+	// TODO Update this to ignore empty last columns
 	public static List<ReactionDescription> parseReactions(String fileName) throws IOException {
 		// Open the file
 		CSVReader reader = new CSVReader(new FileReader(fileName));
@@ -164,7 +165,7 @@ public class Parser {
 		}
 		
 		// Check to see if there are odds associated with the file
-		boolean oddsColumn = enteries.length == (reactants + products + 2);
+		boolean oddsColumn = enteries[enteries.length - 1].toUpperCase().equals("ODDS");
 		
 		List<ReactionDescription> results = new ArrayList<ReactionDescription>();
 		while ((enteries = reader.readNext()) != null) {
