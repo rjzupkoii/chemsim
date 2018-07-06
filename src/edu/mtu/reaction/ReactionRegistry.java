@@ -332,12 +332,9 @@ public class ReactionRegistry {
 			int index = (products[0].equals(formula)) ? 1 : 0;
 			int hash = products[index].hashCode();
 			
-			// TODO Either add a switch or remove this code depending on how pathways are handled
 			// Set the values
-			if (!entities.contains(hash)) {
-				entities.add(hash);
-				radii.add(rd.getInteractionRadius());	
-			}			
+			entities.add(hash);
+			radii.add(rd.getInteractionRadius());				
 		}
 		
 		// Java idiosyncrasy, going to a primitive array isn't that easy 
