@@ -16,8 +16,10 @@ public class Molecule extends Steppable implements Entity {
 	private MoleculeDescription md;
 	
 	// Pointer to the reactor we are working in
-	private Int3D dimensions;
 	private Sparse3DLattice grid;
+	
+	// Dimentions of the grid
+	private int dx, dy, dz;
 	
 	// Used to identify the molecule and find reactions
 	private int formulaHash;
@@ -42,20 +44,14 @@ public class Molecule extends Steppable implements Entity {
 		this.formula = formula;
 		formulaHash = formula.hashCode();
 		if (cache) {
-			md = ReactionRegistry.getInstance().getMoleculeDescription(formula);		
-			dimensions = Reactor.getInstance().dimensions;
+			md = ReactionRegistry.getInstance().getMoleculeDescription(formula);
+			dx = Reactor.getInstance().dimensions.x;
+			dy = Reactor.getInstance().dimensions.y;
+			dz = Reactor.getInstance().dimensions.z;
 			grid = Reactor.getInstance().grid;
 		}
 	}
-	
-	/**
-	 * Constructor, mostly for probing memory space.
-	 */
-	public Molecule(String formula, Int3D dimensions) {
-		this.formula = formula;
-		this.dimensions = dimensions;
-	}
-		
+			
 	@Override
 	public void doAction(int step) {
 		// To save some time the model simplifies things a bit,
@@ -132,7 +128,7 @@ public class Molecule extends Steppable implements Entity {
 		Int3D location = grid.getObjectLocation(this);
 		
 		// Generate the random values for the walk 
-		XoRoShiRo128PlusRandom random = ChemSim.getInstance().random;
+		XoRoShiRo128PlusRandom random = ChemSim.getRandom();
 		double walkX = random.nextDoubleFast();
 		double walkY = random.nextDoubleFast();
 		double walkZ = random.nextDoubleFast();
@@ -148,16 +144,16 @@ public class Molecule extends Steppable implements Entity {
 		z += (walkZ < 0.5) ? -1 : 0;
 		
 		// Adjust the location as needed so we stay in the bounds of the container
-		x = (x > dimensions.x) ? dimensions.x : x;
+		x = (x > dx) ? dx : x;
 		x = (x < 0) ? 0 : x;
 		
-		y = (y > dimensions.y) ? dimensions.y : y;
+		y = (y > dy) ? dy : y;
 		y = (y < 0) ? 0 : y;
 		
-		z = (z > dimensions.z) ? dimensions.z : z;
+		z = (z > dz) ? dz : z;
 		z = (z < 0) ? 0 : z;
 		
-		// Set the new location		
+		// Set the new location
 		grid.setObjectLocation(this, x, y, z);
 	}
 

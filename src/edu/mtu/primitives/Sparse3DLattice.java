@@ -29,9 +29,9 @@ public class Sparse3DLattice {
 	private final static int ENTITY_MULTIPLIER = 3;
 	
 	// Parameters for sizing and resizing bags, this is a point where tuning can take place
-	private final static int INITIAL_BAG_SIZE = 16;
+	private final static int INITIAL_BAG_SIZE = 8;
 	private final static int LARGE_BAG_RATIO = 4;
-	private final static int MIN_BAG_SIZE = 32;
+	private final static int MIN_BAG_SIZE = 16;
 	private final static int REPLACEMENT_BAG_RATIO = 2;
 
 	// This map allows us to find where the entity is and colocated entities in O(c)
@@ -174,9 +174,7 @@ public class Sparse3DLattice {
 	 * Overall this code is O(n^3) where n is the number of points in the integer sphere,
 	 * but in practice, it may return faster if there is a match close to the origin.
 	 */
-	protected Entity distanceBasedSearch(Entity entity, int tag, int radius, int x1, int y1, int z1) {
-		System.out.println("distanceBasedSearch");
-		
+	protected Entity distanceBasedSearch(Entity entity, int tag, int radius, int x1, int y1, int z1) {		
 		// The first search is based upon a cube around the entity's point in 
 		// space, so we need to find how big the cube that can fit in the circle
 		double hypotenuse = Math.sqrt(radius * radius + radius * radius);
@@ -347,7 +345,7 @@ public class Sparse3DLattice {
 		Bag bag = lai.colocated;
 		bag.remove(object);
 		
-		// Clear empty bags
+		// If nothing is left in the bag, clear it's memory
 		int count = bag.numObjs;
 		if (count == 0) {
 			bag.clear();

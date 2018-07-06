@@ -6,11 +6,11 @@ import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import edu.mtu.reaction.ReactionRegistry;
 import edu.mtu.compound.Molecule;
 import edu.mtu.parser.ChemicalDto;
 import edu.mtu.parser.Parser;
 import edu.mtu.primitives.Int3D;
+import edu.mtu.reaction.ReactionRegistry;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.decay.DecayFactory;
 import edu.mtu.simulation.schedule.Schedule;
@@ -49,7 +49,7 @@ public class ChemSim implements Simulation {
 	/**
 	 * Random number generator that is tied to the simulation. 
 	 */
-	public XoRoShiRo128PlusRandom random;
+	private XoRoShiRo128PlusRandom random;
 	
 	/**
 	 * Constructor.
@@ -178,9 +178,6 @@ public class ChemSim implements Simulation {
 	 * Get a reference to the ChemSim singleton.
 	 */
 	public static ChemSim getInstance() {
-		if (instance == null) {
-			throw new IllegalStateException();
-		}		
 		return instance;
 	}
 	
@@ -188,10 +185,14 @@ public class ChemSim implements Simulation {
 	 * Get the properties that are associated with this simulation.
 	 */
 	public static ModelProperities getProperties() {
-		if (instance == null) {
-			throw new IllegalStateException();
-		}
 		return instance.properties;
+	}
+	
+	/**
+	 * Get the random number generator.
+	 */
+	public static XoRoShiRo128PlusRandom getRandom() {
+		return instance.random;
 	}
 	
 	/**

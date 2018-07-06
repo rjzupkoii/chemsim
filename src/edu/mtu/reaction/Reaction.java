@@ -95,7 +95,7 @@ public class Reaction {
 		if (value != 1.0) {
 			throw new IllegalArgumentException("Total odds of the reaction '" + molecule.getFormula() + "' cannot exceed 1.0");
 		}
-		double selected = ChemSim.getInstance().random.nextDouble();
+		double selected = ChemSim.getRandom().nextDouble();
 		
 		// Select the correct reaction
 		double previous = 0.0;
@@ -195,7 +195,7 @@ public class Reaction {
 	private boolean photolysis(Molecule molecule) {
 		// Check to see if the reaction occurred based upon decay rates
 		double decay = ChemSim.getProperties().getHydrogenPeroxideDecay();
-		if (ChemSim.getInstance().random.nextDouble() > decay) {
+		if (ChemSim.getRandom().nextDouble() > decay) {
 			return false;
 		}
 		
