@@ -9,8 +9,8 @@ import java.util.ArrayDeque;
 public class Schedule {
 		
 	// Flags to indicate shutdown
-	private boolean stopping;			// Shut down at end of time step
-	private boolean stop;				// Shut down now
+	private boolean halt;				// Shut down now
+	private boolean stopping;			// Shut down at end of time ste	
 	private boolean stopped;			// Schedule is complete
 	
 	// Current time step of the schedule
@@ -48,8 +48,10 @@ public class Schedule {
 	 * Clears the schedule completely, simulation finish will be called.
 	 */
 	public void halt() {
-		stop = true;
+		halt = true;
+		stopped = true;
 		schedule.clear();
+		simulation.finish(halt);
 	}
 	
 	/**
@@ -78,7 +80,7 @@ public class Schedule {
 		}
 		
 		// Set the relevant flags and pointers
-		stop = false;
+		halt = false;
 		stopped = false;
 		stopping = false;
 		timeStep = 0;
@@ -98,7 +100,9 @@ public class Schedule {
 		}
 	
 		// Perform clean-up operations
-		simulation.finish(stop);
+		if (!halt) {
+			simulation.finish(halt);
+		}
 		stopped = true;
 	}
 	

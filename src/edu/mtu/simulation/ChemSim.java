@@ -306,6 +306,7 @@ public class ChemSim implements Simulation {
 		System.out.println("Staring Molecule Limit: " + scientific.format(maxMolecules) + " (" + size * maxMolecules + "b)\n");		
 		
 		// Print the reactor information
+		System.out.println("Time Step (sec): " + SimulationProperties.getInstance().getTimeStepLength());
 		Int3D container = Reactor.getInstance().dimensions;
 		System.out.println("Reactor Dimensions (nm): " + container.x + ", " + container.x + ", " + container.x);
 		
