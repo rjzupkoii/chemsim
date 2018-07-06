@@ -165,7 +165,9 @@ public class Reaction {
 			for (DissolvedMolecule reactant : ReactionRegistry.DissolvedMoleclues) {
 				for (int formulaHash : hashes) {
 					if (reactant.sameEntity(formulaHash)) {
-						return process(molecule, reactant);
+						Int3D location = Reactor.getInstance().grid.getObjectLocation(molecule);
+						ReactionDescription[] reactions = ReactionRegistry.getInstance().getBimolecularReaction(molecule);
+						return process(molecule, reactant, location, reactions);
 					}
 				}
 			}
@@ -178,7 +180,7 @@ public class Reaction {
 		for (int ndx = 0; ndx < hashes.length; ndx++) {
 			Entity match = Reactor.getInstance().grid.findFirstByTag(molecule, hashes[ndx], radii[ndx]);
 			if (match != null) {
-				return process(molecule, (Molecule)match);
+				return process(molecule, (Molecule)match, radii[ndx]);
 			}
 		}		
 		
@@ -207,14 +209,27 @@ public class Reaction {
 		// Note that a reaction occurred, molecule will dispose of itself
 		return true;
 	}	
-		
+	
 	/**
-	 * Wrapper method, we just know the molelcues.
+	 * Process the reactions that are possible for this entity, assume only one
+	 * bimolecular reaction based upon the search radius.
 	 */
-	private boolean process(Molecule one, Molecule two) {
-		Int3D location = Reactor.getInstance().grid.getObjectLocation(one);
-		ReactionDescription[] reactions = ReactionRegistry.getInstance().getBimolecularReaction(one);
-		return process(one, two, location, reactions);
+	private boolean process(Molecule molecule, Molecule reactant, int radius) {
+		ReactionDescription[] reactions = ReactionRegistry.getInstance().getBimolecularReaction(molecule);
+		for (ReactionDescription rd : reactions) {
+			if (rd.checkReactants(molecule, reactant) && rd.getInteractionRadius() == radius) {
+				// Add the molecules to the model
+				Int3D location = Reactor.getInstance().grid.getObjectLocation(molecule);
+				MoleculeFactory.create(rd.getProducts(), location);
+				
+				// Clean up the reactant and inform the molecule to dispose of itself
+				reactant.dispose();
+				return true;
+			}
+		}
+		
+		// Nothing was found, throw an error since that shouldn't occur
+		throw new IllegalAccessError(String.format("No matches found for %s, %s", molecule, reactant));
 	}
 	
 	/**

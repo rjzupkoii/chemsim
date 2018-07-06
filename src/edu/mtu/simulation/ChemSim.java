@@ -131,7 +131,7 @@ public class ChemSim implements Simulation {
 		// Check to see if we can terminate
 		for (String molecule : SimulationProperties.getInstance().getTerminationOn()) {
 			if (tracker.getCount(molecule) == 0) {
-				System.out.print(molecule + " is exausted, terminating...");
+				System.out.println(molecule + " is exausted, terminating...");
 				schedule.stop();
 			}
 		}
