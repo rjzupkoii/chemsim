@@ -156,7 +156,7 @@ public class Reaction {
 	private boolean bimolecularReaction(Molecule molecule) {
 		
 		// Get the possible hashes
-		int[] hashes = molecule.getReactantHashes(); 
+		Integer[] hashes = molecule.getReactantHashes(); 
 		
 		// Check to see if there are any dissolved molecule we should be aware of,
 		// this comes first since a molecule that reacts with dissolved molecules

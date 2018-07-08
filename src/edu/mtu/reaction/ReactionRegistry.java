@@ -318,7 +318,7 @@ public class ReactionRegistry {
 	private void extractReactants(String formula, MoleculeDescription md) {
 		ReactionDescription[] rds = bimolecular.get(formula);
 		if (rds == null) {
-			md.reactsWithHash = new int[0];
+			md.reactsWithHash = new Integer[0];
 			md.interactionRadius = new int[0];
 			return;
 		}
@@ -338,7 +338,7 @@ public class ReactionRegistry {
 		}
 		
 		// Java idiosyncrasy, going to a primitive array isn't that easy 
-		md.reactsWithHash = new int[entities.size()];
+		md.reactsWithHash = new Integer[entities.size()];
 		md.interactionRadius = new int[entities.size()];
 		for (int ndx = 0; ndx < entities.size(); ndx++) {
 			md.reactsWithHash[ndx] = entities.get(ndx);

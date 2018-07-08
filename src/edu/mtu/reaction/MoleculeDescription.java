@@ -10,6 +10,6 @@ public class MoleculeDescription {
 	public boolean hasDissolvedReactants;
 	
 	// The hash and the interaction radius are coupled with each other
-	public int[] reactsWithHash;
+	public Integer[] reactsWithHash;
 	public int[] interactionRadius;
 }

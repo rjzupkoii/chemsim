@@ -22,7 +22,7 @@ public class Molecule extends Steppable implements Entity {
 	private int dx, dy, dz;
 	
 	// Used to identify the molecule and find reactions
-	private int formulaHash;
+	private Integer formulaHash;
 	private String formula;
 		
 	/**
@@ -115,7 +115,7 @@ public class Molecule extends Steppable implements Entity {
 		return md.interactionRadius;
 	}
 	
-	public int[] getReactantHashes() {
+	public Integer[] getReactantHashes() {
 		return md.reactsWithHash;
 	}
 	
@@ -181,7 +181,7 @@ public class Molecule extends Steppable implements Entity {
 	}
 
 	@Override
-	public int getEntityTypeTag() {
+	public Integer getEntityTypeTag() {
 		return formulaHash;
 	}
 	

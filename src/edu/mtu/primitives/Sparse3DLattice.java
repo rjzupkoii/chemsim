@@ -26,7 +26,7 @@ import sim.util.Bag;
 public class Sparse3DLattice {
 
 	// Multiplier for setting the initial hash map size
-	private final static int ENTITY_MULTIPLIER = 3;
+	private final static int ENTITY_MULTIPLIER = 2;
 	
 	// Parameters for sizing and resizing bags, this is a point where tuning can take place
 	private final static int INITIAL_BAG_SIZE = 8;
@@ -91,10 +91,10 @@ public class Sparse3DLattice {
 	 * @param radius defining the sphere.
 	 * @return The first entity with a matching tag in the sphere, or null.
 	 */
-	public Entity findFirstByTag(Entity entity, int tag, int radius) {
+	public Entity findFirstByTag(final Entity entity, final Integer tag, final int radius) {
 				
-		// Start by peeking to see if there are any entities wtih the given tag
-		if (tagMap.get(tag).size() == 0) {
+		// Start by peeking to see if there are any entities with the given tag
+		if (tagMap.get(tag).isEmpty()) {
 			return null;
 		}
 		
@@ -128,7 +128,7 @@ public class Sparse3DLattice {
 	/**
 	 * Search for an entity with the given tag, using the tags hash. 
 	 */
-	protected Entity tagBasedSearch(Entity entity, int tag, int radius, int x1, int y1, int z1) {
+	protected Entity tagBasedSearch(final Entity entity, final Integer tag, final int radius, final int x1, final int y1, final int z1) {
 		// Get the last entity so when know when to stop
 		ArrayDeque<Entity> entities = tagMap.get(tag);
 		Entity last = entities.peekLast();
