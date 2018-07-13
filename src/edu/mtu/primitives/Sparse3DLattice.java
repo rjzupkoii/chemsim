@@ -313,7 +313,8 @@ public class Sparse3DLattice {
 	 * @return The bag of objects or null.
 	 */
 	public Bag getObjectsAtLocation(final int[] location) {
-		return latticeMap.get(location.hashCode());
+		Integer hash = hashCoordinates(location[0], location[1], location[2]);
+		return latticeMap.get(hash);
 	}
 	
 	/**
