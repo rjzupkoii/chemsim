@@ -12,7 +12,6 @@ import java.util.List;
 import edu.mtu.compound.Molecule;
 import edu.mtu.parser.ChemicalDto;
 import edu.mtu.parser.Parser;
-import edu.mtu.primitives.Int3D;
 import edu.mtu.reaction.ReactionRegistry;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.decay.DecayFactory;
@@ -26,7 +25,7 @@ import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 public class ChemSim implements Simulation {
 				
 	// TDOO Come up with a better way of doing this
-	public final static double VERSION = 0.1; 
+	public final static double VERSION = 0.2; 
 	
 	// Scale the decay by the given time unit, 1 = sec, 60 = minute
 	public static final int SCALING = 60;
@@ -250,10 +249,10 @@ public class ChemSim implements Simulation {
 		// Now add all of the molecules to the schedule
 		System.out.println("Adding molecules to the schedule...");
 		Reactor reactor = Reactor.getInstance();
-		Int3D container = reactor.dimensions;
+		int[] container = reactor.dimensions;
 		for (Molecule molecule : moleclues) {
-			int x = random.nextInt(container.x), y = random.nextInt(container.y), z = random.nextInt(container.z);
-			reactor.grid.setObjectLocation(molecule, x, y, z);
+			int x = random.nextInt(container[0]), y = random.nextInt(container[1]), z = random.nextInt(container[2]);
+			reactor.grid.setObjectLocation(molecule, new int[] { x, y, z });
 			schedule.insert(molecule);
 			
 		}
@@ -312,8 +311,8 @@ public class ChemSim implements Simulation {
 		
 		// Print the reactor information
 		System.out.println("Time Step (sec): " + SimulationProperties.getInstance().getTimeStepLength());
-		Int3D container = Reactor.getInstance().dimensions;
-		System.out.println("Reactor Dimensions (nm): " + container.x + ", " + container.x + ", " + container.x);
+		int[] container = Reactor.getInstance().dimensions;
+		System.out.println("Reactor Dimensions (nm): " + container[0] + ", " + container[1] + ", " + container[2]);
 		
 		// Print report of reactions
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd - HH:mm:ss");

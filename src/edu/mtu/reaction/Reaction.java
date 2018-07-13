@@ -8,7 +8,6 @@ import edu.mtu.compound.DissolvedMolecule;
 import edu.mtu.compound.Molecule;
 import edu.mtu.compound.MoleculeFactory;
 import edu.mtu.primitives.Entity;
-import edu.mtu.primitives.Int3D;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;
 
@@ -71,7 +70,7 @@ public class Reaction {
 			for (int index : indicies) {
 				// Create the products for the reaction
 				Reactor reactor = Reactor.getInstance();
-				Int3D location = reactor.getLocation(molecule);
+				int[] location = reactor.getLocation(molecule);
 				for (String formula : reactions[index].getProducts()) {			
 					MoleculeFactory.create(formula, location);
 				}
@@ -103,7 +102,7 @@ public class Reaction {
 			
 			// If the selected value is in the range, then create the products and return
 			if (previous <= selected && selected <= reactionOdds.get(ndx)) {
-				Int3D location = Reactor.getInstance().getLocation(molecule);
+				int[] location = Reactor.getInstance().getLocation(molecule);
 				for (String formula : reactions[indicies.get(ndx)].getProducts()) {			
 					MoleculeFactory.create(formula, location);
 				}
@@ -165,7 +164,7 @@ public class Reaction {
 			for (DissolvedMolecule reactant : ReactionRegistry.DissolvedMoleclues) {
 				for (int formulaHash : hashes) {
 					if (reactant.sameEntity(formulaHash)) {
-						Int3D location = Reactor.getInstance().grid.getObjectLocation(molecule);
+						int[] location = Reactor.getInstance().grid.getObjectLocation(molecule);
 						ReactionDescription[] reactions = ReactionRegistry.getInstance().getBimolecularReaction(molecule);
 						return process(molecule, reactant, location, reactions);
 					}
@@ -202,7 +201,7 @@ public class Reaction {
 		}
 		
 		// Add the products at this location
-		Int3D location = Reactor.getInstance().getLocation(molecule);
+		int[] location = Reactor.getInstance().getLocation(molecule);
 		String[] products = ReactionRegistry.getInstance().getPhotolysisReaction(molecule);
 		MoleculeFactory.create(products, location);
 		
@@ -219,7 +218,7 @@ public class Reaction {
 		for (ReactionDescription rd : reactions) {
 			if (rd.checkReactants(molecule, reactant) && rd.getInteractionRadius() == radius) {
 				// Add the molecules to the model
-				Int3D location = Reactor.getInstance().grid.getObjectLocation(molecule);
+				int[] location = Reactor.getInstance().grid.getObjectLocation(molecule);
 				MoleculeFactory.create(rd.getProducts(), location);
 				
 				// Clean up the reactant and inform the molecule to dispose of itself
@@ -235,7 +234,7 @@ public class Reaction {
 	/**
 	 * Process the reactions that are possible for this entity.
 	 */
-	private boolean process(Molecule molecule, Molecule reactant, Int3D location, ReactionDescription[] reactions) {
+	private boolean process(Molecule molecule, Molecule reactant, int[] location, ReactionDescription[] reactions) {
 		
 		// Find the correct reaction(s)
 		List<ReactionDescription> matched = new ArrayList<ReactionDescription>();
@@ -270,7 +269,7 @@ public class Reaction {
 	 * Perform a unimolecular reaction on the given species.
 	 */
 	private boolean unimolecularDecay(Molecule molecule) {
-		Int3D location = Reactor.getInstance().grid.getObjectLocation(molecule);
+		int[] location = Reactor.getInstance().grid.getObjectLocation(molecule);
 		ReactionDescription[] reactions = ReactionRegistry.getInstance().getUnimolecularReaction(molecule);
 		return process(molecule, null, location, reactions);
 	}

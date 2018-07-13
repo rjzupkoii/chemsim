@@ -1,11 +1,10 @@
 package edu.mtu.compound;
 
+import edu.mtu.primitives.Entity;
+import edu.mtu.primitives.Sparse3DLattice;
 import edu.mtu.reaction.MoleculeDescription;
 import edu.mtu.reaction.Reaction;
 import edu.mtu.reaction.ReactionRegistry;
-import edu.mtu.primitives.Entity;
-import edu.mtu.primitives.Int3D;
-import edu.mtu.primitives.Sparse3DLattice;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;
 import edu.mtu.simulation.schedule.Steppable;
@@ -45,9 +44,9 @@ public class Molecule extends Steppable implements Entity {
 		formulaHash = formula.hashCode();
 		if (cache) {
 			md = ReactionRegistry.getInstance().getMoleculeDescription(formula);
-			dx = Reactor.getInstance().dimensions.x;
-			dy = Reactor.getInstance().dimensions.y;
-			dz = Reactor.getInstance().dimensions.z;
+			dx = Reactor.getInstance().dimensions[0];
+			dy = Reactor.getInstance().dimensions[1];
+			dz = Reactor.getInstance().dimensions[2];
 			grid = Reactor.getInstance().grid;
 		}
 	}
@@ -125,7 +124,7 @@ public class Molecule extends Steppable implements Entity {
 	private void move() {
 				
 		// Get our current location
-		Int3D location = grid.getObjectLocation(this);
+		int[] location = grid.getObjectLocation(this);
 		
 		// Generate the random values for the walk 
 		XoRoShiRo128PlusRandom random = ChemSim.getRandom();
@@ -134,27 +133,27 @@ public class Molecule extends Steppable implements Entity {
 		double walkZ = random.nextDoubleFast();
 		
 		// Apply the values, note that we are discarding everything outside of one standard deviation
-		int x = location.x + (walkX >= 0.5 ? 1 : 0);
-		x += (walkX < 0.5) ? -1 : 0;
+		location[0] += (walkX >= 0.5 ? 1 : 0);
+		location[0] += (walkX < 0.5) ? -1 : 0;
 		
-		int y = location.y + ((walkY >= 0.5) ? 1 : 0);
-		y += (walkY < 0.5) ? -1 : 0;
+		location[1] += ((walkY >= 0.5) ? 1 : 0);
+		location[1] += (walkY < 0.5) ? -1 : 0;
 		
-		int z = location.z + ((walkZ >= 0.5) ? 1 : 0);
-		z += (walkZ < 0.5) ? -1 : 0;
+		location[2] += ((walkZ >= 0.5) ? 1 : 0);
+		location[2] += (walkZ < 0.5) ? -1 : 0;
 		
 		// Adjust the location as needed so we stay in the bounds of the container
-		x = (x > dx) ? dx : x;
-		x = (x < 0) ? 0 : x;
+		location[0] = (location[0] > dx) ? dx : location[0];
+		location[0] = (location[0] < 0) ? 0 : location[0];
 		
-		y = (y > dy) ? dy : y;
-		y = (y < 0) ? 0 : y;
+		location[1] = (location[1] > dy) ? dy : location[1];
+		location[1] = (location[1] < 0) ? 0 : location[1];
 		
-		z = (z > dz) ? dz : z;
-		z = (z < 0) ? 0 : z;
+		location[2] = (location[2] > dz) ? dz : location[2];
+		location[2] = (location[2] < 0) ? 0 : location[2];
 		
 		// Set the new location
-		grid.setObjectLocation(this, x, y, z);
+		grid.setObjectLocation(this, location);
 	}
 
 	/**

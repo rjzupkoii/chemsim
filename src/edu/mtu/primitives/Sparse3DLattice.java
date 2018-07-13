@@ -120,9 +120,9 @@ public class Sparse3DLattice {
 		// and chose our approach accordingly
 		int points = (int)((4 / 3) * Math.PI * Math.pow(radius, 3));
 		if (tagMap.get(tag).size() > points) {
-			return distanceBasedSearch(entity, tag, radius, lai.location.x, lai.location.y, lai.location.z);
+			return distanceBasedSearch(entity, tag, radius, lai.location[0], lai.location[1], lai.location[2]);
 		}
-		return tagBasedSearch(entity, tag, radius, lai.location.x, lai.location.y, lai.location.z);
+		return tagBasedSearch(entity, tag, radius, lai.location[0], lai.location[1], lai.location[2]);
 	}
 	
 	/**
@@ -154,9 +154,9 @@ public class Sparse3DLattice {
 				}
 				
 				// Calculate the Euclidean distance, d = sqrt((x1 - x2)^2 + (y1 - y2)^2 + (z1 - z2)^2)
-				int x = x1 - lai.location.x;
-				int y = y1 - lai.location.y;
-				int z = z1 - lai.location.z;
+				int x = x1 - lai.location[0];
+				int y = y1 - lai.location[1];
+				int z = z1 - lai.location[2];
 				double d = Math.sqrt(x*x + y*y + z*z);
 				
 				// Check and return if we are good
@@ -301,7 +301,7 @@ public class Sparse3DLattice {
 	 * @param object To retrieve the location of.
 	 * @return The location as Int3D or null if it does not exist.e
 	 */
-	public Int3D getObjectLocation(final Entity object) {
+	public int[] getObjectLocation(final Entity object) {
 		LocationAndIndex lai = entityMap.get(object);
 		return (lai == null) ? null : lai.location;
 	}
@@ -312,7 +312,7 @@ public class Sparse3DLattice {
 	 * @param location To retrieve the objects from.
 	 * @return The bag of objects or null.
 	 */
-	public Bag getObjectsAtLocation(final Int3D location) {
+	public Bag getObjectsAtLocation(final int[] location) {
 		return latticeMap.get(location.hashCode());
 	}
 	
@@ -321,7 +321,7 @@ public class Sparse3DLattice {
 	 * 
 	 *  Based upon Teschner et al., 2003
 	 */
-	private int hashCoordinates(int x, int y, int z) {
+	private Integer hashCoordinates(int x, int y, int z) {
 		final int p1 = 73856093, p2 = 19349663, p3 = 83492791;
 		return (x * p1 ^ y * p2 ^ z * p3) % allocation;
 	}
@@ -332,7 +332,7 @@ public class Sparse3DLattice {
 	 * @param object to be removed.
 	 * @return The location of the object, or null if it doesn't exist.
 	 */
-	public Int3D remove(final Entity object) {
+	public int[] remove(final Entity object) {
 		
 		// Start by removing the object finding out where it is located
 		LocationAndIndex lai = entityMap.remove(object);
@@ -357,21 +357,9 @@ public class Sparse3DLattice {
 		}
 		
 		// Return the location, be sure to release memory
-        Int3D location = lai.location;
+        int[] location = lai.location;
         lai = null;
         return location;
-	}
-		
-	/**
-	 * Add or update the location of the object in the lattice.
-	 * 
-	 * @param object to be added or updated.
-	 * @param x coordinate of the object.
-	 * @param y coordinate of the object.
-	 * @param z coordinate of the object.
-	 */
-	public void setObjectLocation(final Entity object, int x, int y, int z) {
-		setObjectLocation(object, new Int3D(x, y, z, hashCoordinates(x, y, z)));
 	}
 	
 	/**
@@ -380,7 +368,7 @@ public class Sparse3DLattice {
 	 * @param object to be added or updated.
 	 * @param location of the object in the lattice.
 	 */
-	public void setObjectLocation(final Entity object, final Int3D location) {
+	public void setObjectLocation(final Entity object, final int[] location) {
 		// Start by checking our conditions		
 		if (object == null) {
 			throw new IllegalStateException("Attempting to insert null into lattice.");
@@ -400,7 +388,7 @@ public class Sparse3DLattice {
 			tagMap.get(object.getEntityTypeTag()).add(object);
 		} else {
 			// Return if there is no update
-			if (lai.location.equals(location)) {
+			if (lai.location[0] == location[0] && lai.location[1] == location[1] && lai.location[2] == location[2]) {
 				return;
 			}
 			
@@ -424,7 +412,7 @@ public class Sparse3DLattice {
 		}
 		
 		// Update the bag in the lattice at the new location
-		Integer hash = location.hashCode();
+		Integer hash = hashCoordinates(location[0], location[1], location[2]);
 		bag = latticeMap.get(hash);
 		if (bag == null) {
 			bag = new Bag(INITIAL_BAG_SIZE);
@@ -440,6 +428,6 @@ public class Sparse3DLattice {
 	 */
 	private static class LocationAndIndex {
 		private Bag colocated;
-		private Int3D location;
+		private int[] location;
 	}
 }

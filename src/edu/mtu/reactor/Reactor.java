@@ -6,7 +6,6 @@ import java.util.Set;
 import edu.mtu.compound.Molecule;
 import edu.mtu.parser.ChemicalDto;
 import edu.mtu.primitives.Entity;
-import edu.mtu.primitives.Int3D;
 import edu.mtu.primitives.Sparse3DLattice;
 import edu.mtu.reaction.ReactionRegistry;
 import edu.mtu.simulation.SimulationProperties;
@@ -31,13 +30,13 @@ public class Reactor {
 	private int moleculeCount;
 	private long moleculeSize;
 
-	public final Int3D dimensions;
+	public final int[] dimensions;
 	public Sparse3DLattice grid; 
 	
 	/**
 	 * Constructor.
 	 */
-	private Reactor(Int3D dimensions) { 
+	private Reactor(int[] dimensions) { 
 		this.dimensions = dimensions;
 	}
 	
@@ -62,7 +61,7 @@ public class Reactor {
 		return (int)Math.ceil(result);
 	}
 		
-	public Int3D getLocation(Molecule molecule) {
+	public int[] getLocation(Molecule molecule) {
 		return grid.getObjectLocation(molecule);
 	}
 	
@@ -127,7 +126,7 @@ public class Reactor {
 				throw new IllegalAccessError("Entity hash table is null.");
 			}
 			
-			instance = new Reactor(new Int3D(dimension, dimension, dimension));
+			instance = new Reactor(new int[] { dimension, dimension, dimension });
 			instance.grid = Sparse3DLattice.create3DLattice(count, hashes);
 			instance.moleculeCount = count;
 			instance.moleculeSize = size;
@@ -142,7 +141,7 @@ public class Reactor {
 	/**
 	 * Insert the given molecule at the given location.
 	 */
-	public void insert(Molecule molecule, Int3D location) {
+	public void insert(Molecule molecule, int[] location) {
 		grid.setObjectLocation(molecule, location);
 	}
 	
