@@ -371,8 +371,7 @@ public class Sparse3DLattice {
 	 * @param z coordinate of the object.
 	 */
 	public void setObjectLocation(final Entity object, int x, int y, int z) {
-		Int3D location = new Int3D(x, y, z, hashCoordinates(x, y, z));
-		setObjectLocation(object, location);
+		setObjectLocation(object, new Int3D(x, y, z, hashCoordinates(x, y, z)));
 	}
 	
 	/**
@@ -425,7 +424,7 @@ public class Sparse3DLattice {
 		}
 		
 		// Update the bag in the lattice at the new location
-		int hash = location.hashCode();
+		Integer hash = location.hashCode();
 		bag = latticeMap.get(hash);
 		if (bag == null) {
 			bag = new Bag(INITIAL_BAG_SIZE);

@@ -1,8 +1,11 @@
 package edu.mtu.simulation;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,14 +28,15 @@ public class ChemSim implements Simulation {
 	// TDOO Come up with a better way of doing this
 	public final static double VERSION = 0.1; 
 	
-	private static final boolean CENSUS = false;
-		
-	// Format the number in scientific notation, two significant digits
-	private final static NumberFormat scientific = new DecimalFormat("0.##E0");
-		
 	// Scale the decay by the given time unit, 1 = sec, 60 = minute
 	public static final int SCALING = 60;
-		
+
+	// Number of time steps before the simulation is considered "warmed-up"
+	public static final int WARM_UP = 50;
+	
+	// Format the number in scientific notation, two significant digits
+	private final static NumberFormat scientific = new DecimalFormat("0.##E0");
+	
 	// Singleton instance of the simulation and schedule
 	private static ChemSim instance = new ChemSim();
 	private Schedule schedule = new Schedule();
@@ -82,10 +86,6 @@ public class ChemSim implements Simulation {
 			// Initialize the tracker(s)
 			fileName = simulation.getResultsFileName();
 			tracker = new TrackEnties(fileName, simulation.getOverWriteResults());
-			if (CENSUS) {
-				System.out.println("WARNING: counducting census of molecules, model will run slow.");
-				census = new CensusTracking("census.csv", simulation.getOverWriteResults());
-			}
 			
 			// Initialize the model
 			random = new XoRoShiRo128PlusRandom(seed);
@@ -128,14 +128,6 @@ public class ChemSim implements Simulation {
 		}
 		properties.setHydrogenPeroxideDecay(decay);
 			
-		// Check to see if we can terminate
-		for (String molecule : SimulationProperties.getInstance().getTerminationOn()) {
-			if (tracker.getCount(molecule) == 0) {
-				System.out.println(molecule + " is exausted, terminating...");
-				schedule.stop();
-			}
-		}
-		
 		// Update the census if need be
 		if (census != null) {
 			census.count();
@@ -147,6 +139,17 @@ public class ChemSim implements Simulation {
 			tracker.reset(flush);
 			if (flush) {
 				System.out.println(LocalDateTime.now() + ": " + count + " of " + total);
+			}
+		}
+		
+		// Check to see if we can terminate, but let the simulation warm up first
+		if (count < 10) {
+			return;
+		}
+		for (String molecule : SimulationProperties.getInstance().getTerminationOn()) {
+			if (tracker.getCount(molecule) == 0) {
+				System.out.println(molecule + " is exausted, terminating...");
+				schedule.stop();
 			}
 		}
 	}
@@ -294,6 +297,7 @@ public class ChemSim implements Simulation {
 	private void printHeader(String report) {
 		
 		// Application versioning information
+		// TODO dump build number
 		System.out.println("ChemSim, version " + VERSION + "\n");
 		
 		// System and molecule information
@@ -312,7 +316,10 @@ public class ChemSim implements Simulation {
 		System.out.println("Reactor Dimensions (nm): " + container.x + ", " + container.x + ", " + container.x);
 		
 		// Print report of reactions
-		System.out.println("Reactions: \n" + report);
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd - HH:mm:ss");
+		String reactions = SimulationProperties.getInstance().getReactionsFileName();
+		System.out.println("\nReactions: " + reactions + " [" + dateFormat.format(new File(reactions).lastModified()) + "]");
+		System.out.println(report);
 				
 	}
 }
