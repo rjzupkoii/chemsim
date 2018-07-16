@@ -118,7 +118,7 @@ public class ChemSim implements Simulation {
 	 */
 	@Override
 	public void step(int count, int total) {
-		// Update the decay
+		// Update the HO* decay
 		long hydrogenPeroxide = tracker.getCount("H2O2");
 		double decay = 0;
 		if (hydrogenPeroxide != 0) {
@@ -126,6 +126,9 @@ public class ChemSim implements Simulation {
 			decay = (double)quantity / hydrogenPeroxide;
 		}
 		properties.setHydrogenPeroxideDecay(decay);
+		
+		// Update the probability of HO* up-take
+		updateHydroxylOdds(count);
 			
 		// Update the census if need be
 		if (census != null) {
@@ -151,6 +154,38 @@ public class ChemSim implements Simulation {
 				schedule.stop();
 			}
 		}
+	}
+	
+	// TODO Bad, shift to properties
+	public static double hydroxylOdds = 0;
+	
+	private void updateHydroxylOdds(int timeStep) {
+		// Scale out the current concentration, mM/L
+		long count = ChemSim.getTracker().getCount("CH3COCH3");
+		double mols = ((count / ChemSim.getProperties().getMoleculeToMol()) * 1000) / 1.8;
+		
+		// Predict target concentration, mM/L
+		double delta_conc = 1.33 * Math.exp(-7.65E-03 * timeStep);
+		
+		// If we are above the target, the odds are zero
+		if (mols < delta_conc) {
+			hydroxylOdds = 0;
+			return;
+		}
+		
+		// Find the difference in the target concentration, scale to mol/reactor
+		double diff = mols - delta_conc;	// mM/L
+		diff = (diff / 1000) * 1.8;
+		
+		// Now scale mol/reactor to molecules/timestep
+		double divisor = 60 / SimulationProperties.getInstance().getTimeStepLength();
+		double molecueles = (diff * ChemSim.getProperties().getMoleculeToMol()) / divisor;
+		
+		// Get the quantity of HO* radicals per timestep
+		double dq = ChemSim.getProperties().getDecayModel().getDecayQuantity(timeStep, "H2O2", ChemSim.getTracker().getCount("H2O2"));
+		
+		// The odds is based upon the number being required to change the concentration vs. the number being created
+		hydroxylOdds = molecueles / dq;		
 	}
 	
 	/**

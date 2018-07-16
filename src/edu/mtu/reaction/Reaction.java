@@ -199,11 +199,18 @@ public class Reaction {
 		if (ChemSim.getRandom().nextDouble() > decay) {
 			return false;
 		}
-		
-		// Add the products at this location
+				
+		// Note the current location
 		int[] location = Reactor.getInstance().getLocation(molecule);
-		String[] products = ReactionRegistry.getInstance().getPhotolysisReaction(molecule);
-		MoleculeFactory.create(products, location);
+		
+		if (ChemSim.getRandom().nextDouble() > ChemSim.hydroxylOdds) {
+			// Create a placeholder HO*
+			MoleculeFactory.create("HO*'", location);
+		} else {
+			// Add the products at this location
+			String[] products = ReactionRegistry.getInstance().getPhotolysisReaction(molecule);
+			MoleculeFactory.create(products, location);
+		}
 		
 		// Note that a reaction occurred, molecule will dispose of itself
 		return true;

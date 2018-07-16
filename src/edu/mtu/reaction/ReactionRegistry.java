@@ -170,7 +170,8 @@ public class ReactionRegistry {
 	 * Check to see if the given formula has any reactants. 
 	 */
 	public boolean hasReactants(String formula) {
-		return moleculeDescriptions.get(formula).hasReactants;
+		MoleculeDescription result = moleculeDescriptions.get(formula);
+		return (result == null) ? false : result.hasReactants;
 	}
 	
 	/**
