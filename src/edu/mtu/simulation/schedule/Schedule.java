@@ -1,6 +1,9 @@
 package edu.mtu.simulation.schedule;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+
+import edu.mtu.simulation.ChemSim;
 
 /**
  * The schedule is based upon a ring buffer, but modified so that there is always
@@ -15,18 +18,19 @@ public class Schedule {
 	
 	// Current time step of the schedule
 	private int timeStep;
-	private int runTill;
 	
 	// Pointer to the simulation
 	private Simulation simulation;
 	
 	private ArrayDeque<Steppable> schedule;
-	
+	private ArrayList<Steppable> pending;
+		
 	/**
 	 * Constructor.
 	 */
 	public Schedule() {
 		schedule = new ArrayDeque<Steppable>();
+		pending = new ArrayList<Steppable>();
 		stopped = true;
 	}
 	
@@ -34,7 +38,7 @@ public class Schedule {
 	 * Get the count of nodes in the schedule.
 	 */
 	public int getCount() {
-		return schedule.size();
+		return schedule.size() + pending.size();
 	}
 	
 	/**
@@ -48,17 +52,23 @@ public class Schedule {
 	 * Clears the schedule completely, simulation finish will be called.
 	 */
 	public void halt() {
+		// Set the flags
 		halt = true;
 		stopped = true;
+		
+		// Clear the arrays
 		schedule.clear();
+		pending.clear();
+		
+		// Call the finish method
 		simulation.finish(halt);
 	}
 	
 	/**
-	 * Insert a new steppable at the beginning of the next time step.
+	 * Add a new steppable to the next time step.
 	 */
 	public void insert(Steppable steppable) {
-		schedule.add(steppable);
+		pending.add(steppable);
 	}
 		
 	/**
@@ -79,31 +89,69 @@ public class Schedule {
 			throw new IllegalArgumentException("The simulation cannot be null");
 		}
 		
+		// Check for illegal states
+		if (schedule.size() > 0) {
+			throw new IllegalStateException("Schedule variable shoud be empty when starting the simulation!");
+		}
+		
 		// Set the relevant flags and pointers
 		halt = false;
 		stopped = false;
 		stopping = false;
 		timeStep = 0;
-		this.runTill = runTill;
 		this.simulation = simulation;
 		
-		// Add the escapement as the final entry
-		schedule.add(new Escapement());
+		// Prepare the pending data by first shuffling it to remove any basis
+		shuffle(pending);
+		
+		// Update the schedule, clear pending
+		schedule.addAll(pending);
+		pending.clear();
 		
 		// Run the schedule
-		while (schedule.size() > 0) {			
-			Steppable steppable = schedule.remove();			
+		while (getCount() != 0) {
+			// If the schedule is empty then the time step is complete
+			if (schedule.size() == 0) {
+				// Update the time step, inform the simulation, exit if we are done 
+				timeStep++;
+				simulation.step(timeStep, runTill);
+				if (timeStep == runTill || stopping) {
+					break;
+				}
+				
+				// Shuffle and run
+				shuffle(pending);
+				schedule.addAll(pending);
+				pending.clear();				
+			}
+			
+			// Otherwise, run the time step
+			Steppable steppable = schedule.remove();
 			if (steppable.isActive()) {
 				steppable.doAction(timeStep);
-				schedule.add(steppable);
-			}
+				pending.add(steppable);
+ 			}
 		}
-	
+			
 		// Perform clean-up operations
 		if (!halt) {
 			simulation.finish(halt);
 		}
 		stopped = true;
+	}
+	
+	/**
+	 * Perform a Fisher–Yates shuffle on the steppables to remove possible bias
+	 * due to the activation order.
+	 */
+	private void shuffle(ArrayList<Steppable> steppables) {
+		for (int ndx = steppables.size() - 1; ndx > 0; ndx--)
+	    {
+	      int index = ChemSim.getRandom().nextInt(ndx + 1);
+	      Steppable swap = steppables.get(index);
+	      steppables.set(index, steppables.get(ndx));
+	      steppables.set(ndx, swap);
+	    }
 	}
 	
 	/**
@@ -118,23 +166,5 @@ public class Schedule {
 	 */
 	public boolean stopped() {
 		return stopped;
-	}
-		
-	/**
-	 * Wrapper for the steppable that represents the end of a single time step.
-	 * 
-	 * This offers us a very minor performance gain under very large schedules
-	 * by avoiding the instanceof check
-	 */
-	private class Escapement extends Steppable {
-		@Override
-		public void doAction(int step) { 
-			timeStep++;
-			simulation.step(timeStep, runTill);
-			if (timeStep == runTill || stopping) {
-				schedule.clear();
-				deactivate();
-			}
-		} 
 	}
 }
