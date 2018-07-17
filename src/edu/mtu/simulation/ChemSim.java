@@ -29,9 +29,6 @@ public class ChemSim implements Simulation {
 	
 	// Scale the decay by the given time unit, 1 = sec, 60 = minute
 	public static final int SCALING = 60;
-
-	// Number of time steps before the simulation is considered "warmed-up"
-	public static final int WARM_UP = 50;
 	
 	// Format the number in scientific notation, two significant digits
 	private final static NumberFormat scientific = new DecimalFormat("0.##E0");
@@ -156,9 +153,9 @@ public class ChemSim implements Simulation {
 		}
 	}
 	
-	// TODO Bad, shift to properties
-	public static double hydroxylOdds = 0;
-	
+	/**
+	 * Calculate the odds that a hydroxyl radical should be added to the model.
+	 */
 	private void updateHydroxylOdds(int timeStep) {
 		
 		// Scale out the current concentration, mM/L
@@ -174,30 +171,29 @@ public class ChemSim implements Simulation {
 //		count += ChemSim.getTracker().getCount("HOOCCOOH");
 //		count += ChemSim.getTracker().getCount("HCOOH");
 		
-		double mols = ((count / ChemSim.getProperties().getMoleculeToMol()) * 1000) / 1.8;
+		ModelProperities properties = ChemSim.getProperties();
+		double mols = ((count / properties.getMoleculeToMol()) * 1000) / 1.8;
 		
 		// Predict target concentration, mM/L
 		double delta_conc = 1.33 * Math.exp(-7.65E-03 * timeStep);
 		
 		// If we are above the target, the odds are zero
 		if (mols < delta_conc) {
-			hydroxylOdds = 0;
+			properties.setHydroxylOdds(0);
 			return;
 		}
 		
 		// Find the difference in the target concentration, scale to mol/reactor
-		double diff = mols - delta_conc;	// mM/L
-		diff = (diff / 1000) * 1.8;
+		double diff = ((mols - delta_conc) / 1000) * 1.8;
 		
 		// Now scale mol/reactor to molecules/timestep
-		double divisor = 60 / SimulationProperties.getInstance().getTimeStepLength();
-		double molecueles = (diff * ChemSim.getProperties().getMoleculeToMol()) / divisor;
+		double molecueles = (diff * properties.getMoleculeToMol()) / (60 / SimulationProperties.getInstance().getTimeStepLength());
 		
 		// Get the quantity of HO* radicals per timestep
-		double dq = ChemSim.getProperties().getDecayModel().getDecayQuantity(timeStep, "H2O2", ChemSim.getTracker().getCount("H2O2"));
+		double dq = properties.getDecayModel().getDecayQuantity(timeStep, "H2O2", tracker.getCount("H2O2"));
 		
 		// The odds is based upon the number being required to change the concentration vs. the number being created
-		hydroxylOdds = molecueles / dq;		
+		properties.setHydroxylOdds(molecueles / dq);		
 	}
 	
 	/**
@@ -282,17 +278,7 @@ public class ChemSim implements Simulation {
 			}
 			tracker.update(chemical.formula, chemical.count);
 		}
-		
-		// Use a Fisher–Yates shuffle them so we have a random distribution of activation in the schedule
-		System.out.println("Shuffling molecules...");
-		for (ndx = size - 1; ndx > 0; ndx--)
-	    {
-	      int index = random.nextInt(ndx + 1);
-	      Molecule swap = moleclues[index];
-	      moleclues[index] = moleclues[ndx];
-	      moleclues[ndx] = swap;
-	    }
-		
+				
 		// Now add all of the molecules to the schedule
 		System.out.println("Adding molecules to the schedule...");
 		Reactor reactor = Reactor.getInstance();
@@ -343,7 +329,6 @@ public class ChemSim implements Simulation {
 	private void printHeader(String report) {
 		
 		// Application versioning information
-		// TODO dump build number
 		System.out.println("ChemSim, version " + VERSION + "\n");
 		
 		// System and molecule information

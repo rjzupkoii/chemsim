@@ -17,7 +17,7 @@ public class Molecule extends Steppable implements Entity {
 	// Pointer to the reactor we are working in
 	private Sparse3DLattice grid;
 	
-	// Dimentions of the grid
+	// Dimensions of the grid
 	private int dx, dy, dz;
 	
 	// Used to identify the molecule and find reactions

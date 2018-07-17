@@ -13,7 +13,7 @@ public class Schedule {
 		
 	// Flags to indicate shutdown
 	private boolean halt;				// Shut down now
-	private boolean stopping;			// Shut down at end of time ste	
+	private boolean stopping;			// Shut down at end of time step
 	private boolean stopped;			// Schedule is complete
 	
 	// Current time step of the schedule

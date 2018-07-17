@@ -16,6 +16,9 @@ public class ModelProperities {
 	// The expected duration of the model in time steps
 	private int timeSteps;
 		
+	// The odds that a hydroxyl radical should be moved into the model
+	private double hydroxylOdds = 0;
+	
 	// Values needed to ensure hydrogen peroxide exhibits a linear decay based upon the UV intensity
 	private double hydrogenPeroxideDecay = 0;
 	
@@ -35,6 +38,10 @@ public class ModelProperities {
 	
 	public double getHydrogenPeroxideDecay() {
 		return hydrogenPeroxideDecay;
+	}
+	
+	public double getHydroxylOdds() {
+		return hydroxylOdds;
 	}
 	
 	public int getMediumPathway() {
@@ -65,6 +72,10 @@ public class ModelProperities {
 		hydrogenPeroxideDecay = value;
 	}
 				
+	public void setHydroxylOdds(double value) {
+		hydroxylOdds = value;
+	}
+	
 	public void setMediumPathway(int value) {
 		mediumPathway = value;
 	}

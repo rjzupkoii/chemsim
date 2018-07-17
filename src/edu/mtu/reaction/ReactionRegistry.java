@@ -20,8 +20,6 @@ import edu.mtu.parser.Parser;
  * This singleton contains a look up of the reactions in the simulation. In order to account for 
  * disproportionation each of the species is associated with a list of formulas.
  */
-
-// TODO Add code to verify the uniqueness of the reactions
 public class ReactionRegistry {
 	
 	/**

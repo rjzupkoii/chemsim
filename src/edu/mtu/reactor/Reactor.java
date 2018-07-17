@@ -49,6 +49,7 @@ public class Reactor {
 	
 	/**
 	 * Calculate the dimensions (assuming cubic) of the reactor based upon the list of compounds provided. 
+	 * 
 	 * @param compounds parsed out when the experimental inputs are loaded.
 	 * @return The dimensions a long a single axis in nanometers (nm).
 	 */
