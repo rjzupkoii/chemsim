@@ -58,6 +58,8 @@ public class Molecule extends Steppable implements Entity {
 		// 2. Radicals will always move if they don't react
 		// 3. Everything else moves every minute of simulation time
 		
+		// TODO Update the movement calcluation based upon the time step
+		
 		if (react()) {
 			dispose();
 		} else if (md.isRadical) {

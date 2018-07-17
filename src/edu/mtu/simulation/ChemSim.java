@@ -25,7 +25,7 @@ import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 public class ChemSim implements Simulation {
 				
 	// TDOO Come up with a better way of doing this
-	public final static double VERSION = 0.2; 
+	public final static double VERSION = 0.3; 
 	
 	// Scale the decay by the given time unit, 1 = sec, 60 = minute
 	public static final int SCALING = 60;
@@ -160,27 +160,24 @@ public class ChemSim implements Simulation {
 	public static double hydroxylOdds = 0;
 	
 	private void updateHydroxylOdds(int timeStep) {
-		if (timeStep == 250) {
-			System.out.println("Marker");
-		}
 		
 		// Scale out the current concentration, mM/L
 		long count = ChemSim.getTracker().getCount("CH3COCH3");
 		
 		// Sum everything that reacts with HO*
-		count += ChemSim.getTracker().getCount("CH3COCHO");
-		count += ChemSim.getTracker().getCount("CH3COCOOH");
-		count += ChemSim.getTracker().getCount("CH3COCH2OH");
-		count += ChemSim.getTracker().getCount("HCHO");
-		count += ChemSim.getTracker().getCount("CH3COOH");
-		count += ChemSim.getTracker().getCount("HOCCOOH");
-		count += ChemSim.getTracker().getCount("HOOCCOOH");
-		count += ChemSim.getTracker().getCount("HCOOH");
+//		count += ChemSim.getTracker().getCount("CH3COCHO");
+//		count += ChemSim.getTracker().getCount("CH3COCOOH");
+//		count += ChemSim.getTracker().getCount("CH3COCH2OH");
+//		count += ChemSim.getTracker().getCount("HCHO");
+//		count += ChemSim.getTracker().getCount("CH3COOH");
+//		count += ChemSim.getTracker().getCount("HOCCOOH");
+//		count += ChemSim.getTracker().getCount("HOOCCOOH");
+//		count += ChemSim.getTracker().getCount("HCOOH");
 		
 		double mols = ((count / ChemSim.getProperties().getMoleculeToMol()) * 1000) / 1.8;
 		
 		// Predict target concentration, mM/L
-		double delta_conc = 1.29 * Math.exp(-7.64E-03 * timeStep);
+		double delta_conc = 1.33 * Math.exp(-7.65E-03 * timeStep);
 		
 		// If we are above the target, the odds are zero
 		if (mols < delta_conc) {
