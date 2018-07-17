@@ -19,6 +19,13 @@ public class MoleculeFactory {
 		// First update out count
 		ChemSim.getTracker().update(formula, 1);
 		
+		// Return if this is a dissolved molecule
+		for (DissolvedMolecule moleclue : ReactionRegistry.DissolvedMoleclues) {
+			if (moleclue.getFormula().equals(formula)) {
+				return;
+			}
+		}
+		
 		// Return if it doesn't have any reactants
 		if (!ReactionRegistry.getInstance().hasReactants(formula)) {
 			return;
