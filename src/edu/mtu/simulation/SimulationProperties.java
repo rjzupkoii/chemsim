@@ -25,6 +25,9 @@ public class SimulationProperties {
 	// Interval to report to the console and save data on
 	private int reportInterval = 100;
 	
+	// Length of one time step in minutes;
+	private double timeStepDuration = 1.0;
+	
 	// Length of one time step in seconds
 	private double timeStepLength = 60;
 	
@@ -54,10 +57,13 @@ public class SimulationProperties {
 		return instance;
 	}
 	
-	public void setTerminateOn(String[] value) {
-		terminateOn = value;
+	/**
+	 * Get the duration of a time step in minutes.
+	 */
+	public double getDuration() {
+		return timeStepDuration;
 	}
-	
+		
 	public String getChemicalsFileName() {
 		return chemicalsFileName;
 	}
@@ -146,7 +152,12 @@ public class SimulationProperties {
 		resultsFileName = value;
 	}
 	
+	public void setTerminateOn(String[] value) {
+		terminateOn = value;
+	}
+	
 	public void setTimeStepLength(double value) {
 		timeStepLength = value;
+		timeStepDuration = 60 / value;
 	}
 }

@@ -25,8 +25,8 @@ import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 
 public class ChemSim implements Simulation {
 				
-	// TDOO Come up with a better way of doing this
-	public final static String VERSION = "0.3.172"; 
+	// TODO Come up with a better way of doing this
+	public final static String VERSION = "0.3.173"; 
 	
 	// Scale the decay by the given time unit, 1 = sec, 60 = minute
 	public static final int SCALING = 60;

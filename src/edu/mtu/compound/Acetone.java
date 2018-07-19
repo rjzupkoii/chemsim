@@ -25,16 +25,18 @@ public class Acetone extends Molecule {
 		}
 	}
 	
-	private double updateAcetoneOdds(int timeStep) {
-		
+	private double updateAcetoneOdds(int step) {
+				
 		ModelProperities properties = ChemSim.getProperties();
-		
+		double duration = SimulationProperties.getInstance().getDuration();
+				
 		// Scale out the current concentration, mM/L
 		long count = ChemSim.getTracker().getCount("CH3COCH3");
 		double mols = ((count / properties.getMoleculeToMol()) * 1000) / 1.8;
 		
 		// Predict target concentration, mM/L
-		double target = 1.33 * Math.exp(-7.65E-03 * timeStep);
+		double t = step / duration;
+		double target = 1.33 * Math.exp(-7.65E-03 * t);
 		
 		// If we are above the target, the odds are zero
 		if (mols < target) {
@@ -45,7 +47,7 @@ public class Acetone extends Molecule {
 		double diff = ((mols - target) / 1000) * 1.8;
 		
 		// Now scale mol/reactor to molecules/timestep
-		double molecueles = (diff * properties.getMoleculeToMol()) / (60 / SimulationProperties.getInstance().getTimeStepLength());
+		double molecueles = diff * properties.getMoleculeToMol();
 				
 		// The odds is based upon the number being required to change the concentration vs. the number being created
 		return (molecueles / count);	
