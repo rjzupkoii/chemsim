@@ -15,7 +15,7 @@ public class Molecule extends Steppable implements Entity {
 	private MoleculeDescription md;
 	
 	// Pointer to the reactor we are working in
-	private Sparse3DLattice grid;
+	protected Sparse3DLattice grid;
 	
 	// Dimensions of the grid
 	private int dx, dy, dz;
@@ -23,12 +23,7 @@ public class Molecule extends Steppable implements Entity {
 	// Used to identify the molecule and find reactions
 	private Integer formulaHash;
 	private String formula;
-		
-	/**
-	 * Constructor.
-	 */
-	protected Molecule() { }
-	
+				
 	/**
 	 * Constructor.
 	 */
@@ -57,9 +52,7 @@ public class Molecule extends Steppable implements Entity {
 		// 1. Everything tries to react
 		// 2. Radicals will always move if they don't react
 		// 3. Everything else moves every minute of simulation time
-		
-		// TODO Update the movement calcluation based upon the time step
-		
+						
 		if (react()) {
 			dispose();
 		} else if (md.isRadical) {
@@ -123,7 +116,7 @@ public class Molecule extends Steppable implements Entity {
 	/**
 	 * Calculate the new location for this molecule.
 	 */
-	private void move() {
+	protected void move() {
 				
 		// Get our current location
 		int[] location = grid.getObjectLocation(this);
@@ -163,7 +156,7 @@ public class Molecule extends Steppable implements Entity {
 	 * 
 	 *  @return True if something happened, false otherwise.
 	 */
-	private boolean react() {
+	protected boolean react() {
 		return Reaction.getInstance().react(this);
 	}
 	

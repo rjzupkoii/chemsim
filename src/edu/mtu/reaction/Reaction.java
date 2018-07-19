@@ -201,15 +201,17 @@ public class Reaction {
 		}
 
 		// Create the reactant and add it to the model, or not depending on the odds
-		String[] products;
-		if (ChemSim.getRandom().nextDouble() > ChemSim.getProperties().getHydroxylOdds()) {
-			// TODO Generalize this
-			// Create a placeholder HO*
-			products = new String[] { "HO*'" };
-		} else {
-			// Add the products at this location
-			products = ReactionRegistry.getInstance().getPhotolysisReaction(molecule);
-		}
+//		String[] products;
+//		if (ChemSim.getRandom().nextDouble() > ChemSim.getProperties().getHydroxylOdds()) {
+//			// TODO Generalize this
+//			// Create a placeholder HO*
+//			products = new String[] { "HO*'" };
+//		} else {
+//			// Add the products at this location
+//			products = ReactionRegistry.getInstance().getPhotolysisReaction(molecule);
+//		}
+		
+		String[] products = ReactionRegistry.getInstance().getPhotolysisReaction(molecule);
 		MoleculeFactory.create(products, Reactor.getInstance().getLocation(molecule));
 		
 		// Note that a reaction occurred, molecule will dispose of itself

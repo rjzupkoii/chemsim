@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import edu.mtu.compound.Acetone;
 import edu.mtu.compound.Molecule;
 import edu.mtu.parser.ChemicalDto;
 import edu.mtu.parser.Parser;
@@ -25,7 +26,7 @@ import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 public class ChemSim implements Simulation {
 				
 	// TDOO Come up with a better way of doing this
-	public final static double VERSION = 0.3; 
+	public final static String VERSION = "0.3.172"; 
 	
 	// Scale the decay by the given time unit, 1 = sec, 60 = minute
 	public static final int SCALING = 60;
@@ -124,8 +125,8 @@ public class ChemSim implements Simulation {
 		}
 		properties.setHydrogenPeroxideDecay(decay);
 		
-		// Update the probability of HO* up-take
-		updateHydroxylOdds(count);
+		// Update the probability of decay
+//		updateHydroxylOdds(count);
 			
 		// Update the census if need be
 		if (census != null) {
@@ -160,17 +161,7 @@ public class ChemSim implements Simulation {
 		
 		// Scale out the current concentration, mM/L
 		long count = ChemSim.getTracker().getCount("CH3COCH3");
-		
-		// Sum everything that reacts with HO*
-//		count += ChemSim.getTracker().getCount("CH3COCHO");
-//		count += ChemSim.getTracker().getCount("CH3COCOOH");
-//		count += ChemSim.getTracker().getCount("CH3COCH2OH");
-//		count += ChemSim.getTracker().getCount("HCHO");
-//		count += ChemSim.getTracker().getCount("CH3COOH");
-//		count += ChemSim.getTracker().getCount("HOCCOOH");
-//		count += ChemSim.getTracker().getCount("HOOCCOOH");
-//		count += ChemSim.getTracker().getCount("HCOOH");
-		
+				
 		ModelProperities properties = ChemSim.getProperties();
 		double mols = ((count / properties.getMoleculeToMol()) * 1000) / 1.8;
 		
@@ -274,7 +265,11 @@ public class ChemSim implements Simulation {
 		for (ChemicalDto chemical : chemicals) {
 			System.out.println("Generating " + chemical.count + " molecules of " + chemical.formula);
 			for (int count = 0; count < chemical.count; count++) {
-				moleclues[ndx++] = new Molecule(chemical.formula);
+				if (chemical.formula.equals("CH3COCH3")) {
+					moleclues[ndx++] = new Acetone();
+				} else {
+					moleclues[ndx++] = new Molecule(chemical.formula);
+				}
 			}
 			tracker.update(chemical.formula, chemical.count);
 		}
