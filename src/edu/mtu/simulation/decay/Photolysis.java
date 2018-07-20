@@ -14,13 +14,23 @@ import edu.mtu.simulation.SimulationProperties;
  */
 public class Photolysis implements DecayModel {
 
+	// TODO Move this in to the simulation code
+	private final static int targetTime = 700;
+	
 	private int time;
 	private double m;
 	private long b;
 	
 	@Override
 	public int estimateRunningTime() {
-		return time;
+		// Is this minutes?
+		if (time < targetTime) {
+			return targetTime;
+		}
+		// Must be seconds
+		return targetTime * 60;
+		
+//		return time;
 	}
 
 	@Override

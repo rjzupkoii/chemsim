@@ -11,6 +11,11 @@ import edu.mtu.simulation.ChemSim;
  */
 public class Schedule {
 		
+	// TODO Make this configurable
+	// How many steps to go before shuffling, higher than 1 will allow 
+	// some bias in exchange for faster runs
+	public final static int ShuffleSteps = 10;
+	
 	// Flags to indicate shutdown
 	private boolean halt;				// Shut down now
 	private boolean stopping;			// Shut down at end of time step
@@ -120,7 +125,9 @@ public class Schedule {
 				}
 				
 				// Shuffle and run
-				shuffle(pending);
+				if (timeStep % ShuffleSteps == 0) {
+					shuffle(pending);
+				}
 				schedule.addAll(pending);
 				pending.clear();				
 			}
