@@ -130,6 +130,13 @@ public class ReactionRegistry {
 	}
 	
 	/**
+	 * Returns the list of bimolecular reactions for the chemical species or null.
+	 */
+	public ReactionDescription[] getBimolecularReaction(String formula) {
+		return bimolecular.get(formula);
+	}
+	
+	/**
 	 * Get a list of all the entities in the registry.
 	 */
 	public Set<String> getEntityList() {
@@ -142,7 +149,7 @@ public class ReactionRegistry {
 	public int[] getEntityHashList() {
 		return entityHashes;
 	}
-	
+		
 	/**
 	 * Returns the photolysis products for the chemical species or null.
 	 */

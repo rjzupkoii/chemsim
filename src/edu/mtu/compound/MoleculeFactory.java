@@ -31,21 +31,8 @@ public class MoleculeFactory {
 			return;
 		}
 		
-		// Create the appropriate type
-		Molecule entity = null;
-		switch (formula) {
-		case "CH3COCH3":
-			entity = new Acetone();
-			break;
-		case "HO*":
-			entity = new HydroxylRadical();
-			break;
-		default:
-			entity = new Molecule(formula);
-			break;
-		}
-		
-		// Schedule the molecule		
+		// Create and schedule the molecule
+		Molecule entity = new Molecule(formula);
 		ChemSim.getSchedule().insert(entity);
 		Reactor.getInstance().insert(entity, location.clone());
 	}

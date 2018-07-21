@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import edu.mtu.compound.Acetone;
 import edu.mtu.compound.Molecule;
 import edu.mtu.parser.ChemicalDto;
 import edu.mtu.parser.Parser;
@@ -26,7 +25,7 @@ import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 public class ChemSim implements Simulation {
 				
 	// TODO Come up with a better way of doing this
-	public final static String VERSION = "0.3.174"; 
+	public final static String VERSION = "0.4.175"; 
 	
 	// Scale the decay by the given time unit, 1 = sec, 60 = minute
 	public static final int SCALING = 60;
@@ -124,10 +123,7 @@ public class ChemSim implements Simulation {
 			decay = (double)quantity / hydrogenPeroxide;
 		}
 		properties.setHydrogenPeroxideDecay(decay);
-		
-		// Update the probability of decay
-//		updateHydroxylOdds(count);
-			
+					
 		// Update the census if need be
 		if (census != null) {
 			census.count();
@@ -153,40 +149,7 @@ public class ChemSim implements Simulation {
 			}
 		}
 	}
-	
-	/**
-	 * Calculate the odds that a hydroxyl radical should be added to the model.
-	 */
-	private void updateHydroxylOdds(int timeStep) {
 		
-		// Scale out the current concentration, mM/L
-		long count = ChemSim.getTracker().getCount("CH3COCH3");
-				
-		ModelProperities properties = ChemSim.getProperties();
-		double mols = ((count / properties.getMoleculeToMol()) * 1000) / 1.8;
-		
-		// Predict target concentration, mM/L
-		double delta_conc = 1.33 * Math.exp(-7.65E-03 * timeStep);
-		
-		// If we are above the target, the odds are zero
-		if (mols < delta_conc) {
-			properties.setHydroxylOdds(0);
-			return;
-		}
-		
-		// Find the difference in the target concentration, scale to mol/reactor
-		double diff = ((mols - delta_conc) / 1000) * 1.8;
-		
-		// Now scale mol/reactor to molecules/timestep
-		double molecueles = (diff * properties.getMoleculeToMol()) / (60 / SimulationProperties.getInstance().getTimeStepLength());
-		
-		// Get the quantity of HO* radicals per timestep
-		double dq = properties.getDecayModel().getDecayQuantity(timeStep, "H2O2", tracker.getCount("H2O2"));
-		
-		// The odds is based upon the number being required to change the concentration vs. the number being created
-		properties.setHydroxylOdds(molecueles / dq);		
-	}
-	
 	/**
 	 * Complete the simulation.
 	 */
@@ -265,11 +228,7 @@ public class ChemSim implements Simulation {
 		for (ChemicalDto chemical : chemicals) {
 			System.out.println("Generating " + chemical.count + " molecules of " + chemical.formula);
 			for (int count = 0; count < chemical.count; count++) {
-				if (chemical.formula.equals("CH3COCH3")) {
-					moleclues[ndx++] = new Acetone();
-				} else {
-					moleclues[ndx++] = new Molecule(chemical.formula);
-				}
+				moleclues[ndx++] = new Molecule(chemical.formula);
 			}
 			tracker.update(chemical.formula, chemical.count);
 		}

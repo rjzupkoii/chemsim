@@ -152,8 +152,7 @@ public class Schedule {
 	 * due to the activation order.
 	 */
 	private void shuffle(ArrayList<Steppable> steppables) {
-		for (int ndx = steppables.size() - 1; ndx > 0; ndx--)
-	    {
+		for (int ndx = steppables.size() - 1; ndx > 0; ndx--) {
 	      int index = ChemSim.getRandom().nextInt(ndx + 1);
 	      Steppable swap = steppables.get(index);
 	      steppables.set(index, steppables.get(ndx));
