@@ -32,7 +32,15 @@ public class MoleculeFactory {
 		}
 		
 		// Create and schedule the molecule
-		Molecule entity = new Molecule(formula);
+		Molecule entity;
+		switch (formula) {
+		case "HO*":
+			entity = new Hydroxyl();
+			break;
+		default:
+			entity = new Molecule(formula);
+			break;
+		}
 		ChemSim.getSchedule().insert(entity);
 		Reactor.getInstance().insert(entity, location.clone());
 	}

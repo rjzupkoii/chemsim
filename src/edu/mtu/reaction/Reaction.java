@@ -194,6 +194,8 @@ public class Reaction {
 	 * @return True if it occurred, false otherwise.
 	 */
 	private boolean photolysis(Molecule molecule) {
+		final double odds = 0.5;
+		
 		// Check to see if the reaction occurred based upon decay rates
 		double decay = ChemSim.getProperties().getHydrogenPeroxideDecay();
 		if (ChemSim.getRandom().nextDouble() > decay) {
@@ -201,13 +203,17 @@ public class Reaction {
 		}
 
 		// Create the relevant products, note that hydroxyl gets special treatment
+		int[] location = Reactor.getInstance().getLocation(molecule);
 		for (String product : ReactionRegistry.getInstance().getPhotolysisReaction(molecule)) {
-			if (product.equals("HO*")) {
-				hydroxylReaction(molecule);
+			if (product.equals("HO*") && ChemSim.getRandom().nextDouble() > odds) {
+				MoleculeFactory.create("HO*'", location);
 			} else {
-				MoleculeFactory.create(product, Reactor.getInstance().getLocation(molecule));
+				MoleculeFactory.create(product, location);
 			}
 		}
+
+//		String[] products = ReactionRegistry.getInstance().getPhotolysisReaction(molecule);
+//		MoleculeFactory.create(products, Reactor.getInstance().getLocation(molecule));
 				
 		// Note that a reaction occurred, molecule will dispose of itself
 		return true;

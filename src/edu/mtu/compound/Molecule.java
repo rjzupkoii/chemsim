@@ -7,6 +7,7 @@ import edu.mtu.reaction.Reaction;
 import edu.mtu.reaction.ReactionRegistry;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;
+import edu.mtu.simulation.SimulationProperties;
 import edu.mtu.simulation.schedule.Steppable;
 import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 
@@ -24,6 +25,8 @@ public class Molecule extends Steppable implements Entity {
 	private Integer formulaHash;
 	private String formula;
 				
+	private int stepOn;
+	
 	/**
 	 * Constructor.
 	 */
@@ -37,6 +40,7 @@ public class Molecule extends Steppable implements Entity {
 	public Molecule(String formula, boolean cache) {
 		this.formula = formula;
 		formulaHash = formula.hashCode();
+		stepOn = 60 / (int)SimulationProperties.getInstance().getTimeStepLength();
 		if (cache) {
 			md = ReactionRegistry.getInstance().getMoleculeDescription(formula);
 			dx = Reactor.getInstance().dimensions[0];
@@ -47,17 +51,12 @@ public class Molecule extends Steppable implements Entity {
 	}
 			
 	@Override
-	public void doAction(int step) {
-		// To save some time the model simplifies things a bit,
-		// 1. Everything tries to react
-		// 2. Radicals will always move if they don't react
-		// 3. Everything else moves every minute of simulation time
-						
+	public void doAction(int step) {						
 		if (react()) {
 			dispose();
 		} else if (md.isRadical) {
 			move();
-		} else if (step % 60 == 0) {
+		} else if (step % stepOn == 0) {
 			move();
 		}
 	}
