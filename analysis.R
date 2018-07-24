@@ -93,31 +93,56 @@ analysis <- function(data, label, unit) {
 		unit <- 'mM'
 		experimental <- getExperimental(label)
 	}
-	
+		
+	if (!is.null(experimental)) {
+		plotExperimental(data, experimental, label, unit)
+	} else {
+
+		# Find the stats
+		min <- rowMins(data)
+		mean <- rowMeans(data)
+		max <- rowMaxs(data)
+		
+		# Plot the data
+		file = sprintf(OUTPUT_PATH, label)
+		png(file = file, width = 1024, height = 768)
+		plot(mean, type = 'l', xlab = 'Timestep, min', ylab = sprintf('%s, %s', label, unit))
+		lines(min, type='l', col='blue')
+		lines(max, type='l', col='red')
+		legend("right", legend = c("Mean", "Min", "Max"), col = c("black", "blue", "red"), lty=1, cex=0.8)
+		dev.off()
+	}
+}
+
+plotExperimental <- function(data, experimental, label, unit) {
 	# Find the stats
 	min <- rowMins(data)
 	mean <- rowMeans(data)
-	max <- rowMaxs(data)	
+	max <- rowMaxs(data)
+	
+	# Extract the points
+	x <- as.list(experimental[,'Min'])
+	y <- as.list(experimental[, label])	
+	
+	# Check to see if we need to adjust the x/y axis
+	ylim <- c(min(unlist(y[which.min(y)]), unlist(mean[which.min(mean)]) ), 
+			  max(unlist(y[which.max(y)]), unlist(mean[which.max(mean)])))
+	xlim <- c(0, max(unlist(x[which.max(x)]), length(mean)))
 	
 	# Plot the data
 	file = sprintf(OUTPUT_PATH, label)
 	png(file = file, width = 1024, height = 768)
-	plot(mean, type = 'l', xlab = 'Timestep, min', ylab = sprintf('%s, %s', label, unit))
+	plot(mean, type = 'l', xlab = 'Timestep, min', ylab = sprintf('%s, %s', label, unit), ylim = ylim, xlim = xlim)
 	lines(min, type='l', col='blue')
 	lines(max, type='l', col='red')
-		
-	# Plot experimetnal data if present
-	if (!is.null(experimental)) {
-		x <- as.list(experimental[,'Min'])
-		y <- as.list(experimental[, label])
-		points(x, y, pch=16, col="red")
-		legend("right", legend = c("Mean", "Min", "Max", "Experimental"), 
-				col = c("black", "blue", "red", "red"), lty=c(1, 1, 1, NA), cex=0.8, pch = c(NA, NA, NA, 16))
-	} else {
-		legend("right", legend = c("Mean", "Min", "Max"), col = c("black", "blue", "red"), lty=1, cex=0.8)
-	}
-	dev.off()	
+	
+	# Add the experimetal points	
+	points(x, y, pch=16, col="red")
+	legend("right", legend = c("Mean", "Min", "Max", "Experimental"), 
+			col = c("black", "blue", "red", "red"), lty=c(1, 1, 1, NA), cex=0.8, pch = c(NA, NA, NA, 16))
+	dev.off()
 }
+
 
 dir.create(OUTPUT_DIR, showWarnings = FALSE)
 #process('../data/simple/molecules', 'Molecules')
