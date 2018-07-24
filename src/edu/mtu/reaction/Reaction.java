@@ -194,7 +194,7 @@ public class Reaction {
 	 * @return True if it occurred, false otherwise.
 	 */
 	private boolean photolysis(Molecule molecule) {
-		final double odds = 0.5;
+		double odds = ChemSim.getProperties().getHydroxylPercentage();
 		
 		// Check to see if the reaction occurred based upon decay rates
 		double decay = ChemSim.getProperties().getHydrogenPeroxideDecay();
@@ -211,56 +211,11 @@ public class Reaction {
 				MoleculeFactory.create(product, location);
 			}
 		}
-
-//		String[] products = ReactionRegistry.getInstance().getPhotolysisReaction(molecule);
-//		MoleculeFactory.create(products, Reactor.getInstance().getLocation(molecule));
-				
+			
 		// Note that a reaction occurred, molecule will dispose of itself
 		return true;
 	}	
-	
-	/**
-	 * Perform a hydroxyl reaction at the given location, or dispose of the hydroxyl radical.
-	 */
-	private void hydroxylReaction(Molecule parent) {
 		
-		// First check to see if we are just discarding this radical
-		if (ChemSim.getRandom().nextDouble() > 1.0) {
-			MoleculeFactory.create("HO*'", Reactor.getInstance().getLocation(parent));
-			return;
-		}
-		
-		// Get the reactions that may occur
-		ReactionDescription[] reactions = ReactionRegistry.getInstance().getBimolecularReaction("HO*");
-		
-		// Shuffle the reactions
-		for (int ndx = reactions.length - 1; ndx > 0; ndx--) {
-		      int index = ChemSim.getRandom().nextInt(ndx + 1);
-		      ReactionDescription swap = reactions[index];
-		      reactions[index] = reactions[ndx];
-		      reactions[ndx] = swap;
-	    }
-								
-		// Search to see if the reaction can occur from the location of the parent
-		for (ReactionDescription rd : reactions) {
-			int hash = rd.getReactants()[0].equals("HO*") ? rd.getReactants()[1].hashCode() : rd.getReactants()[0].hashCode();
-			Entity match = Reactor.getInstance().grid.findFirstByTag(parent, hash, rd.getInteractionRadius());
-			
-			// No reaction, press on
-			if (match == null) {
-				continue;
-			}
-			
-			// Reaction occurred, add the products, dispose of the other reactant
-			MoleculeFactory.create(rd.getProducts(),  Reactor.getInstance().getLocation(parent));
-			((Molecule)match).dispose();
-			return;
-		}	
-		
-		// Nothing to react with, note the NOOP
-		MoleculeFactory.create("HO*'", Reactor.getInstance().getLocation(parent));
-	}
-	
 	/**
 	 * Process the reactions that are possible for this entity, assume only one
 	 * bimolecular reaction based upon the search radius.

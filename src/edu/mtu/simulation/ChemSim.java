@@ -25,7 +25,7 @@ import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 public class ChemSim implements Simulation {
 				
 	// TODO Come up with a better way of doing this
-	public final static String VERSION = "0.4.176"; 
+	public final static String VERSION = "0.4.177"; 
 	
 	// Scale the decay by the given time unit, 1 = sec, 60 = minute
 	public static final int SCALING = 60;
@@ -78,6 +78,15 @@ public class ChemSim implements Simulation {
 			// Load the experimental parameters for the model
 			String fileName = SimulationProperties.getInstance().getChemicalsFileName();
 			List<ChemicalDto> compounds = Parser.parseChemicals(fileName);
+			
+			// Set the odds, assume 1.0 if we have an error
+			try {
+				double odds = Parser.parseHydroxylPercentage(fileName);
+				properties.setHydroxylPercentage(odds);
+			} catch (IOException | IllegalArgumentException ex) {
+				System.err.print("WARNING: error encountered loading hydroxyl retention odds, assuming 1.0");
+				System.err.println(ex.getMessage());
+			}
 
 			// Initialize the tracker(s)
 			fileName = simulation.getResultsFileName();
@@ -297,6 +306,7 @@ public class ChemSim implements Simulation {
 		
 		// Print the reactor information
 		System.out.println("Time Step (sec): " + SimulationProperties.getInstance().getTimeStepLength());
+		System.out.println("Hydroxyl Retention: " + properties.getHydroxylPercentage());
 		int[] container = Reactor.getInstance().dimensions;
 		System.out.println("Reactor Dimensions (nm): " + container[0] + ", " + container[1] + ", " + container[2]);
 		

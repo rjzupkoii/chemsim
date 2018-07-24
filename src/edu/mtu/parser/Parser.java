@@ -29,10 +29,15 @@ public class Parser {
 			reader.readNext();
 			reader.readNext();
 			
-			// Check to make sure we are on the chemicals header
-			String[] entries = reader.readNext();
-			if (!entries[0].toUpperCase().equals("NAME")) {
-				System.err.println("File provided does not contain the chemicals header on line three.");
+			// Scan until we reach the chemicals header
+			String[] entries;
+			while ((entries = reader.readNext()) != null) {
+				if (entries[0].toUpperCase().equals("NAME")) {
+					break;
+				}
+			}
+			if (entries == null) {
+				System.err.println("File provided does not contain the chemicals header.");
 				throw new IOException("Invalid ChemSim chemicals file.");
 			}
 			
@@ -110,6 +115,41 @@ public class Parser {
 			
 			// Return the result
 			return Double.parseDouble(entries[2]);
+		} finally {
+			if (reader != null) reader.close();
+		}
+	}
+	
+	/**
+	 * Parse the percentage of hydroxyl radicals that should be retained.
+	 * 
+	 * @param fileName The full name and path of the file.
+	 * @return The value as a decimal percentage (ex., 0.50).
+	 * 
+	 * @exception IllegalArgumentException Thrown if the file does not contain a "Percentage" field.
+	 */
+	public static double parseHydroxylPercentage(String fileName) throws IOException, IllegalArgumentException {
+		CSVReader reader = null;
+		
+		try {
+			// Open the file
+			reader = new CSVReader(new FileReader(fileName));
+			
+			// Read until we find the value, or the "Name" marker for the chemicals listing
+			String[] entries;
+			while ((entries = reader.readNext()) != null) {
+				// Match found
+				if (entries[0].toUpperCase().equals("PERCENTAGE")) {
+					return Double.parseDouble(entries[1]);
+				}
+				
+				// Start of chemicals found
+				if (entries[0].toUpperCase().equals("NAME")) {
+					throw new IllegalArgumentException("File does not appear to contain 'percentage' entry.");
+				}
+			}
+			
+			throw new IOException("Invalid ChemSim chemicals file.");
 		} finally {
 			if (reader != null) reader.close();
 		}
