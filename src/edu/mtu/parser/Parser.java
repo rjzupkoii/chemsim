@@ -205,7 +205,7 @@ public class Parser {
 		}
 		
 		// Check to see if there are odds associated with the file
-		boolean oddsColumn = enteries[enteries.length - 1].toUpperCase().equals("ODDS");
+		boolean oddsColumn = enteries[enteries.length - 1].toUpperCase().equals("RATIO");
 		
 		List<ReactionDescription> results = new ArrayList<ReactionDescription>();
 		while ((enteries = reader.readNext()) != null) {

@@ -215,8 +215,8 @@ public class ReactionRegistry {
 				check = addBimolecularReaction(reaction, bimolecular);
 				message.append("bimolecular");
 			}
-			if (reaction.getReactionOdds() != 1.0) {
-				message.append(", " + reaction.getReactionOdds());
+			if (reaction.getReactionRatio() != 1.0) {
+				message.append(", " + reaction.getReactionRatio());
 			}
 			message.append(")\n");
 			

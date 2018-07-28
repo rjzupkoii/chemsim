@@ -55,7 +55,7 @@ public class Reaction {
 			}
 						
 			// Note the odds
-			double odds = reactions[ndx].getReactionOdds();
+			double odds = reactions[ndx].getReactionRatio();
 			probabilistic = probabilistic || (odds < 1);
 			reactionOdds.add(odds);			
 			

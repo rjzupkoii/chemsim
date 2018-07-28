@@ -20,7 +20,7 @@ public class ReactionDescription implements Cloneable {
 	
 	private double k = 0.0;
 	private int interactionRadius = 0;
-	private double reactionOdds = 1.0;	// Default is one to allow the field to be optional
+	private double ratio = 1.0;
 				
 	/**
 	 * Constructor.
@@ -40,11 +40,11 @@ public class ReactionDescription implements Cloneable {
 	/**
 	 * Constructor.
 	 */
-	public ReactionDescription(List<String> reactants, List<String> products, double reactionRate, double reactionOdds) {
+	public ReactionDescription(List<String> reactants, List<String> products, double reactionRate, double ratio) {
 		setReactants(reactants);
 		setProducts(products);
 		k = reactionRate;
-		this.reactionOdds = reactionOdds;
+		this.ratio = ratio;
 		interactionRadius = calcluateInteractionRadius();
 	}
 	
@@ -130,8 +130,8 @@ public class ReactionDescription implements Cloneable {
 	/**
 	 * Get the reaction odds.
 	 */
-	public double getReactionOdds() {
-		return reactionOdds;
+	public double getReactionRatio() {
+		return ratio;
 	}
 	
 	/**
@@ -165,7 +165,7 @@ public class ReactionDescription implements Cloneable {
 		copy.products = this.products.clone();
 		copy.reactants = this.reactants.clone();
 		copy.reactantHashes = this.reactantHashes.clone();		
-		copy.reactionOdds = this.reactionOdds;
+		copy.ratio = this.ratio;
 		copy.k = this.k;
 		return copy;
 	}
