@@ -51,7 +51,7 @@ public class Molecule extends Steppable implements Entity {
 	}
 			
 	@Override
-	public void doAction(int step) {						
+	public void doAction(int step) {				
 		if (react()) {
 			dispose();
 		} else if (md.isRadical) {

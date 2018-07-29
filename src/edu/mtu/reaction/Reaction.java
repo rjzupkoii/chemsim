@@ -49,7 +49,7 @@ public class Reaction {
 		// Find the indicies and odds of valid reactions
 		ArrayList<Integer> indicies = new ArrayList<Integer>();
 		for (int ndx = 0; ndx < size; ndx++) {
-			// Press on if the descrption is null
+			// Press on if the description is null
 			if (reactions[ndx] == null) {
 				continue;
 			}
@@ -217,32 +217,45 @@ public class Reaction {
 	}	
 		
 	/**
-	 * Process the reactions that are possible for this entity, assume only one
-	 * bimolecular reaction based upon the search radius.
+	 * Process the reactions that are possible for this entity.
 	 */
 	private boolean process(Molecule molecule, Molecule reactant, int radius) {
+		// Find the correct reactions
+		List<ReactionDescription> matched = new ArrayList<ReactionDescription>();
 		ReactionDescription[] reactions = ReactionRegistry.getInstance().getBimolecularReaction(molecule);
 		for (ReactionDescription rd : reactions) {
-			if (rd.checkReactants(molecule, reactant) && rd.getInteractionRadius() == radius) {
-				// Add the molecules to the model
-				int[] location = Reactor.getInstance().grid.getObjectLocation(molecule);
-				MoleculeFactory.create(rd.getProducts(), location);
-				
-				// Clean up the reactant and inform the molecule to dispose of itself
-				reactant.dispose();
-				return true;
+			if (rd.checkReactants(molecule, reactant)) {
+				matched.add(rd);
 			}
 		}
+		if (matched.size() == 0) {
+			throw new IllegalAccessError(String.format("No matches found for %s, %s", molecule, reactant));
+		}
+				
+		// Add the molecules to the model
+		int[] location = Reactor.getInstance().grid.getObjectLocation(molecule);
+		if (matched.size() > 1) {
+			// Disproportion is occurring
+			MoleculeFactory.create(molecule, reactant, matched, location);
+		} else {
+			// A standard reaction is occurring
+			MoleculeFactory.create(matched.get(0).getProducts(), location);
+		}
 		
-		// Nothing was found, throw an error since that shouldn't occur
-		throw new IllegalAccessError(String.format("No matches found for %s, %s", molecule, reactant));
+		// Clean up the reactant that was involved
+		if (reactant != null) {
+			reactant.dispose();
+		}
+		
+		// The molecule will be dispose itself
+		return true;
 	}
 	
 	/**
 	 * Process the reactions that are possible for this entity.
 	 */
 	private boolean process(Molecule molecule, Molecule reactant, int[] location, ReactionDescription[] reactions) {
-		
+
 		// Find the correct reaction(s)
 		List<ReactionDescription> matched = new ArrayList<ReactionDescription>();
 		for (ReactionDescription rd : reactions) {
