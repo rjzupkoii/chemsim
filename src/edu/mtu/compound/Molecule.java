@@ -54,9 +54,7 @@ public class Molecule extends Steppable implements Entity {
 	public void doAction(int step) {				
 		if (react()) {
 			dispose();
-		} else if (md.isRadical) {
-			move();
-		} else if (step % stepOn == 0) {
+		} else {
 			move();
 		}
 	}
@@ -116,6 +114,8 @@ public class Molecule extends Steppable implements Entity {
 	 * Calculate the new location for this molecule.
 	 */
 	protected void move() {
+		final int speed = 590;	// nm/s
+		
 				
 		// Get our current location
 		int[] location = grid.getObjectLocation(this);
@@ -127,14 +127,14 @@ public class Molecule extends Steppable implements Entity {
 		double walkZ = random.nextDoubleFast();
 		
 		// Apply the values, note that we are discarding everything outside of one standard deviation
-		location[0] += (walkX >= 0.5 ? 1 : 0);
-		location[0] += (walkX < 0.5) ? -1 : 0;
+		location[0] += (walkX >= 0.5 ? 1 : 0) * speed;
+		location[0] += (walkX < 0.5 ? -1 : 0) * speed;
 		
-		location[1] += ((walkY >= 0.5) ? 1 : 0);
-		location[1] += (walkY < 0.5) ? -1 : 0;
+		location[1] += (walkY >= 0.5 ? 1 : 0) * speed;
+		location[1] += (walkY < 0.5 ? -1 : 0) * speed;
 		
-		location[2] += ((walkZ >= 0.5) ? 1 : 0);
-		location[2] += (walkZ < 0.5) ? -1 : 0;
+		location[2] += (walkZ >= 0.5 ? 1 : 0) * speed;
+		location[2] += (walkZ < 0.5 ? -1 : 0) * speed;
 		
 		// Adjust the location as needed so we stay in the bounds of the container
 		location[0] = (location[0] > dx) ? dx : location[0];

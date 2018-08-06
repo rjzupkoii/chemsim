@@ -131,6 +131,11 @@ public class Reaction {
 	 * @return True if a reaction occurred, false otherwise.
 	 */
 	public boolean react(Molecule molecule) {
+		// Finally, see if photolysis needs to take place
+		if (molecule.hasPhotolysis() && photolysis(molecule)) {
+			return true;
+		}
+		
 		// First, see if there are any bimolecular reactions to take place
 		if (molecule.hasBimoleculear() && bimolecularReaction(molecule)) {
 			return true;
@@ -139,11 +144,6 @@ public class Reaction {
 		// Second, see if unimolecular decay needs to take place
 		if (molecule.hasUnimolecular() && unimolecularDecay(molecule)) {
 			return true;
-		}
-
-		// Finally, see if photolysis needs to take place
-		if (molecule.hasPhotolysis()) {
-			return photolysis(molecule);
 		}
 		
 		return false;
@@ -194,7 +194,6 @@ public class Reaction {
 	 * @return True if it occurred, false otherwise.
 	 */
 	private boolean photolysis(Molecule molecule) {
-		double odds = ChemSim.getProperties().getHydroxylPercentage();
 		
 		// Check to see if the reaction occurred based upon decay rates
 		double decay = ChemSim.getProperties().getHydrogenPeroxideDecay();
@@ -203,6 +202,7 @@ public class Reaction {
 		}
 
 		// Create the relevant products, note that hydroxyl gets special treatment
+		double odds = ChemSim.getProperties().getHydroxylPercentage();
 		int[] location = Reactor.getInstance().getLocation(molecule);
 		for (String product : ReactionRegistry.getInstance().getPhotolysisReaction(molecule)) {
 			if (product.equals("HO*") && ChemSim.getRandom().nextDouble() > odds) {

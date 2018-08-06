@@ -25,7 +25,7 @@ import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 public class ChemSim implements Simulation {
 				
 	// TODO Come up with a better way of doing this
-	public final static String VERSION = "0.4.180"; 
+	public final static String VERSION = "0.6.181"; 
 	
 	// Scale the decay by the given time unit, 1 = sec, 60 = minute
 	public static final int SCALING = 60;
@@ -45,7 +45,7 @@ public class ChemSim implements Simulation {
 	// Entity count tracker for the simulation
 	private CensusTracking census;
 	private TrackEnties tracker;	
-	
+		
 	/**
 	 * Random number generator that is tied to the simulation. 
 	 */
@@ -132,6 +132,10 @@ public class ChemSim implements Simulation {
 			decay = (double)quantity / hydrogenPeroxide;
 		}
 		properties.setHydrogenPeroxideDecay(decay);
+		
+		// Update the HO* odds
+		double odds = calculateHydroxylOdds();
+		properties.setHydroxylPercentage(odds);
 					
 		// Update the census if need be
 		if (census != null) {
@@ -157,6 +161,22 @@ public class ChemSim implements Simulation {
 				schedule.stop();
 			}
 		}
+	}
+	
+	private double calculateHydroxylOdds() {
+		final String[] values = { "CH3COCH3", "CH3COCHO", "CH3COCOOH", "CH3COCH2OH", "HCHO", "CH3COOH", "HOCCOOH", "HOOCCOOH", "HCOOH" };
+		final double[] radius = { 3.41E-07, 5.83E-07, 1.58E-07, 3.41E-07, 3.41E-07, 1.85E-07, 4.22E-07, 8.22E-08, 2.61E-07 };
+		final double HoReaction = 7.35E-07;
+		
+		double sum = HoReaction;
+		for (int ndx = 0; ndx < values.length; ndx++) {
+			if (tracker.getCount(values[ndx]) > 0) {
+				sum += radius[ndx];
+			}
+		}
+		
+		double result = 1 - (HoReaction / sum);
+		return result;
 	}
 		
 	/**

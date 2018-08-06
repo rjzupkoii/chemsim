@@ -58,8 +58,9 @@ public class Reactor {
 		for (ChemicalDto compound : compounds) {
 			mols += compound.mols;
 		}
-		double result = Math.cbrt((Math.pow(10.0, 24.0) * (double)molecules) / (mols * AvogadrosNumber));
-		return (int)Math.ceil(result);
+//		double result = Math.cbrt((Math.pow(10.0, 24.0) * (double)molecules) / (mols * AvogadrosNumber));
+		double result = Math.cbrt((double)molecules / (mols * AvogadrosNumber));	// m
+		return (int)Math.ceil(result*Math.pow(10, 9));								// nm
 	}
 		
 	public int[] getLocation(Molecule molecule) {
