@@ -18,10 +18,7 @@ public class ModelProperities {
 		
 	// The odds that a hydroxyl radical should be moved into the model
 	private double hydroxylOdds = 0;
-	
-	// Percentage of hydroxyl radicals to retain, expressed as a decimal
-	private double hydroxylPercentage = 0;
-	
+		
 	// Values needed to ensure hydrogen peroxide exhibits a linear decay based upon the UV intensity
 	private double hydrogenPeroxideDecay = 0;
 	
@@ -42,11 +39,7 @@ public class ModelProperities {
 	public double getHydroxylOdds() {
 		return hydroxylOdds;
 	}
-	
-	public double getHydroxylPercentage() {
-		return hydroxylPercentage;
-	}
-	
+		
 	public double getHydrogenPeroxideDecay() {
 		return hydrogenPeroxideDecay;
 	}
@@ -82,11 +75,7 @@ public class ModelProperities {
 	public void setHydroxylOdds(double value) {
 		hydroxylOdds = value;
 	}
-	
-	public void setHydroxylPercentage(double value) {
-		hydroxylPercentage = value;
-	}
-	
+		
 	public void setMediumPathway(int value) {
 		mediumPathway = value;
 	}

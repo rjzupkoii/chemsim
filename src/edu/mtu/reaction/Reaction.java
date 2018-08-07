@@ -202,7 +202,7 @@ public class Reaction {
 		}
 
 		// Create the relevant products, note that hydroxyl gets special treatment
-		double odds = ChemSim.getProperties().getHydroxylPercentage();
+		double odds = ChemSim.getProperties().getHydroxylOdds();
 		int[] location = Reactor.getInstance().getLocation(molecule);
 		for (String product : ReactionRegistry.getInstance().getPhotolysisReaction(molecule)) {
 			if (product.equals("HO*") && ChemSim.getRandom().nextDouble() > odds) {

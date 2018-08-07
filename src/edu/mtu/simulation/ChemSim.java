@@ -82,7 +82,7 @@ public class ChemSim implements Simulation {
 			// Set the odds, assume 1.0 if we have an error
 			try {
 				double odds = Parser.parseHydroxylPercentage(fileName);
-				properties.setHydroxylPercentage(odds);
+				properties.setHydroxylOdds(odds);
 			} catch (IOException | IllegalArgumentException ex) {
 				System.err.print("WARNING: error encountered loading hydroxyl retention odds, assuming 1.0");
 				System.err.println(ex.getMessage());
@@ -134,8 +134,12 @@ public class ChemSim implements Simulation {
 		properties.setHydrogenPeroxideDecay(decay);
 		
 		// Update the HO* odds
+		double old = properties.getHydroxylOdds();
 		double odds = calculateHydroxylOdds();
-		properties.setHydroxylPercentage(odds);
+		properties.setHydroxylOdds(odds);
+		if (old != odds) {
+			System.out.println("Hydroxyl Retention: " + odds);
+		}
 					
 		// Update the census if need be
 		if (census != null) {
@@ -168,18 +172,16 @@ public class ChemSim implements Simulation {
 		final double[] radius = { 3.41E-07, 5.83E-07, 1.58E-07, 3.41E-07, 3.41E-07, 1.85E-07, 4.22E-07, 8.22E-08, 2.61E-07 };
 		final double HoReaction = 7.35E-07;
 		
-		long count = 0;
 		double k = 0;
 
 		for (int ndx = 0; ndx < values.length; ndx++) {
-			long result = tracker.getCount(values[ndx]);
-			if (result > count) {
-				count = result;
-				k = radius[ndx];
+			if (tracker.getCount(values[ndx]) > 0) {
+				k = (k > radius[ndx]) ? k : radius[ndx];
 			}
 		}
 		
-		double result = Math.cbrt(k / HoReaction);
+		double result = k / HoReaction;
+//		result = Math.cbrt(result);
 		return result;
 	}
 		
@@ -330,7 +332,7 @@ public class ChemSim implements Simulation {
 		
 		// Print the reactor information
 		System.out.println("Time Step (sec): " + SimulationProperties.getInstance().getTimeStepLength());
-		System.out.println("Hydroxyl Retention: " + properties.getHydroxylPercentage());
+		System.out.println("Hydroxyl Retention: " + properties.getHydroxylOdds());
 		int[] container = Reactor.getInstance().dimensions;
 		System.out.println("Reactor Dimensions (nm): " + container[0] + ", " + container[1] + ", " + container[2]);
 		
