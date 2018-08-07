@@ -134,8 +134,8 @@ public class ChemSim implements Simulation {
 		properties.setHydrogenPeroxideDecay(decay);
 		
 		// Update the HO* odds
-		double odds = calculateHydroxylOdds();
-		properties.setHydroxylPercentage(odds);
+//		double odds = calculateHydroxylOdds();
+//		properties.setHydroxylPercentage(odds);
 					
 		// Update the census if need be
 		if (census != null) {
@@ -175,7 +175,7 @@ public class ChemSim implements Simulation {
 			}
 		}
 		
-		double result = 1 - (HoReaction / sum);
+		double result = (1 - (HoReaction / sum)) / 2;
 		return result;
 	}
 		
