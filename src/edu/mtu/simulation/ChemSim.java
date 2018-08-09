@@ -170,7 +170,7 @@ public class ChemSim implements Simulation {
 	private double calculateHydroxylOdds() {
 		final String[] values = { "CH3COCH3", "CH3COCHO", "CH3COCOOH", "CH3COCH2OH", "HCHO", "CH3COOH", "HOCCOOH", "HOOCCOOH", "HCOOH" };
 		final double[] radius = { 3.41E-07, 5.83E-07, 1.58E-07, 3.41E-07, 3.41E-07, 1.85E-07, 4.22E-07, 8.22E-08, 2.61E-07 };
-		final double HoReaction = 7.35E-07;
+		final double HoReaction = 1.81E-06;
 		
 		double k = 0;
 
