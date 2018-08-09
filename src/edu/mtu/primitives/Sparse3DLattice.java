@@ -72,7 +72,7 @@ public class Sparse3DLattice {
 		lattice.tagMap = new Int2ObjectOpenHashMap<ArrayDeque<Entity>>(tags.length);
 		for (int key : tags) {
 			if (lattice.tagMap.containsKey(key)) {
-				throw new IllegalAccessError("Key collision while allocating the tagMap.");
+				throw new IllegalAccessError("Key collision {hash = " + key + "} while allocating the tagMap.");
 			}
 			lattice.tagMap.put(key, new ArrayDeque<Entity>());
 		}				

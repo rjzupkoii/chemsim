@@ -7,8 +7,8 @@ import edu.mtu.reaction.Reaction;
 import edu.mtu.reaction.ReactionRegistry;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;
-import edu.mtu.simulation.SimulationProperties;
 import edu.mtu.simulation.schedule.Steppable;
+import edu.mtu.util.FnvHash;
 import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 
 public class Molecule extends Steppable implements Entity {
@@ -24,8 +24,6 @@ public class Molecule extends Steppable implements Entity {
 	// Used to identify the molecule and find reactions
 	private Integer formulaHash;
 	private String formula;
-				
-	private int stepOn;
 	
 	/**
 	 * Constructor.
@@ -39,8 +37,8 @@ public class Molecule extends Steppable implements Entity {
 	 */
 	public Molecule(String formula, boolean cache) {
 		this.formula = formula;
-		formulaHash = formula.hashCode();
-		stepOn = 60 / (int)SimulationProperties.getInstance().getTimeStepLength();
+		formulaHash = FnvHash.fnv1a32(formula);
+		
 		if (cache) {
 			md = ReactionRegistry.getInstance().getMoleculeDescription(formula);
 			dx = Reactor.getInstance().dimensions[0];

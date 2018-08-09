@@ -15,6 +15,7 @@ import javax.activity.InvalidActivityException;
 import edu.mtu.compound.DissolvedMolecule;
 import edu.mtu.compound.Molecule;
 import edu.mtu.parser.Parser;
+import edu.mtu.util.FnvHash;
 
 /**
  * This singleton contains a look up of the reactions in the simulation. In order to account for 
@@ -192,7 +193,7 @@ public class ReactionRegistry {
 		Map<String, String[]> photoysis = new HashMap<String, String[]>();
 		Map<String, List<ReactionDescription>> unimolecular = new HashMap<String, List<ReactionDescription>>();
 		
-		// Define a hash set so we can check for dispropration reaction, namely two of the same reactants
+		// Define a hash set so we can check for dispropration reaction, namely two of the same reactions
 		HashSet<String> disproportionationCheck = new HashSet<String>();
 		HashSet<Integer> disproportationHash = new HashSet<Integer>(); 
 		
@@ -221,8 +222,9 @@ public class ReactionRegistry {
 			message.append(")\n");
 			
 			// Check to see if we've seen this reaction before
-			if (!disproportionationCheck.add(check)) {
-				disproportationHash.add(check.hashCode());
+			if (!disproportionationCheck.add(check)) {			
+				int hash = FnvHash.fnv1a32(check);
+				disproportationHash.add(hash);	
 			}
 		}
 		
@@ -258,13 +260,20 @@ public class ReactionRegistry {
 	 * Build the array that contains the entity hashes that are present.
 	 */
 	private void buildEntityHash(HashSet<Integer> disproportationHash) {
-		int size = moleculeDescriptions.keySet().size() + disproportationHash.size();
-		entityHashes = new int[size];
-		int ndx = 0;
+		// Clone the disproportation hashes into a working variable and then
+		// add the hashes for the molecule descriptions. Note that we are 
+		// kind of assuming that we have a very low likelihood of a hash collision
+		@SuppressWarnings("unchecked")
+		HashSet<Integer> working = (HashSet<Integer>)disproportationHash.clone();
 		for (String key : moleculeDescriptions.keySet()) {
-			entityHashes[ndx++] = key.hashCode();
+			working.add(FnvHash.fnv1a32(key));
 		}
-		for (int hash : disproportationHash) {
+
+		// Allocate an array and move the data over... deals with the Java 
+		// idiosyncrasy between int and Integer
+		entityHashes = new int[working.size()];
+		int ndx = 0;
+		for (int hash : working) {
 			entityHashes[ndx++] = hash;
 		}
 	}
@@ -336,7 +345,7 @@ public class ReactionRegistry {
 
 			// Note the hash to use
 			int index = (products[0].equals(formula)) ? 1 : 0;
-			int hash = products[index].hashCode();
+			int hash = FnvHash.fnv1a32(products[index]);
 			
 			// Set the values
 			entities.add(hash);

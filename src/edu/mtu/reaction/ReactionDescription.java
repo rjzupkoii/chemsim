@@ -6,6 +6,7 @@ import java.util.List;
 import edu.mtu.compound.Molecule;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.SimulationProperties;
+import edu.mtu.util.FnvHash;
 
 /**
  * This class represents a single chemical equation.
@@ -147,7 +148,7 @@ public class ReactionDescription implements Cloneable {
 		reactants = value.toArray(reactants);
 		reactantHashes = new int[reactants.length];
 		for (int ndx = 0; ndx < reactants.length; ndx++) {
-			reactantHashes[ndx] = reactants[ndx].hashCode();
+			reactantHashes[ndx] = FnvHash.fnv1a32(reactants[ndx]);
 		}
 	}
 	
