@@ -25,7 +25,7 @@ import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 public class ChemSim implements Simulation {
 				
 	// TODO Come up with a better way of doing this
-	public final static String VERSION = "0.6.181"; 
+	public final static String VERSION = "0.6.186"; 
 	
 	// Scale the decay by the given time unit, 1 = sec, 60 = minute
 	public static final int SCALING = 60;
@@ -134,12 +134,12 @@ public class ChemSim implements Simulation {
 		properties.setHydrogenPeroxideDecay(decay);
 		
 		// Update the HO* odds
-		double old = properties.getHydroxylOdds();
-		double odds = calculateHydroxylOdds();
-		properties.setHydroxylOdds(odds);
-		if (old != odds) {
-			System.out.println("Hydroxyl Retention: " + odds);
-		}
+//		double old = properties.getHydroxylOdds();
+//		double odds = calculateHydroxylOdds();
+//		properties.setHydroxylOdds(odds);
+//		if (old != odds) {
+//			System.out.println("Hydroxyl Retention: " + odds);
+//		}
 					
 		// Update the census if need be
 		if (census != null) {
@@ -170,13 +170,22 @@ public class ChemSim implements Simulation {
 	private double calculateHydroxylOdds() {
 		final String[] values = { "CH3COCH3", "CH3COCHO", "CH3COCOOH", "CH3COCH2OH", "HCHO", "CH3COOH", "HOCCOOH", "HOOCCOOH", "HCOOH" };
 		final double[] radius = { 3.41E-07, 5.83E-07, 1.58E-07, 3.41E-07, 3.41E-07, 1.85E-07, 4.22E-07, 8.22E-08, 2.61E-07 };
-		final double HoReaction = 1.81E-06;
 		
+		final double HoReaction = 7.35E-07; // 1.0e9
+//		final double HoReaction = 1.81E-06;	// 1.5e10
+		
+		long count = 0;
 		double k = 0;
 
 		for (int ndx = 0; ndx < values.length; ndx++) {
-			if (tracker.getCount(values[ndx]) > 0) {
-				k = (k > radius[ndx]) ? k : radius[ndx];
+			long result = tracker.getCount(values[ndx]);			
+			if (result > count) {
+				// Update on greater value
+				count = result;
+				k = radius[ndx];
+			} else if (result == count) {
+				// Use the larger value
+				k = (radius[ndx] > k) ? radius[ndx] : k;
 			}
 		}
 		

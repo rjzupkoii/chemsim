@@ -105,11 +105,13 @@ analysis <- function(data, label, unit) {
 		
 		# Plot the data
 		file = sprintf(OUTPUT_PATH, label)
-		png(file = file, width = 1024, height = 768)
-		plot(mean, type = 'l', xlab = 'Timestep, min', ylab = sprintf('%s, %s', label, unit))
-		lines(min, type='l', col='blue')
-		lines(max, type='l', col='red')
-		legend("right", legend = c("Mean", "Min", "Max"), col = c("black", "blue", "red"), lty=1, cex=0.8)
+		png(file = file, width = 1280, height = 1040)
+		par(mar = c(5, 5, 5, 5))
+		plot(mean, type = 'l', xlab = 'Timestep, min', ylab = sprintf('%s, %s', label, unit),
+				cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
+#		lines(min, type='l', col='blue')
+#		lines(max, type='l', col='red')
+#		legend("right", legend = c("Mean", "Min", "Max"), col = c("black", "blue", "red"), lty=1, cex=0.8)
 		dev.off()
 	}
 }
@@ -131,15 +133,17 @@ plotExperimental <- function(data, experimental, label, unit) {
 	
 	# Plot the data
 	file = sprintf(OUTPUT_PATH, label)
-	png(file = file, width = 1024, height = 768)
-	plot(mean, type = 'l', xlab = 'Timestep, min', ylab = sprintf('%s, %s', label, unit), ylim = ylim, xlim = xlim)
-	lines(min, type='l', col='blue')
-	lines(max, type='l', col='red')
+	png(file = file, width = 1280, height = 1040)
+	par(mar = c(5, 5, 5, 5))
+	plot(mean, type = 'l', xlab = 'Timestep, min', ylab = sprintf('%s, %s', label, unit), ylim = ylim, xlim = xlim,
+			cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
+#	lines(min, type='l', col='blue')
+#	lines(max, type='l', col='red')
 	
 	# Add the experimetal points	
 	points(x, y, pch=16, col="red")
-	legend("right", legend = c("Mean", "Min", "Max", "Experimental"), 
-			col = c("black", "blue", "red", "red"), lty=c(1, 1, 1, NA), cex=0.8, pch = c(NA, NA, NA, 16))
+	legend("right", legend = c("Simulation", "Experimental"), 
+			col = c("black", "red"), lty=c(1, 1, 1, NA), cex=1.5, pch = c(NA, NA, NA, 16))
 	dev.off()
 }
 
