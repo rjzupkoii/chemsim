@@ -105,13 +105,22 @@ analysis <- function(data, label, unit) {
 		
 		# Plot the data
 		file = sprintf(OUTPUT_PATH, label)
+		
+		# Replace the star with a plus on Windows
+		if (Sys.info()[['sysname']] == 'Windows') {
+			file = gsub("\\*", "+", file)
+		}
+		
 		png(file = file, width = 1280, height = 1040)
 		par(mar = c(5, 5, 5, 5))
 		plot(mean, type = 'l', xlab = 'Timestep, min', ylab = sprintf('%s, %s', label, unit),
-				cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
+				lwd = 2, cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
+		box(lwd=2)
+		
 #		lines(min, type='l', col='blue')
 #		lines(max, type='l', col='red')
 #		legend("right", legend = c("Mean", "Min", "Max"), col = c("black", "blue", "red"), lty=1, cex=0.8)
+
 		dev.off()
 	}
 }
@@ -131,19 +140,27 @@ plotExperimental <- function(data, experimental, label, unit) {
 			  max(unlist(y[which.max(y)]), unlist(mean[which.max(mean)])))
 	xlim <- c(0, max(unlist(x[which.max(x)]), length(mean)))
 	
+	# Note the location of the legend
+	loc = "bottomleft"
+	if (mean[1] == 0) {
+		loc = "bottomright"
+	}
+	
 	# Plot the data
 	file = sprintf(OUTPUT_PATH, label)
 	png(file = file, width = 1280, height = 1040)
 	par(mar = c(5, 5, 5, 5))
 	plot(mean, type = 'l', xlab = 'Timestep, min', ylab = sprintf('%s, %s', label, unit), ylim = ylim, xlim = xlim,
-			cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
+			lwd = 2, cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
+	box(lwd=2)
+	
 #	lines(min, type='l', col='blue')
 #	lines(max, type='l', col='red')
 	
 	# Add the experimetal points	
-	points(x, y, pch=16, col="red")
-	legend("right", legend = c("Simulation", "Experimental"), 
-			col = c("black", "red"), lty=c(1, 1, 1, NA), cex=1.5, pch = c(NA, NA, NA, 16))
+	points(x, y, pch=16, cex = 2, col="red")
+	legend(loc, legend = c("Experimental", "Simulation"), box.col = "white", inset = 0.1, cex=1.5,
+			col = c("red", "black"), lty=c(NA, 1), lwd=c(NA, 2), pch = c(16, NA))
 	dev.off()
 }
 
