@@ -237,7 +237,9 @@ public class Parser {
 			double reactionRate = Double.parseDouble(enteries[reactants + products]);
 						
 			if (oddsColumn) {
-				double reactionOdds = Double.parseDouble(enteries[reactants + products + 1]);
+				String entry = enteries[reactants + products + 1];
+				entry = entry.isEmpty() ? "1" : entry;
+				double reactionOdds = Double.parseDouble(entry);
 				results.add(new ReactionDescription(reactant, product, reactionRate, reactionOdds));				
 			} else {
 				results.add(new ReactionDescription(reactant, product, reactionRate));	

@@ -25,7 +25,7 @@ import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 public class ChemSim implements Simulation {
 				
 	// TODO Come up with a better way of doing this
-	public final static String VERSION = "0.6.186"; 
+	public final static String VERSION = "0.6.189"; 
 	
 	// Scale the decay by the given time unit, 1 = sec, 60 = minute
 	public static final int SCALING = 60;
@@ -293,32 +293,21 @@ public class ChemSim implements Simulation {
 	 * Find the proportions for the chemicals input, return the scaling applied.
 	 */
 	private double findIntitalCount(List<ChemicalDto> input) {
-		// Find the smallest exponent based upon the natural log
-		int smallest = Integer.MAX_VALUE;
+		// Find the normalizer
+		double sum = 0.0;
 		for (ChemicalDto entry : input) {
-			int exp = (int)Math.log(entry.mols);
-			smallest = Math.min(exp, smallest);
+			sum += entry.mols;
+		}
+		double normalizer = 1 / sum;
+		
+		// Scale the values
+		long target = Reactor.getInstance().getMaximumMolecules();
+		for (ChemicalDto entry : input) {
+			entry.count = (long)Math.floor(entry.mols * normalizer * target);
 		}
 		
-		// Calculate the scaling, note that this is closely related to find the 
-		// mantissa of the input value, but subtracting one from the exponent 
-		// is the same as dividing by ten and allows the actual sum of the 
-		// multipliers a bit more space to work in
-		long total = 0;
-		double scaling = Math.pow(10, Math.abs(smallest) - 1);
-		for (ChemicalDto entry : input) {
-			entry.count = (long)Math.ceil(entry.mols * scaling);
-			total += entry.count;
-		}
-		
-		// Calculate out the multiplier and apply it
-		long multiplier = Reactor.getInstance().getMaximumMolecules() / total;
-		for (ChemicalDto entry : input) {
-			entry.count *= multiplier;
-		}
-		
-		// Return the scalar to go from moleclues to mols
-		return multiplier * scaling;
+		// Return the scalar to go from molecules to moles
+		return (normalizer * target);
 	} 
 
 	/**
