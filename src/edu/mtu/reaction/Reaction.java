@@ -224,7 +224,7 @@ public class Reaction {
 		List<ReactionDescription> matched = new ArrayList<ReactionDescription>();
 		ReactionDescription[] reactions = ReactionRegistry.getInstance().getBimolecularReaction(molecule);
 		for (ReactionDescription rd : reactions) {
-			if (rd.checkReactants(molecule, reactant)) {
+			if (rd.checkReactants(molecule, reactant) && rd.getInteractionRadius() == radius) {
 				matched.add(rd);
 			}
 		}
