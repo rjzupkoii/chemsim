@@ -29,8 +29,6 @@ public class Photolysis implements DecayModel {
 		}
 		// Must be seconds
 		return targetTime * 60;
-		
-//		return time;
 	}
 
 	@Override
@@ -49,6 +47,7 @@ public class Photolysis implements DecayModel {
 	@Override
 	public void prepare(String fileName) throws IOException {
 		// TODO Adjust this for multiple compounds
+		
 //		ChemicalDto chemical = getCompound("H2O2", fileName);
 
 		// Get the current count of H2O2
