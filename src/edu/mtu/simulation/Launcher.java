@@ -114,7 +114,7 @@ public final class Launcher {
 			case "-l":
 			case "--limit":
 				int limit = Double.valueOf(args[ndx + 1]).intValue();
-				properties.setMoleculeLimit(limit);
+				properties.setInitialMolecules(limit);
 				break;
 			case "-s":
 			case "--step":

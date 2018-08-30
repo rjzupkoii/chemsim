@@ -235,6 +235,18 @@ public class ChemSim implements Simulation {
 		int ndx = 0;
 		Molecule[] moleclues = new Molecule[size];
 		for (ChemicalDto chemical : chemicals) {
+			
+			try {
+				// Check to make sure the molecule is valid, note we are only doing
+				// this here since it is easiest way to ensure that the configuration
+				// from the user is valid
+				Molecule check = new Molecule(chemical.formula);
+				check.getReactantHashes();
+			} catch (NullPointerException ex) {
+				System.err.println("No reactions assoicated with input chemcial, " + chemical.formula);
+				System.exit(-1);
+			}
+			
 			System.out.println("Generating " + chemical.count + " molecules of " + chemical.formula);
 			for (int count = 0; count < chemical.count; count++) {
 				moleclues[ndx++] = new Molecule(chemical.formula);
@@ -250,7 +262,6 @@ public class ChemSim implements Simulation {
 			int x = random.nextInt(container[0]), y = random.nextInt(container[1]), z = random.nextInt(container[2]);
 			reactor.grid.setObjectLocation(molecule, new int[] { x, y, z });
 			schedule.insert(molecule);
-			
 		}
 	}
 		
@@ -286,9 +297,6 @@ public class ChemSim implements Simulation {
 		// System and molecule information
 		long size = Reactor.getInstance().getMoleculeSize();
 		long maxMolecules = Reactor.getInstance().getMaximumMolecules();
-		if (SimulationProperties.getInstance().getMoleculeLimit() != SimulationProperties.NO_LIMIT) {
-			System.out.println("WARNING: Molecule count limited by configuration");
-		}
 		System.out.println("Max Memory:         " + Runtime.getRuntime().maxMemory() + "b");
 		System.out.println("Molecule Size:      " + size + "b");
 		System.out.println("Staring Molecule Limit: " + scientific.format(maxMolecules) + " (" + size * maxMolecules + "b)\n");		

@@ -105,19 +105,10 @@ public class Reactor {
 	 */
 	public static void initalize(List<ChemicalDto> compounds) {
 		try {
-			// Start by determining how much space we have to work with, note
-			// that this is based upon free memory to account for program over
-			// head that we have no control over
-			long heapSize = Runtime.getRuntime().maxMemory();
 			
-			// Calculate out how many molecules we can create
+			// Note the size and number of initial molecules
 			long size = SizeOf.deepSizeOf(new Molecule("CH3COCH2OH", false)) * 3;
-			int count = (int) ((heapSize * MemoryOverhead) / size);
-			
-			// Check to see if a molecule limit was enforced
-			if (SimulationProperties.getInstance().getMoleculeLimit() != SimulationProperties.NO_LIMIT) {
-				count = SimulationProperties.getInstance().getMoleculeLimit();
-			}
+			int count = SimulationProperties.getInstance().getInitialMolecules();
 			
 			// Use the maximum molecule count to estimate a size for the reactor
 			int dimension = calculateSize(compounds, count);

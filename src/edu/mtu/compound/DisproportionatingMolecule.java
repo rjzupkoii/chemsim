@@ -1,7 +1,7 @@
 package edu.mtu.compound;
 
 import edu.mtu.reaction.Reaction;
-import edu.mtu.reaction.ReactionDescription;
+import edu.mtu.reaction.BasicReaction;
 
 /**
  * This class represents a disproportionating chemical entity and is used to support
@@ -9,7 +9,7 @@ import edu.mtu.reaction.ReactionDescription;
  */
 public class DisproportionatingMolecule extends Molecule {
 
-	private ReactionDescription[] reactions;
+	private BasicReaction[] reactions;
 	
 	/**
 	 * Constructor.
@@ -22,7 +22,7 @@ public class DisproportionatingMolecule extends Molecule {
 	/**
 	 * Create a new disproportionating species from the species and reactions provided. 
 	 */
-	public static DisproportionatingMolecule create(Molecule species, ReactionDescription[] reactions) {
+	public static DisproportionatingMolecule create(Molecule species, BasicReaction[] reactions) {
 		DisproportionatingMolecule entity = new DisproportionatingMolecule(species.getFormula());
 		entity.reactions = reactions.clone();
 		return entity;
@@ -31,7 +31,7 @@ public class DisproportionatingMolecule extends Molecule {
 	/**
 	 * Create a new disproportionating species from the species and reactions provided.
 	 */
-	public static DisproportionatingMolecule create(Molecule one, Molecule two, ReactionDescription[] reactions) { 
+	public static DisproportionatingMolecule create(Molecule one, Molecule two, BasicReaction[] reactions) { 
 		if (two == null) {
 			return create(one, reactions);
 		}
@@ -59,7 +59,7 @@ public class DisproportionatingMolecule extends Molecule {
 	/**
 	 * Get the reactions for this entity.
 	 */
-	public ReactionDescription[] getReactions() {
+	public BasicReaction[] getReactions() {
 		return reactions;
 	}
 }

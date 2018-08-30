@@ -2,7 +2,7 @@ package edu.mtu.compound;
 
 import java.util.List;
 
-import edu.mtu.reaction.ReactionDescription;
+import edu.mtu.reaction.BasicReaction;
 import edu.mtu.reaction.ReactionRegistry;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;
@@ -32,15 +32,7 @@ public class MoleculeFactory {
 		}
 		
 		// Create and schedule the molecule
-		Molecule entity;
-		switch (formula) {
-		case "HO*":
-			entity = new Hydroxyl();
-			break;
-		default:
-			entity = new Molecule(formula);
-			break;
-		}
+		Molecule entity = new Molecule(formula);
 		ChemSim.getSchedule().insert(entity);
 		Reactor.getInstance().insert(entity, location.clone());
 	}
@@ -63,8 +55,8 @@ public class MoleculeFactory {
 	 * @param reactions associated with the molecule.
 	 * @param location of the molecule.
 	 */
-	public static void create(Molecule one, Molecule two, List<ReactionDescription> reactions, final int[] location) {
-		ReactionDescription[] rd = new ReactionDescription[reactions.size()];
+	public static void create(Molecule one, Molecule two, List<BasicReaction> reactions, final int[] location) {
+		BasicReaction[] rd = new BasicReaction[reactions.size()];
 		rd = reactions.toArray(rd);
 		Molecule entity = DisproportionatingMolecule.create(one, two, rd);
 		ChemSim.getSchedule().insert(entity);

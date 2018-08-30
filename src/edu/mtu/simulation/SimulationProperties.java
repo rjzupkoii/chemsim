@@ -6,9 +6,6 @@ package edu.mtu.simulation;
  * started.
  */
 public class SimulationProperties {
-
-	// Flag to indicate no limit on the number of molecules
-	public static final int NO_LIMIT = -1;
 	
 	// Flag for if results should be overwritten
 	private boolean overWriteResults = true;
@@ -16,8 +13,8 @@ public class SimulationProperties {
 	// Flag to indicate the type of decay model to use
 	private boolean experimetnalDecay = false;
 	
-	// Limit to the number of molecules in the model, -1 means no limit
-	private int moleculeLimit = NO_LIMIT;
+	// Initial number of molecules in the model
+	private int initialMolecules = 0;
 	
 	// The time, in minutes, to pad the model by 
 	private int timePadding = 60;
@@ -80,8 +77,8 @@ public class SimulationProperties {
 		return molarFileName;
 	}
 	
-	public int getMoleculeLimit() {
-		return moleculeLimit;
+	public int getInitialMolecules() {
+		return initialMolecules;
 	}
 			
 	public boolean getOverWriteResults() {
@@ -132,8 +129,8 @@ public class SimulationProperties {
 		overWriteResults = value;
 	}
 	
-	public void setMoleculeLimit(int value) {
-		moleculeLimit = value;
+	public void setInitialMolecules(int value) {
+		initialMolecules = value;
 	}
 	
 	public void setPadding(int value) {

@@ -39,7 +39,7 @@ public class Reaction {
 	public void disproportionate(DisproportionatingMolecule molecule) {
 		
 		// Local pointer to the reactions
-		ReactionDescription[] reactions = molecule.getReactions();
+		BasicReaction[] reactions = molecule.getReactions();
 		int size = reactions.length;
 
 		// Keep track of the odds
@@ -83,7 +83,7 @@ public class Reaction {
 		}
 	}
 	
-	private void doProbabilistic(DisproportionatingMolecule molecule, ReactionDescription[] reactions, ArrayList<Integer> indicies, ArrayList<Double> reactionOdds) {
+	private void doProbabilistic(DisproportionatingMolecule molecule, BasicReaction[] reactions, ArrayList<Integer> indicies, ArrayList<Double> reactionOdds) {
 		// Add the odds so we can do a single dice roll
 		int size = reactionOdds.size();
 		double value = 0;
@@ -165,7 +165,7 @@ public class Reaction {
 				for (int formulaHash : hashes) {
 					if (reactant.sameEntity(formulaHash)) {
 						int[] location = Reactor.getInstance().grid.getObjectLocation(molecule);
-						ReactionDescription[] reactions = ReactionRegistry.getInstance().getBimolecularReaction(molecule);
+						BasicReaction[] reactions = ReactionRegistry.getInstance().getBimolecularReaction(molecule);
 						return process(molecule, reactant, location, reactions);
 					}
 				}
@@ -221,9 +221,9 @@ public class Reaction {
 	 */
 	private boolean process(Molecule molecule, Molecule reactant, int radius) {
 		// Find the correct reactions
-		List<ReactionDescription> matched = new ArrayList<ReactionDescription>();
-		ReactionDescription[] reactions = ReactionRegistry.getInstance().getBimolecularReaction(molecule);
-		for (ReactionDescription rd : reactions) {
+		List<BasicReaction> matched = new ArrayList<BasicReaction>();
+		BasicReaction[] reactions = ReactionRegistry.getInstance().getBimolecularReaction(molecule);
+		for (BasicReaction rd : reactions) {
 			if (rd.checkReactants(molecule, reactant) && rd.getInteractionRadius() == radius) {
 				matched.add(rd);
 			}
@@ -254,11 +254,11 @@ public class Reaction {
 	/**
 	 * Process the reactions that are possible for this entity.
 	 */
-	private boolean process(Molecule molecule, Molecule reactant, int[] location, ReactionDescription[] reactions) {
+	private boolean process(Molecule molecule, Molecule reactant, int[] location, BasicReaction[] reactions) {
 
 		// Find the correct reaction(s)
-		List<ReactionDescription> matched = new ArrayList<ReactionDescription>();
-		for (ReactionDescription rd : reactions) {
+		List<BasicReaction> matched = new ArrayList<BasicReaction>();
+		for (BasicReaction rd : reactions) {
 			if (rd.checkReactants(molecule, reactant)) {
 				matched.add(rd);
 			}
@@ -290,7 +290,7 @@ public class Reaction {
 	 */
 	private boolean unimolecularDecay(Molecule molecule) {
 		int[] location = Reactor.getInstance().grid.getObjectLocation(molecule);
-		ReactionDescription[] reactions = ReactionRegistry.getInstance().getUnimolecularReaction(molecule);
+		BasicReaction[] reactions = ReactionRegistry.getInstance().getUnimolecularReaction(molecule);
 		return process(molecule, null, location, reactions);
 	}
 }

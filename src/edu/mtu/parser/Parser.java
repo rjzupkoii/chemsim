@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import au.com.bytecode.opencsv.CSVReader;
-import edu.mtu.reaction.ReactionDescription;
+import edu.mtu.reaction.AcidDissociation;
+import edu.mtu.reaction.BasicReaction;
+import edu.mtu.reaction.ChemicalEquation;
 
 /**
  * This class is used to parse the equation(s) that are present in an import file for their reaction.
@@ -44,11 +46,7 @@ public class Parser {
 			// Load the entries
 			List<ChemicalDto> results = new ArrayList<ChemicalDto>();
 			while ((entries = reader.readNext()) != null) {
-				// Check to see if this is an empty line
-				if (entries[0].isEmpty()) {
-					continue;
-				}
-				
+				if (entries[0].startsWith("#") || entries[0].isEmpty()) { continue; }
 				results.add(new ChemicalDto(entries[0], entries[1], Double.parseDouble(entries[2])));
 			}
 			
@@ -188,67 +186,89 @@ public class Parser {
 	 * @param fileName The full path to the file.
 	 * @return A list of reactions.
 	 */
-	// TODO Update this to ignore empty last columns
-	public static List<ReactionDescription> parseReactions(String fileName) throws IOException {
-		// Open the file
-		CSVReader reader = new CSVReader(new FileReader(fileName));
-		
-		// Read the header to note the number of items
-		String[] enteries = reader.readNext();
-		int reactants = 0;
-		while (enteries[reactants].toUpperCase().equals("REACTANT")) {
-			reactants++;
-		}
-		int products = 0;
-		while (enteries[reactants + products].toUpperCase().equals("PRODUCT")) {
-			products++;
-		}
-		
-		// Check to see if there are odds associated with the file
-		boolean oddsColumn = enteries[enteries.length - 1].toUpperCase().equals("RATIO");
-		
-		List<ReactionDescription> results = new ArrayList<ReactionDescription>();
-		while ((enteries = reader.readNext()) != null) {
-			// Check to see if the line is commented out
-			if (enteries[0].startsWith("#")) {
-				continue;
+	public static List<ChemicalEquation> parseReactions(String fileName) throws IOException {
+		CSVReader reader = null;
+
+		try {
+			// Read the header to note the number of items
+			reader = new CSVReader(new FileReader(fileName));
+			String[] entries = reader.readNext();
+			int reactants = 0;
+			while (entries[reactants].toUpperCase().equals("REACTANT")) {
+				reactants++;
 			}
-			
-			// Check to see if this is an empty line
-			if (enteries[0].isEmpty()) {
-				continue;
+			int products = 0;
+			while (entries[reactants + products].toUpperCase().equals("PRODUCT")) {
+				products++;
 			}
-			
-			// Process the reactants
-			List<String> reactant = new ArrayList<String>();
-			for (int ndx = 0; ndx < reactants; ndx++) {
-				if (!enteries[ndx].isEmpty()) {
-					reactant.add(enteries[ndx].trim());	
+
+			// Check to make sure the k column is present
+			int k = reactants + products;
+			if (!entries[k].toUpperCase().equals("K")) {
+				System.err.println("File provided does not contain 'k' header at index " + (k + 1));
+				throw new IOException("Invalid ChemSim reactions file.");
+			}
+
+			// Next column may be either the ratios, pKa, or nothing. However,
+			// the order
+			// of k, ratios, pKa is enforced for the sake of consistency.
+			int pKa = -1, ratio = -1;
+			String value = entries[k + 1].toUpperCase();
+			if (value.equals("RATIO")) {
+				ratio = k + 1;
+			} else if (value.equals("PKA")) {
+				pKa = k + 1;
+			}
+			if (entries.length > k + 2) {
+				value = entries[k + 2].toUpperCase();
+				if (value.equals("PKA")) {
+					pKa = k + 2;
+				} else if (!value.isEmpty()) {
+					System.err.println("Invalid header at column index " + (k + 2) + " value, '" + value + "'");
+					throw new IOException("Invalid ChemSim reactions file.");
 				}
 			}
-						
-			// Process the products
-			List<String> product = new ArrayList<String>();
-			for (int ndx = 0; ndx < products; ndx++) {
-				product.addAll(parseProduct(enteries[reactants + ndx].trim()));
-			}				
-			
-			// Note the reaction rate
-			double reactionRate = Double.parseDouble(enteries[reactants + products]);
-						
-			if (oddsColumn) {
-				String entry = enteries[reactants + products + 1];
-				entry = entry.isEmpty() ? "1" : entry;
-				double reactionOdds = Double.parseDouble(entry);
-				results.add(new ReactionDescription(reactant, product, reactionRate, reactionOdds));				
-			} else {
-				results.add(new ReactionDescription(reactant, product, reactionRate));	
-			}			
+
+			// We know the headers, now parse out the actual reactions
+			List<ChemicalEquation> results = new ArrayList<ChemicalEquation>();
+			while ((entries = reader.readNext()) != null) {
+				// Should we skip this line? 
+				if (entries[0].startsWith("#") || entries[0].isEmpty()) { continue; }
+
+				// Process the reactants
+				List<String> reactant = new ArrayList<String>();
+				for (int ndx = 0; ndx < reactants; ndx++) {
+					if (!entries[ndx].isEmpty()) {
+						reactant.add(entries[ndx].trim());
+					}
+				}
+
+				// Process the products
+				List<String> product = new ArrayList<String>();
+				for (int ndx = 0; ndx < products; ndx++) {
+					product.addAll(parseProduct(entries[reactants + ndx].trim()));
+				}
+
+				// Check to see if pKa is set, if so this is a acid dissociation
+				if (pKa != -1 && !entries[pKa].isEmpty()) {
+					results.add(new AcidDissociation(reactant, product, Double.parseDouble(entries[pKa])));
+					continue;
+				}
+
+				// Basic reaction, finish parsing it out
+				String kString = entries[k].isEmpty() ? "0" : entries[k]; 
+				if (ratio != -1) {
+					String ratioString = entries[ratio].isEmpty() ? "1" : entries[ratio];
+					results.add(new BasicReaction(reactant, product, Double.parseDouble(kString), Double.parseDouble(ratioString)));
+				} else {
+					results.add(new BasicReaction(reactant, product, Double.parseDouble(kString)));
+				}
+			}
+
+			return results;
+		} finally {
+			if (reader != null) { reader.close(); }
 		}
-		
-		// Close and return
-		reader.close();
-		return results;
 	}
 	
 	/**

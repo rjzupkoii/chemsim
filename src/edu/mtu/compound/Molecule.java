@@ -84,6 +84,14 @@ public class Molecule extends Steppable implements Entity {
 		return formula;
 	}
 	
+	public int[] getInteractionRadii() {
+		return md.interactionRadius;
+	}
+	
+	public Integer[] getReactantHashes() {
+		return md.reactsWithHash;
+	}
+	
 	public boolean hasBimoleculear() {
 		return md.hasBimolecular;
 	}
@@ -99,15 +107,7 @@ public class Molecule extends Steppable implements Entity {
 	public boolean hasDissolvedReactants() {
 		return md.hasDissolvedReactants;
 	}
-	
-	public int[] getInteractionRadii() {
-		return md.interactionRadius;
-	}
-	
-	public Integer[] getReactantHashes() {
-		return md.reactsWithHash;
-	}
-	
+		
 	/**
 	 * Calculate the new location for this molecule.
 	 */
