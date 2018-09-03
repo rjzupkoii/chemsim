@@ -34,10 +34,13 @@ public class ReactionRegistry {
 	private static ReactionRegistry instance = new ReactionRegistry();
 
 	private int[] entityHashes;
-	
+		
 	// Mapping of all of the molecules and the basics of their reactions
 	private Map<String, MoleculeDescription> moleculeDescriptions;
 
+	// Acid Dissacitation reactions are [Reactant] <=> [Product] + [Product], pKa = [Value
+	private Map<String, AcidDissociation> acid;
+	
 	// Photolysis is [Reactant] + UV -> [Product] + ... + [Product] 
 	private Map<String, String[]> photolysis;
 		
@@ -57,6 +60,21 @@ public class ReactionRegistry {
 	 */
 	public static ReactionRegistry getInstance() {
 		return instance;
+	}
+	
+	/**
+	 * Add the given acid dissociation reaction to the registry.
+	 */
+	private void addAcidDissociation(AcidDissociation reaction, Map<String, AcidDissociation> working) throws InvalidActivityException {
+		// Check our parameters
+		if (reaction.reactants.length > 1) {
+			throw new InvalidActivityException("Acid dissociation can only contain one reactant.");
+		}
+		if (working.containsKey(reaction.reactants[0])) {
+			throw new InvalidActivityException("Reaction registry already cotnains acid dissocitation for " + reaction.reactants[0]);
+		}
+				
+		working.put(reaction.reactants[0], reaction);
 	}
 
 	/**
@@ -121,6 +139,20 @@ public class ReactionRegistry {
 		photolysis = null;
 		unimolecular = null;
 		moleculeDescriptions = null;
+	}
+	
+	/**
+	 * Returns the set of molecules that have acid dissociation reactions.
+	 */
+	public Set<String> getAcidDissociationReactants() {
+		return acid.keySet();
+	}
+	
+	/**
+	 * Returns the chemical equation associated with the given reactant. 
+	 */
+	public AcidDissociation getAcidDissociation(String reactant) {
+		return acid.get(reactant);
 	}
 	
 	/**
@@ -189,6 +221,7 @@ public class ReactionRegistry {
 	public String load(String fileName) throws IOException {
 		
 		// Define our working maps
+		Map<String, AcidDissociation> acid = new HashMap<String, AcidDissociation>();
 		Map<String, List<BasicReaction>> bimolecular = new HashMap<String, List<BasicReaction>>();
 		Map<String, String[]> photoysis = new HashMap<String, String[]>();
 		Map<String, List<BasicReaction>> unimolecular = new HashMap<String, List<BasicReaction>>();
@@ -196,20 +229,22 @@ public class ReactionRegistry {
 		// Define a hash set so we can check for dispropration reaction, namely two of the same reactions
 		HashSet<String> disproportionationCheck = new HashSet<String>();
 		HashSet<Integer> disproportationHash = new HashSet<Integer>(); 
-		
+
+		String check;
 		StringBuilder message = new StringBuilder();
 		List<ChemicalEquation> reactions = Parser.parseReactions(fileName); 
 		for (ChemicalEquation ce : reactions) {
-			// TODO Add support for acid dissociation
-			if (!(ce instanceof BasicReaction)) {
-				System.err.println("Warning: passed on reaction");
+			
+			// Check to see if this is acid dissociation
+			if (ce instanceof AcidDissociation) {
+				AcidDissociation ad = (AcidDissociation)ce;
+				message.append(ad.toString() + " (acid dissociation)\n");
+				addAcidDissociation(ad, acid);
 				continue;
 			}
 			
+			// Must be a basic reaction
 			BasicReaction reaction = (BasicReaction)ce;
-			
-			// Note what we are currently loading
-			String check;
 			message.append(reaction.toString() + " (");						
 			if (reaction.getReactants().length == 1) {
 				// This is a unimolecular reaction
@@ -240,6 +275,7 @@ public class ReactionRegistry {
 		this.photolysis = Collections.unmodifiableMap(new HashMap<String, String[]>(photoysis));
 		this.bimolecular = fixMap(bimolecular);
 		this.unimolecular = fixMap(unimolecular);
+		this.acid = Collections.unmodifiableMap(new HashMap<String, AcidDissociation>(acid));
 				
 		// Build the molecule descriptions
 		buildMoleculeDescriptions();
@@ -298,8 +334,9 @@ public class ReactionRegistry {
 				entities.add(value);
 			}
 		}
-		entities.addAll(extractEntities(unimolecular));
-		entities.addAll(extractEntities(bimolecular));
+		entities.addAll(extractBasic(unimolecular));
+		entities.addAll(extractBasic(bimolecular));
+		entities.addAll(extractAcid(acid));
 		
 		// Now use that list to start building the descriptions
 		moleculeDescriptions = new HashMap<String, MoleculeDescription>();
@@ -369,10 +406,21 @@ public class ReactionRegistry {
 		}		
 	}
 	
+	private HashSet<String> extractAcid(Map<String, AcidDissociation> reactions) {
+		HashSet<String> entities = new HashSet<String>();
+		for (String key : reactions.keySet()) {
+			entities.add(key);
+			for (String formula : reactions.get(key).getProducts()) {
+				entities.add(formula);
+			}
+		}
+		return entities;
+	}
+	
 	/**
 	 * Extract the unique entity names from the collection.
 	 */
-	private HashSet<String> extractEntities(Map<String, BasicReaction[]> reactions) {
+	private HashSet<String> extractBasic(Map<String, BasicReaction[]> reactions) {
 		HashSet<String> entities = new HashSet<String>();
 		for (String key : reactions.keySet()) {
 			entities.add(key);

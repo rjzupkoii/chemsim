@@ -15,15 +15,15 @@ public class ModelProperities {
 		
 	// The expected duration of the model in time steps
 	private int timeSteps;
-		
-	// The odds that a hydroxyl radical should be moved into the model
-	private double hydroxylOdds = 0;
-		
+				
 	// Values needed to ensure hydrogen peroxide exhibits a linear decay based upon the UV intensity
 	private double hydrogenPeroxideDecay = 0;
 	
 	// Scalar needed to convert molecules to molar values
 	private double moleculeToMol = 0;
+	
+	// pH of the model
+	private final double pH = 7.0;
 	
 	// Decay model to use for the model, may be null
 	private DecayModel decayModel = null;
@@ -36,10 +36,6 @@ public class ModelProperities {
 		return decayModel;
 	}
 		
-	public double getHydroxylOdds() {
-		return hydroxylOdds;
-	}
-		
 	public double getHydrogenPeroxideDecay() {
 		return hydrogenPeroxideDecay;
 	}
@@ -50,6 +46,10 @@ public class ModelProperities {
 	
 	public double getMoleculeToMol() {
 		return moleculeToMol;
+	}
+	
+	public double getPH() {
+		return pH;
 	}
 	
 	public int getSlowPathway() {
@@ -70,10 +70,6 @@ public class ModelProperities {
 			
 	public void setHydrogenPeroxideDecay(double value) {
 		hydrogenPeroxideDecay = value;
-	}
-				
-	public void setHydroxylOdds(double value) {
-		hydroxylOdds = value;
 	}
 		
 	public void setMediumPathway(int value) {

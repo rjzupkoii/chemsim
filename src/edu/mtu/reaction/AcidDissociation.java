@@ -2,6 +2,8 @@ package edu.mtu.reaction;
 
 import java.util.List;
 
+import javax.activity.InvalidActivityException;
+
 public class AcidDissociation extends ChemicalEquation implements Cloneable {
 	private double pKa = 0.0;
 
@@ -13,7 +15,7 @@ public class AcidDissociation extends ChemicalEquation implements Cloneable {
 	/**
 	 * Constructor.
 	 */
-	public AcidDissociation(List<String> reactants, List<String> products, double pKa) {
+	public AcidDissociation(List<String> reactants, List<String> products, double pKa) throws InvalidActivityException {
 		setReactants(reactants);
 		setProducts(products);
 		this.pKa = pKa;
@@ -49,9 +51,25 @@ public class AcidDissociation extends ChemicalEquation implements Cloneable {
 		// Defer to the base for everything else
 		return super.equals(obj);
 	}
+	
+	String acid() {
+		return reactants[0];
+	}
+	
+	String conjugateBase() {
+		return products[0].endsWith("-") ? products[0] : products[1];
+	}
+	
+	String hydrogenIon() {
+		return products[0].endsWith("+") ? products[0] : products[1];
+	}
+	
+	double pKa() {
+		return pKa;
+	}
 
 	@Override
 	public String toString() {
-		return super.toString() + ", pKa = " + pKa;
+		return super.toString().replace("->", "<=>") + ", pKa = " + pKa;
 	}
 }

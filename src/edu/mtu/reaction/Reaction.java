@@ -10,6 +10,7 @@ import edu.mtu.compound.MoleculeFactory;
 import edu.mtu.primitives.Entity;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;
+import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 
 /**
  * This class provides a means for a chemical species to react with other species.
@@ -29,7 +30,63 @@ public class Reaction {
 	public static Reaction getInstance() {
 		return instance;
 	}
-			
+	
+	/**
+	 * Conduct the acid dissociation that applies to the given reactant.
+	 * 
+	 * @param reactant to perform the acid dissociation of.
+	 */
+	public void doAcidDissociation(String reactant) {
+		
+		// Get the reaction
+		AcidDissociation ad = ReactionRegistry.getInstance().getAcidDissociation(reactant);
+		
+		// Calculate the ratio of [A-] to [HA]
+		double pH = ChemSim.getProperties().getPH();
+		double ratio = Math.pow(10, -ad.pKa()) / Math.pow(10, -pH);
+		
+		// Get the count of [HA]
+		long count = ChemSim.getTracker().getCount(reactant);
+		
+		// Calculate [HA], [A-], and [H+]
+		long aMinus = (long)Math.floor(count * ratio);
+		aMinus = (aMinus > count) ? count : aMinus;
+		long hPlus = aMinus;
+		long ha = count - aMinus;
+		
+		// Balance out the molecules in the system
+		balanceMolecules(ad.acid(), ha);
+		balanceMolecules(ad.conjugateBase(), aMinus);
+		
+		// Note the ion count
+		ChemSim.getTracker().update(ad.hydrogenIon(), hPlus);
+	}
+	
+	/**
+	 * Balance the molecules that are in the system by either, adding or removing 
+	 * them up to the given count.
+	 */
+	private void balanceMolecules(String reactant, long count) {
+
+		// Note the difference
+		long total = ChemSim.getTracker().getCount(reactant);
+		
+		// Do we need to remove molecules?
+		Reactor reactor = Reactor.getInstance();
+		for (; total > count; total--) {
+			Molecule molecule = reactor.getFirst(reactant);
+			molecule.dispose();
+		}
+		
+		// We are adding molecules
+		int[] container = reactor.dimensions;
+		XoRoShiRo128PlusRandom random = ChemSim.getRandom();
+		for (; total < count; total++) {
+			int x = random.nextInt(container[0]), y = random.nextInt(container[1]), z = random.nextInt(container[2]);
+			MoleculeFactory.create(reactant, new int[] { x, y, z });
+		}
+	}
+				
 	/**
 	 * Have the chemical species disproportionate according to its reaction rate.
 	 * 
@@ -202,14 +259,9 @@ public class Reaction {
 		}
 
 		// Create the relevant products, note that hydroxyl gets special treatment
-		double odds = ChemSim.getProperties().getHydroxylOdds();
 		int[] location = Reactor.getInstance().getLocation(molecule);
 		for (String product : ReactionRegistry.getInstance().getPhotolysisReaction(molecule)) {
-			if (product.equals("HO*") && ChemSim.getRandom().nextDouble() > odds) {
-				MoleculeFactory.create("HO*'", location);
-			} else {
-				MoleculeFactory.create(product, location);
-			}
+			MoleculeFactory.create(product, location);
 		}
 			
 		// Note that a reaction occurred, molecule will dispose of itself

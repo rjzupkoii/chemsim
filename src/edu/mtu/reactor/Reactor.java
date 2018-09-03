@@ -9,6 +9,7 @@ import edu.mtu.primitives.Entity;
 import edu.mtu.primitives.Sparse3DLattice;
 import edu.mtu.reaction.ReactionRegistry;
 import edu.mtu.simulation.SimulationProperties;
+import edu.mtu.util.FnvHash;
 import net.sourceforge.sizeof.SizeOf;
 import sim.util.Bag;
 
@@ -63,6 +64,12 @@ public class Reactor {
 		return (int)Math.ceil(result*Math.pow(10, 9));								// nm
 	}
 		
+	public Molecule getFirst(String formula) {
+		// TODO Better way of doing this?
+		int hash = FnvHash.fnv1a32(formula);
+		return (Molecule)grid.getFirstEntity(hash);
+	}
+	
 	public int[] getLocation(Molecule molecule) {
 		return grid.getObjectLocation(molecule);
 	}

@@ -72,4 +72,13 @@ public class TrackEnties extends Tracker {
 			counts.put(formula, value + count);
 		}
 	}
+	
+	/**
+	 * Zeros the count of the given entity.
+	 */
+	public void zero(String formula) {
+		if (counts.containsKey(formula)) {
+			counts.put(formula, 0l);
+		}
+	}
 }

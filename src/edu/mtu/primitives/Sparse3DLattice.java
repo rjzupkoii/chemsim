@@ -296,6 +296,30 @@ public class Sparse3DLattice {
 	}
 	
 	/**
+	 * Get the first entity with the given tag.
+	 * 
+	 * @param tag used to identify the entity.
+	 * @return The first entity of the given type, or null if there are none.
+	 */
+	public Entity getFirstEntity(final int tag) {
+		// Note the correct tag map based upon the tag
+		ArrayDeque<Entity> entities = tagMap.get(tag);
+		
+		// Stale references can be left behind, so make sure the first entity we peek
+		// still has a valid LAI present
+		LocationAndIndex lai = null;
+		while (lai == null && entities.size() > 0) {
+			lai = entityMap.get(entities.peek());
+			if (lai == null) {
+				entities.pop();
+			}
+		}
+		
+		// Return the first entity in the queue.
+		return entities.peek();
+	}
+	
+	/**
 	 * Get the location of the given object.
 	 * 
 	 * @param object To retrieve the location of.
