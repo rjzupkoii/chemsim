@@ -26,7 +26,7 @@ import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 public class ChemSim implements Simulation {
 				
 	// TODO Come up with a better way of doing this
-	public final static String VERSION = "0.6.190"; 
+	public final static String VERSION = "0.6.194"; 
 	
 	// Scale the decay by the given time unit, 1 = sec, 60 = minute
 	public static final int SCALING = 60;
@@ -312,7 +312,6 @@ public class ChemSim implements Simulation {
 		// Print the reactor information
 		System.out.println("Time Step (sec): " + SimulationProperties.getInstance().getTimeStepLength());
 		System.out.println("Inital pH: " + properties.getPH());
-//		System.out.println("Hydroxyl Retention: " + properties.getHydroxylOdds());
 		int[] container = Reactor.getInstance().dimensions;
 		System.out.println("Reactor Dimensions (nm): " + container[0] + ", " + container[1] + ", " + container[2]);
 		

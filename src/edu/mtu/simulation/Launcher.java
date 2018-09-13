@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import edu.mtu.reaction.Verifier;
 import edu.mtu.simulation.tracking.Converter;
 import edu.mtu.system.EchoStream;
 import net.sourceforge.sizeof.SizeOf;
@@ -129,6 +130,10 @@ public final class Launcher {
 			case "--terminate":
 				terminateOn.add(args[ndx + 1]);
 				break;
+			case "-v":
+			case "--verify":
+				Verifier.verify(args[ndx + 1], args[ndx + 2]);
+				System.exit(0);
 			case "-w":
 			case "--write":
 				properties.setReportInterval(Integer.parseInt(args[ndx + 1]));
@@ -172,6 +177,7 @@ public final class Launcher {
 		System.err.printf(format, "-w, --write [number]", "The minute interval to print / save status on, default 100");
 		System.err.printf(format, "-s, --step [number", "The duration of the time step in seconds, default 60");
 		System.err.printf(format, "-t, --terminate [formula]", "Terminate the model when the given molecule has zero entities");
+		System.err.printf(format, "-v, --verify [file] [file]", "Verify the [reactions] and [chemicals] files are properly formatted and has balanced reactions.");
 		System.err.println("\nNOTE:");
 		System.err.println("JAVAGENT initialization is required, -javaagent:lib/SizeOf.jar");
 	}
