@@ -18,10 +18,14 @@ zip=../$REACTIONS.zip
 rm -rf data
 mkdir data
 
+# Note we are preventing sleep
+echo "Preventing sleep during simulations"
+caffeinate &
+
 # Run the simulation
 for ndx in {1..1}
 do
-  java -javaagent:lib/SizeOf.jar -Xms4G -XX:+UseG1GC -jar ChemSim.jar -n $ndx -r $reactions -c $chemicals -l 1.0E+06 -w 1-s 1  
+  java -javaagent:lib/SizeOf.jar -Xms4G -XX:+UseG1GC -jar ChemSim.jar -n $ndx -r $reactions -c $chemicals -l 1.0E+06 -w 1 -s 1 -t CH3COCH3
 done
 
 # Move the results, last console
@@ -34,10 +38,12 @@ mv console.txt data
 # Make a copy of the experimental inputs
 cp $reactions data
 cp $chemicals data
-#cp $experiment data
 
 # Generate the plots
 ./analysis.R
 
 # Compress the raw data
 cd data; zip -r -X "$zip" * -x "*.DS_Store"
+
+# Restore sleep
+killall caffeinate
