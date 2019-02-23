@@ -2,12 +2,16 @@ package edu.mtu.reaction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
+import org.apache.commons.math3.special.Erf;
 
 import edu.mtu.compound.DisproportionatingMolecule;
 import edu.mtu.compound.DissolvedMolecule;
 import edu.mtu.compound.Molecule;
 import edu.mtu.compound.MoleculeFactory;
 import edu.mtu.primitives.Entity;
+import edu.mtu.primitives.Sparse3DLattice;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;
 import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
@@ -231,14 +235,36 @@ public class Reaction {
 								
 		// Get the possible interaction radii
 		int[] radii = molecule.getInteractionRadii();
-		
-		// Use the lattice to search out to the interaction radius		
+
+		// Note the current location
+		Sparse3DLattice grid = Reactor.getInstance().grid;
+		int[] location = grid.getObjectLocation(molecule);
+		int x1 = location[0], y1 = location[1], z1 = location[2];
+				
+		Random rnd = ChemSim.getRandom();
 		for (int ndx = 0; ndx < hashes.length; ndx++) {
-			Entity match = Reactor.getInstance().grid.findFirstByTag(molecule, hashes[ndx], radii[ndx]);
-			if (match != null) {
+			// Find the first that matches
+			Entity match = grid.findFirstByTag(molecule, hashes[ndx], radii[ndx]);
+			if (match == null) {
+				continue;
+			}
+			
+			// Calculate the distance, but return immediately of we occupy the same space
+			location = grid.getObjectLocation(match);
+			int x = x1 - location[0];
+			int y = y1 - location[1];
+			int z = z1 - location[2];
+			if (x == 0 && y == 0 && z == 0) {
 				return process(molecule, (Molecule)match, radii[ndx]);
 			}
-		}		
+			double d = Math.sqrt(x*x + y*y + z*z);
+			
+			// Roll the dice
+			if (rnd.nextGaussian() < Erf.erfc(d / radii[ndx])) {
+				return process(molecule, (Molecule)match, radii[ndx]);
+			}
+			
+		}
 		
 		return false;
 	}
