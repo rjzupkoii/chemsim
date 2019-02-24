@@ -12,7 +12,7 @@ public class Verifier {
 	public static void verify(String reactions, String chemicals) {
 		try {
 			// Application versioning information
-			System.out.println("ChemSim, version " + ChemSim.VERSION + "\n");
+			ChemSim.printVersion();
 			
 			// Import the reactions into the model, print model
 			ReactionRegistry instance = ReactionRegistry.getInstance();

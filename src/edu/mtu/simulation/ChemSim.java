@@ -2,12 +2,15 @@ package edu.mtu.simulation;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 import edu.mtu.compound.Molecule;
 import edu.mtu.parser.ChemicalDto;
@@ -24,10 +27,7 @@ import edu.mtu.simulation.tracking.TrackEnties;
 import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
 
 public class ChemSim implements Simulation {
-				
-	// TODO Come up with a better way of doing this
-	public final static String VERSION = "0.7.196"; 
-	
+		
 	// Scale the decay by the given time unit, 1 = sec, 60 = minute
 	public static final int SCALING = 60;
 	
@@ -63,7 +63,7 @@ public class ChemSim implements Simulation {
 	 * Setup and start the simulation
 	 */
 	public void initialize(long seed) {
-		try {
+		try {		
 			// Note the properties
 			SimulationProperties simulation = SimulationProperties.getInstance();
 			
@@ -299,8 +299,8 @@ public class ChemSim implements Simulation {
 	 */
 	private void printHeader(String report) {
 		
-		// Application versioning information
-		System.out.println("ChemSim, version " + VERSION + "\n");
+		printVersion();
+		System.out.println();
 		
 		// System and molecule information
 		long size = Reactor.getInstance().getMoleculeSize();
@@ -320,6 +320,35 @@ public class ChemSim implements Simulation {
 		String reactions = SimulationProperties.getInstance().getReactionsFileName();
 		System.out.println("\nReactions: " + reactions + " [" + dateFormat.format(new File(reactions).lastModified()) + "]");
 		System.out.println(report);
-				
+	}
+	
+	public static void printVersion() {
+		try {
+			// Start the by-line
+			System.out.print("ChemSim");
+
+			// Get the path to the manifest
+			String className = ChemSim.class.getSimpleName() + ".class";
+			String classPath = ChemSim.class.getResource(className).toString();
+
+			if (classPath.startsWith("jar")) {
+				// Attempt to load the relevant field from the manifest
+				String manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF";
+				Manifest manifest = new Manifest(new URL(manifestPath).openStream());
+				Attributes attr = manifest.getMainAttributes();
+
+				// Application version information
+				String version = attr.getValue("Build-Version");
+				String revision = attr.getValue("Build-Revision");
+				if (version != null && revision != null) {
+					System.out.print(" " + version + " / " + revision.substring(0, 7));
+				}
+			}
+			System.out.println();
+			
+		} catch (IOException ex) {
+			System.err.println(ex);
+			System.exit(-1);
+		}
 	}
 }

@@ -11,7 +11,6 @@ import edu.mtu.simulation.ChemSim;
  */
 public class Schedule {
 		
-	// TODO Make this configurable
 	// How many steps to go before shuffling, higher than 1 will allow 
 	// some bias in exchange for faster runs
 	public final static int ShuffleSteps = 10;

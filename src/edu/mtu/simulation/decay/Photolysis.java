@@ -1,21 +1,15 @@
 package edu.mtu.simulation.decay;
 
 import java.io.IOException;
-import java.util.List;
 
-import edu.mtu.parser.ChemicalDto;
 import edu.mtu.parser.Parser;
 import edu.mtu.simulation.ChemSim;
 import edu.mtu.simulation.SimulationProperties;
 
 /**
- * This class provides a model for photolysis based upon
- * a single decay rate for the whole experiment.
+ * This class provides a model for HO2O photolysis based upon a single decay rate for the whole experiment.
  */
 public class Photolysis implements DecayModel {
-
-	// TODO Move this in to the simulation code
-	private final static int targetTime = 700;
 	
 	private int time;
 	private double m;
@@ -23,18 +17,11 @@ public class Photolysis implements DecayModel {
 	
 	@Override
 	public int estimateRunningTime() {
-		// Is this minutes?
-		if (time < targetTime) {
-			return targetTime;
-		}
-		// Must be seconds
-		return targetTime * 60;
+		return time;
 	}
 
 	@Override
 	public double getDecayQuantity(int timeStep, String compound, long moleclues) {
-		// TODO Adjust this for multiple compounds
-		
 		double y = m * timeStep + b;
 		return moleclues - y;
 	}
@@ -46,10 +33,6 @@ public class Photolysis implements DecayModel {
 	 */
 	@Override
 	public void prepare(String fileName) throws IOException {
-		// TODO Adjust this for multiple compounds
-		
-//		ChemicalDto chemical = getCompound("H2O2", fileName);
-
 		// Get the current count of H2O2
 		long count = ChemSim.getTracker().getCount("H2O2");
 		double rate = Parser.parseRate(fileName);
@@ -85,16 +68,5 @@ public class Photolysis implements DecayModel {
 		
 		// Note the estimated decay
 		System.out.println("H2O2 photolysis decay rate: " + m + " molecules/timestep");
-	}
-	
-	// TODO Update this form more moleclues
-	private ChemicalDto getCompound(String compound, String fileName) throws IOException {
-		List<ChemicalDto> compounds = Parser.parseChemicals(fileName);
-		for (ChemicalDto dto : compounds) {
-			if (dto.formula.equals(compound)) {
-				return dto;
-			}
-		}
-		throw new IllegalArgumentException("Compound, '" + compound + "' not found.");
 	}
 }

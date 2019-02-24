@@ -3,10 +3,27 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ChemSim</groupId>
 	<artifactId>ChemSim</artifactId>
-	<version>0.3-RESEARCH</version>
+	<version>0.7</version>
 	<build>
-		<sourceDirectory>src</sourceDirectory>
+		<sourceDirectory>src</sourceDirectory>		
 		<plugins>
+			<plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <version>2.2.4</version>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <dateFormat>yyyy-MM-dd'T'HH:mm:ss.SSSZ</dateFormat>
+                </configuration>
+            </plugin>		
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.5.1</version>
@@ -15,6 +32,21 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Build-Jdk>${java.version} (${java.vendor} ${java.vm.version})</Build-Jdk>
+                            <Build-Timestamp>${git.build.time}</Build-Timestamp>
+                            <Build-Revision>${git.commit.id}</Build-Revision>
+                            <Build-OS>${os.name} ${os.arch} ${os.version}</Build-OS>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>3.0.0</version>
@@ -26,6 +58,13 @@
 						<manifest>
 							<mainClass>edu.mtu.simulation.Launcher</mainClass>
 						</manifest>
+						<manifestEntries>
+                            <Build-Jdk>${java.version} (${java.vendor} ${java.vm.version})</Build-Jdk>
+                            <Build-Timestamp>${git.build.time}</Build-Timestamp>
+                            <Build-Version>${version}</Build-Version>
+                            <Build-Revision>${git.commit.id}</Build-Revision>
+                            <Build-OS>${os.name} ${os.arch} ${os.version}</Build-OS>
+                        </manifestEntries>
 					</archive>
 				</configuration>
 				<executions>
@@ -48,15 +87,15 @@
 			<version>2.1.7</version>
 		</dependency>
 		<dependency>
-		    <groupId>it.unimi.dsi</groupId>
-		    <artifactId>dsiutils</artifactId>
-		    <version>2.5.1</version>
+			<groupId>it.unimi.dsi</groupId>
+			<artifactId>dsiutils</artifactId>
+			<version>2.5.1</version>
 		</dependency>
 		<dependency>
-		    <groupId>it.unimi.dsi</groupId>
-		    <artifactId>fastutil</artifactId>
-		    <version>8.2.1</version>
-		</dependency>		
+			<groupId>it.unimi.dsi</groupId>
+			<artifactId>fastutil</artifactId>
+			<version>8.2.1</version>
+		</dependency>
 		<dependency>
 			<groupId>javax.media</groupId>
 			<artifactId>jmf</artifactId>
@@ -82,7 +121,6 @@
 			<artifactId>reflections</artifactId>
 			<version>0.9.10</version>
 		</dependency>
-				
 
 		<!-- Distributed with repository -->
 		<dependency>
