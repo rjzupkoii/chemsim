@@ -80,8 +80,7 @@ public class ReactionRegistry {
 	/**
 	 * Add the given bimolecular reaction to the registry, returns the reaction as a check string.
 	 */
-	private String addBimolecularReaction(BasicReaction reaction, Map<String, List<BasicReaction>> working ) {
-		String check = "";
+	private void addBimolecularReaction(BasicReaction reaction, Map<String, List<BasicReaction>> working ) {
 		for (String reactant : reaction.getReactants()) {
 			if (!working.containsKey(reactant)) {
 				working.put(reactant, new ArrayList<BasicReaction>());
@@ -89,16 +88,13 @@ public class ReactionRegistry {
 			if (!((ArrayList<BasicReaction>)working.get(reactant)).contains(reaction)) {
 				((ArrayList<BasicReaction>)working.get(reactant)).add(reaction);
 			}
-			check += reactant + " + ";
 		}
-		
-		return check.substring(0, check.length() - 3);
 	}
 	
 	/**
 	 * Add the given photolysis reaction to the registry, returns the reaction as a check string.
 	 */
-	private String addPhotolysisReaction(BasicReaction reaction, Map<String, String[]> working) throws InvalidActivityException {
+	private void addPhotolysisReaction(BasicReaction reaction, Map<String, String[]> working) throws InvalidActivityException {
 		String reactant = reaction.getReactants()[0];
 		if (reactant.toUpperCase().equals("UV")) {
 			reactant = reaction.getReactants()[1];
@@ -107,14 +103,12 @@ public class ReactionRegistry {
 			throw new InvalidActivityException("Reaction registry already contains photolysis products for " + reactant);
 		}
 		working.put(reactant, reaction.getProducts());
-		
-		return reactant + "+ UV";
 	}
 	
 	/**
 	 * Add the given unimolecular reaction to the registry, returns the check string
 	 */
-	private String addUnimolecularReaction(BasicReaction reaction, Map<String, List<BasicReaction>> working) throws InvalidActivityException {
+	private void addUnimolecularReaction(BasicReaction reaction, Map<String, List<BasicReaction>> working) throws InvalidActivityException {
 		// Make sure the key is valid
 		String key = reaction.getReactants()[0];
 		if (key.toUpperCase() == "UV") {
@@ -126,9 +120,6 @@ public class ReactionRegistry {
 		}
 		
 		((ArrayList<BasicReaction>)working.get(key)).add(reaction);
-		
-		// Return the key as the check string
-		return key;
 	}
 	
 	/**
@@ -226,11 +217,9 @@ public class ReactionRegistry {
 		Map<String, String[]> photoysis = new HashMap<String, String[]>();
 		Map<String, List<BasicReaction>> unimolecular = new HashMap<String, List<BasicReaction>>();
 		
-		// Define a hash set so we can check for dispropration reaction, namely two of the same reactions
-		HashSet<String> disproportionationCheck = new HashSet<String>();
-		HashSet<Integer> disproportationHash = new HashSet<Integer>(); 
+		// Define a hash map so we can check for dispropration reaction, namely two of the same reactions		
+		HashMap<Integer, Integer> disproportionationCheck = new HashMap<Integer, Integer>();
 
-		String check;
 		StringBuilder message = new StringBuilder();
 		List<ChemicalEquation> reactions = Parser.parseReactions(fileName); 
 		for (ChemicalEquation ce : reactions) {
@@ -248,15 +237,15 @@ public class ReactionRegistry {
 			message.append(reaction.toString() + " (");						
 			if (reaction.getReactants().length == 1) {
 				// This is a unimolecular reaction
-				check = addUnimolecularReaction(reaction, unimolecular);
+				addUnimolecularReaction(reaction, unimolecular);
 				message.append("unimolecular");
 			} else if (Arrays.asList(reaction.getReactants()).contains("UV")) {
 				// This is a photolysis reaction
-				check = addPhotolysisReaction(reaction, photoysis);
+				addPhotolysisReaction(reaction, photoysis);
 				message.append("photolysis");
 			} else {
 				// Must be a bimolecular reaction
-				check = addBimolecularReaction(reaction, bimolecular);
+				addBimolecularReaction(reaction, bimolecular);
 				message.append("bimolecular");
 			}
 			if (reaction.getReactionRatio() != 1.0) {
@@ -264,10 +253,12 @@ public class ReactionRegistry {
 			}
 			message.append(")\n");
 			
-			// Check to see if we've seen this reaction before
-			if (!disproportionationCheck.add(check)) {			
-				int hash = FnvHash.fnv1a32(check);
-				disproportationHash.add(hash);	
+			// Update the disproportionation checking
+			if (ce.reactants.length == 1) { 
+				updateCheck(disproportionationCheck, ce.reactants[0]);
+			} else {
+				updateCheck(disproportionationCheck, ce.reactants[0] + " + " + ce.reactants[1]);
+				updateCheck(disproportionationCheck, ce.reactants[1] + " + " + ce.reactants[0]);
 			}
 		}
 		
@@ -279,10 +270,22 @@ public class ReactionRegistry {
 				
 		// Build the molecule descriptions
 		buildMoleculeDescriptions();
-		buildEntityHash(disproportationHash);
+		buildEntityHash(disproportionationCheck);
 		
 		// Return the report
 		return message.toString();
+	}
+	
+	/**
+	 * Helper function to update the check map.
+	 */
+	private void updateCheck(HashMap<Integer, Integer> disproportionationCheck, String check) {
+		int key = FnvHash.fnv1a32(check);
+		if (!disproportionationCheck.containsKey(key)) {
+			disproportionationCheck.put(key, 0);
+		}
+		int value = disproportionationCheck.get(key) + 1;
+		disproportionationCheck.put(key, value);
 	}
 	
 	/**
@@ -303,12 +306,16 @@ public class ReactionRegistry {
 	/**
 	 * Build the array that contains the entity hashes that are present.
 	 */
-	private void buildEntityHash(HashSet<Integer> disproportationHash) {
-		// Clone the disproportation hashes into a working variable and then
-		// add the hashes for the molecule descriptions. Note that we are 
-		// kind of assuming that we have a very low likelihood of a hash collision
-		@SuppressWarnings("unchecked")
-		HashSet<Integer> working = (HashSet<Integer>)disproportationHash.clone();
+	private void buildEntityHash(HashMap<Integer, Integer> disproportionationCheck) {
+		// Add all of the disproportionation hashes that have an appearance count greater than one
+		HashSet<Integer> working = new HashSet<Integer>();
+		for (int key : disproportionationCheck.keySet()) {
+			int value = disproportionationCheck.get(key);
+			if (value > 1) {
+				working.add(key);
+			}
+		}
+		
 		for (String key : moleculeDescriptions.keySet()) {
 			working.add(FnvHash.fnv1a32(key));
 		}

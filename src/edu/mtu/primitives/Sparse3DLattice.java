@@ -41,7 +41,7 @@ public class Sparse3DLattice {
 	// the coordinates we really only need that hash value to find entities
 	private Map<Integer, Bag> latticeMap;
 	
-	// This map allows us to search the lattice for bags containing 
+	// This map allows us to search the lattice for bags containing the relevant entity
 	private Map<Integer, ArrayDeque<Entity>> tagMap;
 	
 	// The size of the partitioned hash tables, used for hashing

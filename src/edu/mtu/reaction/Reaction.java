@@ -227,7 +227,9 @@ public class Reaction {
 					if (reactant.sameEntity(formulaHash)) {
 						int[] location = Reactor.getInstance().grid.getObjectLocation(molecule);
 						BasicReaction[] reactions = ReactionRegistry.getInstance().getBimolecularReaction(molecule);
-						return process(molecule, reactant, location, reactions);
+						if (processList(molecule, reactant, location, reactions)) {
+							return true;
+						}
 					}
 				}
 			}
@@ -255,13 +257,13 @@ public class Reaction {
 			int y = y1 - location[1];
 			int z = z1 - location[2];
 			if (x == 0 && y == 0 && z == 0) {
-				return process(molecule, (Molecule)match, radii[ndx]);
+				return processRadius(molecule, (Molecule)match, radii[ndx]);
 			}
 			double d = Math.sqrt(x*x + y*y + z*z);
 			
 			// Roll the dice
 			if (rnd.nextGaussian() < Erf.erfc(d / radii[ndx])) {
-				return process(molecule, (Molecule)match, radii[ndx]);
+				return processRadius(molecule, (Molecule)match, radii[ndx]);
 			}
 			
 		}
@@ -297,7 +299,7 @@ public class Reaction {
 	/**
 	 * Process the reactions that are possible for this entity.
 	 */
-	private boolean process(Molecule molecule, Molecule reactant, int radius) {
+	private boolean processRadius(Molecule molecule, Molecule reactant, int radius) {
 		// Find the correct reactions
 		List<BasicReaction> matched = new ArrayList<BasicReaction>();
 		BasicReaction[] reactions = ReactionRegistry.getInstance().getBimolecularReaction(molecule);
@@ -306,12 +308,33 @@ public class Reaction {
 				matched.add(rd);
 			}
 		}
+		int[] location = Reactor.getInstance().grid.getObjectLocation(molecule);
+		return react(molecule, reactant, location, matched);
+	}
+	
+	/**
+	 * Process the reactions that are possible for this entity.
+	 */
+	private boolean processList(Molecule molecule, Molecule reactant, int[] location, BasicReaction[] reactions) {
+		List<BasicReaction> matched = new ArrayList<BasicReaction>();
+		for (BasicReaction rd : reactions) {
+			if (rd.checkReactants(molecule, reactant)) {
+				matched.add(rd);
+			}
+		}
+		return react(molecule, reactant, location, matched);
+	}
+		
+	/**
+	 * Do the steps related to the actual reaction.
+	 */
+	private boolean react(Molecule molecule, Molecule reactant, int[] location, List<BasicReaction> matched) {
+		// Return on a bad call
 		if (matched.size() == 0) {
 			throw new IllegalAccessError(String.format("No matches found for %s, %s", molecule, reactant));
 		}
-				
+		
 		// Add the molecules to the model
-		int[] location = Reactor.getInstance().grid.getObjectLocation(molecule);
 		if (matched.size() > 1) {
 			// Disproportion is occurring
 			MoleculeFactory.create(molecule, reactant, matched, location);
@@ -330,45 +353,11 @@ public class Reaction {
 	}
 	
 	/**
-	 * Process the reactions that are possible for this entity.
-	 */
-	private boolean process(Molecule molecule, Molecule reactant, int[] location, BasicReaction[] reactions) {
-
-		// Find the correct reaction(s)
-		List<BasicReaction> matched = new ArrayList<BasicReaction>();
-		for (BasicReaction rd : reactions) {
-			if (rd.checkReactants(molecule, reactant)) {
-				matched.add(rd);
-			}
-		}
-		if (matched.size() == 0) {
-			throw new IllegalAccessError(String.format("No matches found for %s, %s", molecule, reactant));
-		}
-				
-		// Add the molecules to the model
-		if (matched.size() > 1) {
-			// Disproportion is occurring
-			MoleculeFactory.create(molecule, reactant, matched, location);
-		} else {
-			// A standard reaction is occurring
-			MoleculeFactory.create(matched.get(0).getProducts(), location);
-		}
-		
-		// Clean up the reactant that was involved
-		if (reactant != null) {
-			reactant.dispose();
-		}
-		
-		// The molecule will be dispose itself
-		return true;
-	}
-		
-	/**
 	 * Perform a unimolecular reaction on the given species.
 	 */
 	private boolean unimolecularDecay(Molecule molecule) {
 		int[] location = Reactor.getInstance().grid.getObjectLocation(molecule);
 		BasicReaction[] reactions = ReactionRegistry.getInstance().getUnimolecularReaction(molecule);
-		return process(molecule, null, location, reactions);
+		return processList(molecule, null, location, reactions);
 	}
 }
