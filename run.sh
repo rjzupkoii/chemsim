@@ -25,7 +25,7 @@ caffeinate &
 # Run the simulation
 for ndx in {1..1}
 do
-  java -javaagent:lib/SizeOf.jar -Xms4G -XX:+UseG1GC -jar ChemSim.jar -n $ndx -r $reactions -c $chemicals -l 1.0E+06 -w 1 -s 1 -t CH3COCH3
+  java -javaagent:lib/SizeOf.jar -Xms4G -XX:+UseG1GC -jar ChemSim.jar -n $ndx -r $reactions -c $chemicals -l 1.0E+06 -w 1 -s 1
 done
 
 # Move the results, last console

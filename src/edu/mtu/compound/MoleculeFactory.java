@@ -56,8 +56,18 @@ public class MoleculeFactory {
 	 * @param location of the molecule.
 	 */
 	public static void create(Molecule one, Molecule two, List<BasicReaction> reactions, final int[] location) {
+		// Create the list of reactions
 		BasicReaction[] rd = new BasicReaction[reactions.size()];
 		rd = reactions.toArray(rd);
+		
+		// Prepare the canonical order based upon the reactions
+		if (!one.getFormula().equals(rd[0].getReactants()[0])) {
+			Molecule temp = one;
+			one = two;
+			two = temp;
+		}
+		
+		// Create the entity
 		Molecule entity = DisproportionatingMolecule.create(one, two, rd);
 		ChemSim.getSchedule().insert(entity);
 		Reactor.getInstance().insert(entity, location.clone());

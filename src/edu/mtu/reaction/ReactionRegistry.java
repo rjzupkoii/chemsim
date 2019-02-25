@@ -258,7 +258,6 @@ public class ReactionRegistry {
 				updateCheck(disproportionationCheck, ce.reactants[0]);
 			} else {
 				updateCheck(disproportionationCheck, ce.reactants[0] + " + " + ce.reactants[1]);
-				updateCheck(disproportionationCheck, ce.reactants[1] + " + " + ce.reactants[0]);
 			}
 		}
 		
@@ -320,8 +319,7 @@ public class ReactionRegistry {
 			working.add(FnvHash.fnv1a32(key));
 		}
 
-		// Allocate an array and move the data over... deals with the Java 
-		// idiosyncrasy between int and Integer
+		// Allocate an array and move the data over... deals with the Java idiosyncrasy between int and Integer
 		entityHashes = new int[working.size()];
 		int ndx = 0;
 		for (int hash : working) {
