@@ -28,8 +28,6 @@ public class Parser {
 		try {
 			// Open the file, discard volume and rate
 			reader = new CSVReader(new FileReader(fileName));
-			reader.readNext();
-			reader.readNext();
 			
 			// Scan until we reach the chemicals header
 			String[] entries;
@@ -209,8 +207,7 @@ public class Parser {
 				throw new IOException("Invalid ChemSim reactions file.");
 			}
 
-			// Next column may be either the ratios, pKa, or nothing. However,
-			// the order
+			// Next column may be either the ratios, pKa, or nothing. However, the order
 			// of k, ratios, pKa is enforced for the sake of consistency.
 			int pKa = -1, ratio = -1;
 			String value = entries[k + 1].toUpperCase();

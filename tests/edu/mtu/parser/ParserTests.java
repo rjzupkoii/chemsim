@@ -12,8 +12,7 @@ import org.junit.Test;
 
 import edu.mtu.reaction.BasicReaction;
 import edu.mtu.reaction.ChemicalEquation;
-
-// TODO Fix this
+import edu.mtu.tests.TestConstants;
 
 /**
  * Test to ensure that the parser works correctly.
@@ -31,22 +30,7 @@ public class ParserTests {
 		chemicals.add(new ChemicalDto("Water", "H2O", 1001.1));
 		chemicals.add(new ChemicalDto("Hydrogen", "H", 0.00125));
 	}
-	
-	private static List<BasicReaction> reactions = new ArrayList<BasicReaction>();
-	static {
-//		reactions.add(new ReactionDescription(new String[]{"CH2(OH)2", "HO*"}, new String[]{"*CH(OH)2"}, 7.43E+07));
-//		reactions.add(new ReactionDescription(new String[]{"CH2CO", "H2O"}, new String[]{"CH3COOH"}, 44));
-//		reactions.add(new ReactionDescription(new String[]{"CH3COCH3", "HO*"}, new String[]{"*CH2COCH3"}, 7.49E+07));
-//		reactions.add(new ReactionDescription(new String[]{"CH3COCHO", "HO*"}, new String[]{"*CH2COCHO"}, 7.40E+07));
-//		reactions.add(new ReactionDescription(new String[]{"CH3COOH", "HO*"}, new String[]{"*CH2COOH", "H2O"}, 1.60E+07));
-//		reactions.add(new ReactionDescription(new String[]{"CH3OH", "HO*"}, new String[]{"*CH2OH", "H2O"}, 9.63E+08));
-//		reactions.add(new ReactionDescription(new String[]{"HCHO", "H2O"}, new String[]{"CH2(OH)2"}, 0.01));
-//		reactions.add(new ReactionDescription(new String[]{"HCOOH", "HO*"}, new String[]{"*COOH", "H2O"}, 1.00E+08));
-//		reactions.add(new ReactionDescription(new String[]{"HOCCOOH", "HO*"}, new String[]{"*COCOOH", "H2O", "H2O"}, 6.38E+07));
-//		reactions.add(new ReactionDescription(new String[]{"HOCH2COOH", "HO*"}, new String[]{"*CH(OH)COOH"}, 7.12E+07));
-//		reactions.add(new ReactionDescription(new String[]{"H2O2", "UV"}, new String[]{"HO*"}, 0));
-	}
-	
+		
 	/**
 	 * Test to make sure we can parse chemicals files.
 	 */
@@ -87,10 +71,10 @@ public class ParserTests {
 	public void parseReactionsTest() throws IOException {
 		List<ChemicalEquation> results = Parser.parseReactions(reactionsFileName);
 		
-		Assert.assertEquals(reactions.size(), results.size());		
-		for (int ndx = 0; ndx < reactions.size(); ndx++) {
+		Assert.assertEquals(TestConstants.BasicReactions.size(), results.size());		
+		for (int ndx = 0; ndx < TestConstants.BasicReactions.size(); ndx++) {
 			BasicReaction result = (BasicReaction)results.get(ndx);
-			BasicReaction reference = reactions.get(ndx);
+			BasicReaction reference = TestConstants.BasicReactions.get(ndx);
 			
 			assertThat(result.getReactants(), is(reference.getReactants()));
 			assertThat(result.getProducts(), is(reference.getProducts()));

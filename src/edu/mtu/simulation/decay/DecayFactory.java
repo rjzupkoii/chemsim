@@ -12,41 +12,17 @@ public class DecayFactory {
 	 * the ModelProperties object provided.
 	 */
 	public static void createDecayModel(ModelProperities properties) throws IOException {
-		if (SimulationProperties.getInstance().getExperimentalDecay()) {
-			
-			// TODO Remove error
-			System.out.println("Not supported. :(");
-			System.exit(-1);
-			
-			initializeExperimentalDecay(properties);
-		} else {
-			initializePhotolysisDecay(properties);
-		}
+		// This is a bit of a stub from a dead-end path, the code
+		// is being kept around since the factory is a useful point
+		// to expand from.
+		initializePhotolysisDecay(properties);
 		
 		int time = properties.getTimeSteps();
 		int padding = SimulationProperties.getInstance().getPadding();
 		padding = (int)(padding * (60 / SimulationProperties.getInstance().getTimeStepLength()));
 		System.out.println("Estimated running time of " + (time - padding) + " time steps, padded to " + time);
 	}
-	
-	/**
-	 * Initialize the model so that photolysis follows experimental results.
-	 */
-	private static void initializeExperimentalDecay(ModelProperities properties) throws IOException {
-		// Prepare experimentally based decay, note that it must be initialized
-		ExperimentalDecay decay = new ExperimentalDecay();
-		String fileName = SimulationProperties.getInstance().getExperimentalDataFileName();
-		decay.prepare(fileName);
-		decay.initialize();
-		properties.setDecayModel(decay);
 		
-		int padding = SimulationProperties.getInstance().getPadding();
-		int time = (int)(decay.estimateRunningTime() + padding * (SimulationProperties.getInstance().getTimeStepLength() / 60));
-		properties.setTimeSteps(time);
-		
-		System.out.println("Using experimental decay data.");
-	}
-	
 	/**
 	 * Initialize the model so that photolyiss follows linear decay.
 	 */

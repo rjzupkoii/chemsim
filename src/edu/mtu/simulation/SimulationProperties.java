@@ -9,10 +9,7 @@ public class SimulationProperties {
 	
 	// Flag for if results should be overwritten
 	private boolean overWriteResults = true;
-	
-	// Flag to indicate the type of decay model to use
-	private boolean experimetnalDecay = false;
-	
+		
 	// Initial number of molecules in the model
 	private int initialMolecules = 0;
 	
@@ -33,7 +30,6 @@ public class SimulationProperties {
 	
 	// Default paths to experiments
 	private String chemicalsFileName = "";
-	private String experimentalDataFileName = "";
 	private String reactionsFileName = "";
 	
 	// Location of results
@@ -55,7 +51,7 @@ public class SimulationProperties {
 	}
 	
 	/**
-	 * Get the duration of a time step in minutes.
+	 * Get the current time step, note that the units are flexible!
 	 */
 	public double getDuration() {
 		return timeStepDuration;
@@ -64,15 +60,7 @@ public class SimulationProperties {
 	public String getChemicalsFileName() {
 		return chemicalsFileName;
 	}
-	
-	public String getExperimentalDataFileName() {
-		return experimentalDataFileName;
-	}
-	
-	public boolean getExperimentalDecay() {
-		return experimetnalDecay;
-	}
-	
+		
 	public String getMolarFileName() {
 		return molarFileName;
 	}
@@ -112,15 +100,7 @@ public class SimulationProperties {
 	public void setChemicalsFileName(String value) {
 		chemicalsFileName = value;
 	}
-	
-	public void setExperimentalDataFileName(String value) {
-		experimentalDataFileName = value;
-	}
-	
-	public void setExperimentalDecay(boolean value) {
-		experimetnalDecay = value;
-	}
-	
+			
 	public void setMolarFileName(String value) {
 		molarFileName = value;
 	}

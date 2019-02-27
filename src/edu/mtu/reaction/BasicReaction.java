@@ -1,5 +1,6 @@
 package edu.mtu.reaction;
 
+import java.util.Arrays;
 import java.util.List;
 
 import edu.mtu.reactor.Reactor;
@@ -43,6 +44,17 @@ public class BasicReaction extends ChemicalEquation implements Cloneable {
 	}
 	
 	/**
+	 * Constructor.
+	 */
+	public BasicReaction(String[] reactants, String[] products, double reactionRate, double ratio) {
+		setReactants(Arrays.asList(reactants));
+		setProducts(Arrays.asList(products));
+		k = reactionRate;
+		this.ratio = ratio;
+		interactionRadius = calcluateInteractionRadius();
+	}
+	
+	/**
 	 * Calculate the interaction radius for the reaction which is modeled as 
 	 * the distance to search around molecules for a reaction, realistically 
 	 * this should be a double, but we are using an integer lattice, so we 
@@ -58,7 +70,7 @@ public class BasicReaction extends ChemicalEquation implements Cloneable {
 		double k_chem = (k * k_diff) / (k + k_diff);
 		double delta_t = SimulationProperties.getInstance().getTimeStepLength();
 		double r = Math.cbrt((3 * k_chem * delta_t) / (4 * Math.PI * Math.pow(10, 3) * Reactor.AvogadrosNumber));	// meters
-		int r_nm = (int)(r * 1E+9);
+		int r_nm = (int)Math.round(r * 1E+9);
 		return r_nm;
 	}
 			

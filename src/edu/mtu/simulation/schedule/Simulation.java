@@ -1,10 +1,18 @@
 package edu.mtu.simulation.schedule;
 
+import java.util.Random;
+
 /**
  * This interface defines the methods that are needed by Schedule to signal when
  * various operations are taking place.
  */
 public interface Simulation {
+	
+	/**
+	 * Get the random number generated used by the simulation.
+	 */
+	public Random getRandom();
+	
 	/**
 	 * Initialize the simulation using the seed provided for the random number generator. 
 	 */

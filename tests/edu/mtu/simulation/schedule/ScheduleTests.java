@@ -1,10 +1,11 @@
 package edu.mtu.simulation.schedule;
 
+import java.util.Random;
+
 import org.junit.Test;
 
 import junit.framework.Assert;
 
-// TODO Make this a proper set of unit tests
 public class ScheduleTests implements Simulation {
 
 	private class TestSteppable extends Steppable {
@@ -57,5 +58,10 @@ public class ScheduleTests implements Simulation {
 	public void finish(boolean terminated) {
 		System.out.println("Completed: " + schedule.getTimeStep());
 		Assert.assertEquals(timeSteps, schedule.getTimeStep());
+	}
+
+	@Override
+	public Random getRandom() {
+		return new Random();
 	}	
 }

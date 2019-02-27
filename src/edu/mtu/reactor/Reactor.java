@@ -26,6 +26,10 @@ public class Reactor {
 	public final static double AvogadrosNumber = 6.02214085774E23;
 	public final static double MemoryOverhead = 0.9;
 	
+	// Inverse of scaling used in Pogson's equations for r,
+	// required if the unit of measure is molar
+	private final static double ScalingFactor = Math.pow(10, -3);		 
+		
 	private static Reactor instance;
 	
 	private int moleculeCount;
@@ -59,8 +63,10 @@ public class Reactor {
 		for (ChemicalDto compound : compounds) {
 			mols += compound.mols;
 		}
-		double result = Math.cbrt((double)molecules / (mols * AvogadrosNumber));	// m
-		return (int)Math.ceil(result*Math.pow(10, 9));								// nm
+				
+		double result = Math.cbrt(molecules / (mols * ScalingFactor * AvogadrosNumber));	// m
+		result = Math.ceil(result * Math.pow(10, 9));										// nm
+		return (int)result;		
 	}
 		
 	public Molecule getFirst(String formula) {

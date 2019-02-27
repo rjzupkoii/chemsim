@@ -79,7 +79,6 @@ public final class Launcher {
 
 	private static void ParseArguments(String[] args) {
 		boolean chemicals = false, reactions = false;
-		boolean experimentalDecay = false;
 		
 		ArrayList<String> terminateOn = new ArrayList<String>();
 		
@@ -93,11 +92,6 @@ public final class Launcher {
 			case "--chemicals":
 				properties.setChemicalsFileName(args[ndx + 1]);
 				chemicals = true;
-				break;
-			case "-e":
-			case "--experimental":
-				properties.setExperimentalDataFileName(args[ndx + 1]);
-				experimentalDecay = true;
 				break;
 			case "-r":
 			case "--reactions":
@@ -157,7 +151,6 @@ public final class Launcher {
 			value = terminateOn.toArray(value);
 			properties.setTerminateOn(value);
 		}
-		properties.setExperimentalDecay(experimentalDecay);
 		properties.setMolarFileName(String.format(properties.getMolarFileName(), iteration));
 		properties.setResultsFileName(String.format(properties.getResultsFileName(), iteration));
 	}
@@ -170,7 +163,6 @@ public final class Launcher {
 		System.err.printf(format, "-c, --chemicals [file]", "CSV file with compounds present at start of experiment");
 		System.err.printf(format, "-r, --reactions [file]", "CSV file with reactions to be modeled");
 		System.err.println("\nOptional: ");
-		System.err.printf(format, "-e, --experimental [file]", "CSV file with the known experimental results for photolysis decay");
 		System.err.printf(format, "-l, --limit [number]", "The maximum number of molecules to generate at initlization.");
 		System.err.printf(format, "-n, --run [number]", "The run number to apply to results files");
 		System.err.printf(format, "-p, --padding [number]", "The number of minutes to pad the estimated time by");

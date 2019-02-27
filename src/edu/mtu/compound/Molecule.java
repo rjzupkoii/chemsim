@@ -119,7 +119,7 @@ public class Molecule extends Steppable implements Entity {
 		int[] location = grid.getObjectLocation(this);
 		
 		// Generate the random values for the walk 
-		XoRoShiRo128PlusRandom random = ChemSim.getRandom();
+		XoRoShiRo128PlusRandom random = (XoRoShiRo128PlusRandom)ChemSim.getInstance().getRandom();
 		double walkX = random.nextDoubleFast();
 		double walkY = random.nextDoubleFast();
 		double walkZ = random.nextDoubleFast();

@@ -17,10 +17,7 @@ public class ReactionRegistryTests {
 			"*CH2COCHO", "*CH2COOH", "*CH2OH", "*COOH",	"*COCOOH", "*CH(OH)COOH", "CH2CO", "H2O", 
 			"H2O2", "CH3COCH3", "CH3COCHO", "CH3COOH", "CH3OH", "HCHO", "CH2(OH)2", "HCOOH", "HOCCOOH", 	
 			"HOCH2COOH" };
-	
-	private final static String[] expectedProducts = new String[] { "*COOH", "*CH2OH", "*COCOOH", 
-			"*CH(OH)COOH", "*CH2COCHO", "*CH2COCH3", "*CH(OH)2", "*CH2COOH" };
-	
+		
 	@Before
 	public void setUp() throws IOException {
 		ReactionRegistry instance = ReactionRegistry.getInstance();

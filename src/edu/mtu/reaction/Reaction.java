@@ -84,7 +84,7 @@ public class Reaction {
 		
 		// We are adding molecules
 		int[] container = reactor.dimensions;
-		XoRoShiRo128PlusRandom random = ChemSim.getRandom();
+		Random random = ChemSim.getInstance().getRandom();
 		for (; total < count; total++) {
 			int x = random.nextInt(container[0]), y = random.nextInt(container[1]), z = random.nextInt(container[2]);
 			MoleculeFactory.create(reactant, new int[] { x, y, z });
@@ -155,7 +155,7 @@ public class Reaction {
 		if (value != 1.0) {
 			throw new IllegalArgumentException("Total odds of the reaction '" + molecule.getFormula() + "' cannot exceed 1.0");
 		}
-		double selected = ChemSim.getRandom().nextDouble();
+		double selected = ((XoRoShiRo128PlusRandom)ChemSim.getInstance().getRandom()).nextDoubleFast();
 		
 		// Select the correct reaction
 		double previous = 0.0;
@@ -243,7 +243,7 @@ public class Reaction {
 		int[] location = grid.getObjectLocation(molecule);
 		int x1 = location[0], y1 = location[1], z1 = location[2];
 				
-		Random rnd = ChemSim.getRandom();
+		Random random = ChemSim.getInstance().getRandom();
 		for (int ndx = 0; ndx < hashes.length; ndx++) {
 			// Find the first that matches
 			Entity match = grid.findFirstByTag(molecule, hashes[ndx], radii[ndx]);
@@ -262,10 +262,9 @@ public class Reaction {
 			double d = Math.sqrt(x*x + y*y + z*z);
 			
 			// Roll the dice
-			if (rnd.nextGaussian() < Erf.erfc(d / radii[ndx])) {
+			if (random.nextGaussian() < Erf.erfc(d / radii[ndx])) {
 				return processRadius(molecule, (Molecule)match, radii[ndx]);
 			}
-			
 		}
 		
 		return false;
@@ -282,7 +281,8 @@ public class Reaction {
 		
 		// Check to see if the reaction occurred based upon decay rates
 		double decay = ChemSim.getProperties().getHydrogenPeroxideDecay();
-		if (ChemSim.getRandom().nextDouble() > decay) {
+		double random = ((XoRoShiRo128PlusRandom)ChemSim.getInstance().getRandom()).nextDoubleFast();
+		if (random > decay) {
 			return false;
 		}
 

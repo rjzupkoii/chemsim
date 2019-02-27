@@ -21,7 +21,7 @@ public class ReactorTests {
 	 */
 	@Test
 	public void calculateSizeTest() {
-		int result = Reactor.calculateSize(compounds, 1000000);
-		Assert.assertEquals(421, result);
+		int result = Reactor.calculateSize(compounds, 100000);
+		Assert.assertEquals(19528, result);
 	}
 }

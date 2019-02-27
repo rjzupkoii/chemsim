@@ -9,6 +9,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -89,9 +90,14 @@ public class ChemSim implements Simulation {
 			Reactor.initalize(compounds);
 			printHeader(report);
 			
-			// Load the compounds and decay model
+			// Load the compounds
 			initializeModel(compounds);
-			DecayFactory.createDecayModel(properties);
+			
+			// If no decay rate is set, we have no decay model
+			fileName = SimulationProperties.getInstance().getChemicalsFileName();
+			if (Parser.parseRate(fileName) > 0) {
+				DecayFactory.createDecayModel(properties);
+			}
 			
 		} catch (Exception ex) {
 			// We can't recover from errors here
@@ -207,8 +213,8 @@ public class ChemSim implements Simulation {
 	/**
 	 * Get the random number generator.
 	 */
-	public static XoRoShiRo128PlusRandom getRandom() {
-		return instance.random;
+	public Random getRandom() {
+		return random;
 	}
 	
 	/**

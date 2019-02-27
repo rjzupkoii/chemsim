@@ -3,8 +3,6 @@ package edu.mtu.simulation.schedule;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
-import edu.mtu.simulation.ChemSim;
-
 /**
  * The schedule is based upon a ring buffer, but modified so that there is always
  * a marker node that ensures a callback is made to the simulation.  
@@ -152,7 +150,7 @@ public class Schedule {
 	 */
 	private void shuffle(ArrayList<Steppable> steppables) {
 		for (int ndx = steppables.size() - 1; ndx > 0; ndx--) {
-	      int index = ChemSim.getRandom().nextInt(ndx + 1);
+	      int index = simulation.getRandom().nextInt(ndx + 1);
 	      Steppable swap = steppables.get(index);
 	      steppables.set(index, steppables.get(ndx));
 	      steppables.set(ndx, swap);
