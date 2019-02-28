@@ -7,6 +7,7 @@ import edu.mtu.reaction.Reaction;
 import edu.mtu.reaction.ReactionRegistry;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;
+import edu.mtu.simulation.SimulationProperties;
 import edu.mtu.simulation.schedule.Steppable;
 import edu.mtu.util.FnvHash;
 import it.unimi.dsi.util.XoRoShiRo128PlusRandom;
@@ -123,7 +124,8 @@ public class Molecule extends Steppable implements Entity {
 		double walkZ = random.nextDoubleFast();
 		
 		// Find our speed with a bit of noise
-		int speed = (int)Math.round((random.nextGaussian() * 1e-8 + 5.9e-7) * 1e9);
+		double dt = SimulationProperties.getInstance().getDeltaT();
+		int speed = (int)Math.round((random.nextGaussian() * 1e-8 + 5.9e-7) * 1e9 * dt);
 		
 		// Apply the values, note that we are discarding everything outside of one standard deviation
 		location[0] += (walkX >= 0.5 ? 1 : 0) * speed;

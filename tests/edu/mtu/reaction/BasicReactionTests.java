@@ -8,8 +8,8 @@ import junit.framework.Assert;
 
 public class BasicReactionTests {
 
-	// Expected interaction radius, mirrors TestConstants.BasicReactions for t = 60
-	public static int[] ExpectedRates = new int[] { 1206, 10, 1210, 1205, 724, 2762, 1, 1331, 1147, 1189, 0 };
+	// Expected interaction radius, mirrors TestConstants.BasicReactions for dt = 1/sec
+	public static int[] ExpectedRates = new int[] { 308, 3, 309, 308, 185, 705, 0, 340, 293, 304, 0 };
 		
 	/**
 	 * Test to ensure that the interaction radius is correct.
@@ -20,7 +20,7 @@ public class BasicReactionTests {
 		// Make sure we think the time step is correct
 		//double timeStep = SimulationProperties.getInstance().getTimeStepLength();
 		double timeStep = SimulationProperties.getInstance().getDeltaT();
-		Assert.assertEquals(60.0, timeStep);
+		Assert.assertEquals(1.0, timeStep);
 		
 		// Check the rates
 		Assert.assertEquals(ExpectedRates.length, TestConstants.BasicReactions.size());
