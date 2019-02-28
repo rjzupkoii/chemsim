@@ -146,9 +146,10 @@ public class ChemSim implements Simulation {
 		// Sample the count and report if need be
 		if (count % sampleInterval == 0) {
 			boolean flush = (count % reportInterval == 0);
-			tracker.reset(flush);
+			double timeStep = SimulationProperties.getInstance().getTimeStepLength();
+			tracker.reset(flush, count * timeStep);
 			if (flush) {
-				System.out.println(LocalDateTime.now() + ": " + count + " of " + total);
+				System.out.println(LocalDateTime.now() + ": " + (count * timeStep) + " / "  + count + " of " + total);
 			}
 		}
 		

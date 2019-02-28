@@ -45,8 +45,9 @@ public class TrackEnties extends Tracker {
 	/**
 	 * Write the contents to the CSV file and set the counts to zero.
 	 */
-	public void reset(boolean flush) {
+	public void reset(boolean flush, double timeStep) {
 		try {
+			writer.write(timeStep);
 			for (String entity : entities) {
 				writer.write(counts.get(entity));
 			}

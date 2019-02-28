@@ -28,6 +28,9 @@ public abstract class Tracker {
 			writer.write(LocalDateTime.now().toString());
 			writer.newline();
 						
+			// Write the time column
+			writer.write("Time");
+			
 			// Write the names of the entities out
 			writer.write(entities);
 			writer.flush();
