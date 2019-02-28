@@ -112,17 +112,18 @@ public class Molecule extends Steppable implements Entity {
 	 * Calculate the new location for this molecule.
 	 */
 	protected void move() {
-		final int speed = 590;	// nm/s
-		
-				
-		// Get our current location
-		int[] location = grid.getObjectLocation(this);
+
+		// Get our current location use our own copy
+		int[] location = grid.getObjectLocation(this).clone();
 		
 		// Generate the random values for the walk 
 		XoRoShiRo128PlusRandom random = (XoRoShiRo128PlusRandom)ChemSim.getInstance().getRandom();
 		double walkX = random.nextDoubleFast();
 		double walkY = random.nextDoubleFast();
 		double walkZ = random.nextDoubleFast();
+		
+		// Find our speed with a bit of noise
+		int speed = (int)Math.round((random.nextGaussian() * 1e-8 + 5.9e-7) * 1e9);
 		
 		// Apply the values, note that we are discarding everything outside of one standard deviation
 		location[0] += (walkX >= 0.5 ? 1 : 0) * speed;

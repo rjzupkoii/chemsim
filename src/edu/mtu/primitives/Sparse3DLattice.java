@@ -106,7 +106,7 @@ public class Sparse3DLattice {
 			if (checking.equals(entity)) {
 				continue;
 			}
-			if (checking.getEntityTypeTag() == tag) {
+			if (checking.getEntityTypeTag().equals(tag)) {
 				return checking;
 			}
 		}
@@ -118,10 +118,10 @@ public class Sparse3DLattice {
 		
 		// Calculate how big the search space is for a geometric search
 		// and chose our approach accordingly
-		int points = (int)((4 / 3) * Math.PI * Math.pow(radius, 3));
-		if (tagMap.get(tag).size() > points) {
-			return distanceBasedSearch(entity, tag, radius, lai.location[0], lai.location[1], lai.location[2]);
-		}
+//		int points = (int)((4 / 3) * Math.PI * Math.pow(radius, 3));
+//		if (tagMap.get(tag).size() > points) {
+//			return distanceBasedSearch(entity, tag, radius, lai.location[0], lai.location[1], lai.location[2]);
+//		}
 		return tagBasedSearch(entity, tag, radius, lai.location[0], lai.location[1], lai.location[2]);
 	}
 	

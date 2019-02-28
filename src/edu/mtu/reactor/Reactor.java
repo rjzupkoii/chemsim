@@ -28,7 +28,7 @@ public class Reactor {
 	
 	// Inverse of scaling used in Pogson's equations for r,
 	// required if the unit of measure is molar
-	private final static double ScalingFactor = Math.pow(10, -3);		 
+	private final static double ScalingFactor = Math.pow(10, 3);		 
 		
 	private static Reactor instance;
 	

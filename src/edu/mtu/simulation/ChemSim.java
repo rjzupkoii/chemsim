@@ -68,7 +68,7 @@ public class ChemSim implements Simulation {
 			// Note the properties
 			SimulationProperties simulation = SimulationProperties.getInstance();
 			
-			// Calculate the report interval, we only echo on the minute
+			// Calculate the report interval
 			sampleInterval = (60 / simulation.getTimeStepLength());
 			reportInterval = (int)sampleInterval * simulation.getReportInterval();
 
@@ -97,6 +97,10 @@ public class ChemSim implements Simulation {
 			fileName = SimulationProperties.getInstance().getChemicalsFileName();
 			if (Parser.parseRate(fileName) > 0) {
 				DecayFactory.createDecayModel(properties);
+			} else {
+				// If no decay is set, make sure we always sample
+				sampleInterval = 1;
+				reportInterval = 1;
 			}
 			
 		} catch (Exception ex) {
