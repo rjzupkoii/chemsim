@@ -1,5 +1,8 @@
 package edu.mtu.compound;
 
+import org.apache.commons.math3.geometry.euclidean.threed.SphericalCoordinates;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+
 import edu.mtu.primitives.Entity;
 import edu.mtu.primitives.Sparse3DLattice;
 import edu.mtu.reaction.MoleculeDescription;
@@ -116,27 +119,25 @@ public class Molecule extends Steppable implements Entity {
 
 		// Get our current location use our own copy
 		int[] location = grid.getObjectLocation(this).clone();
-		
-		// Generate the random values for the walk 
-		XoRoShiRo128PlusRandom random = (XoRoShiRo128PlusRandom)ChemSim.getInstance().getRandom();
-		double walkX = random.nextDoubleFast();
-		double walkY = random.nextDoubleFast();
-		double walkZ = random.nextDoubleFast();
-		
+			
 		// Find our speed with a bit of noise
+		XoRoShiRo128PlusRandom random = (XoRoShiRo128PlusRandom)ChemSim.getInstance().getRandom();
+		int speed = (int)Math.round((random.nextGaussian() * 1e-8 + 5.9e-7) * 1e9);
+		
+		// Find random random angles
+		double theta = -Math.PI + 2 * Math.PI * random.nextDoubleFast();
+		double phi = -Math.PI + 2 * Math.PI * random.nextDoubleFast();
+		
+		// Convert the coordinates
+		SphericalCoordinates coords = new SphericalCoordinates(speed, theta, phi);
+		Vector3D sphere = coords.getCartesian();
+		
+		// Apply the vector with the dt adjustment
 		double dt = SimulationProperties.getInstance().getDeltaT();
-		int speed = (int)Math.round((random.nextGaussian() * 1e-8 + 5.9e-7) * 1e9 * dt);
-		
-		// Apply the values, note that we are discarding everything outside of one standard deviation
-		location[0] += (walkX >= 0.5 ? 1 : 0) * speed;
-		location[0] += (walkX < 0.5 ? -1 : 0) * speed;
-		
-		location[1] += (walkY >= 0.5 ? 1 : 0) * speed;
-		location[1] += (walkY < 0.5 ? -1 : 0) * speed;
-		
-		location[2] += (walkZ >= 0.5 ? 1 : 0) * speed;
-		location[2] += (walkZ < 0.5 ? -1 : 0) * speed;
-		
+		location[0] += (int)(dt * sphere.getX());
+		location[1] += (int)(dt * sphere.getY());
+		location[2] += (int)(dt * sphere.getZ());
+				
 		// Adjust the location as needed so we stay in the bounds of the container
 		location[0] = (location[0] > dx) ? dx : location[0];
 		location[0] = (location[0] < 0) ? 0 : location[0];
