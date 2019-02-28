@@ -42,7 +42,6 @@ public class ChemSim implements Simulation {
 	// The properties for the simulation
 	private ModelProperities properties;
 	private int reportInterval;
-	private double sampleInterval;
 	
 	// Entity count tracker for the simulation
 	private CensusTracking census;
@@ -67,11 +66,8 @@ public class ChemSim implements Simulation {
 		try {		
 			// Note the properties
 			SimulationProperties simulation = SimulationProperties.getInstance();
+			reportInterval = simulation.getReportInterval();
 			
-			// Calculate the report interval
-			sampleInterval = (60 / simulation.getTimeStepLength());
-			reportInterval = (int)sampleInterval * simulation.getReportInterval();
-
 			// Import the reactions into the model
 			ReactionRegistry instance = ReactionRegistry.getInstance();
 			instance.clear();
@@ -97,10 +93,6 @@ public class ChemSim implements Simulation {
 			fileName = SimulationProperties.getInstance().getChemicalsFileName();
 			if (Parser.parseRate(fileName) != 0) {
 				DecayFactory.createDecayModel(properties);
-			} else {
-				// If no decay is set, make sure we always sample
-				sampleInterval = 1;
-				reportInterval = 1;
 			}
 			
 		} catch (Exception ex) {
@@ -144,13 +136,10 @@ public class ChemSim implements Simulation {
 		}
 						
 		// Sample the count and report if need be
-		if (count % sampleInterval == 0) {
-			boolean flush = (count % reportInterval == 0);
-			double timeStep = SimulationProperties.getInstance().getTimeStepLength();
-			tracker.reset(flush, count * timeStep);
-			if (flush) {
-				System.out.println(LocalDateTime.now() + ": " + (count * timeStep) + " / "  + count + " of " + total);
-			}
+		if (count % reportInterval == 0) {
+			double dt = SimulationProperties.getInstance().getDeltaT();
+			tracker.reset(true, count * dt);
+			System.out.println(LocalDateTime.now() + ": " + (count * dt) + " / "  + count + " of " + total);
 		}
 		
 		// Check to see if we can terminate, but let the simulation warm up first
@@ -321,7 +310,7 @@ public class ChemSim implements Simulation {
 		System.out.println("Staring Molecule Limit: " + scientific.format(maxMolecules) + " (" + size * maxMolecules + "b)\n");		
 		
 		// Print the reactor information
-		System.out.println("Time Step (sec): " + SimulationProperties.getInstance().getTimeStepLength());
+		System.out.println("delta T (sec): " + SimulationProperties.getInstance().getDeltaT());
 		System.out.println("Inital pH: " + properties.getPH());
 		int[] container = Reactor.getInstance().dimensions;
 		System.out.println("Reactor Dimensions (nm): " + container[0] + ", " + container[1] + ", " + container[2]);

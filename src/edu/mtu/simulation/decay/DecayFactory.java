@@ -16,10 +16,10 @@ public class DecayFactory {
 		// is being kept around since the factory is a useful point
 		// to expand from.
 		initializePhotolysisDecay(properties);
-		
+				
 		int time = properties.getTimeSteps();
-		int padding = SimulationProperties.getInstance().getPadding();
-		padding = (int)(padding * (60 / SimulationProperties.getInstance().getTimeStepLength()));
+		SimulationProperties sp = SimulationProperties.getInstance();
+		int padding = (int)(sp.getPadding() * sp.getDeltaT());
 		System.out.println("Estimated running time of " + (time - padding) + " time steps, padded to " + time);
 	}
 		
@@ -32,8 +32,9 @@ public class DecayFactory {
 		decay.prepare(fileName);
 		properties.setDecayModel(decay);
 		
-		int padding = SimulationProperties.getInstance().getPadding();
-		int time = (int)(decay.estimateRunningTime() + padding * (SimulationProperties.getInstance().getTimeStepLength() / 60));
+		SimulationProperties sp = SimulationProperties.getInstance();
+		int padding = sp.getPadding();
+		int time = (int)(decay.estimateRunningTime() + padding * sp.getDeltaT());	
 		properties.setTimeSteps(time);
 	}
 }

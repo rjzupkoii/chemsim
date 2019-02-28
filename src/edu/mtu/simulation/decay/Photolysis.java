@@ -42,13 +42,15 @@ public class Photolysis implements DecayModel {
 		double scaling = ChemSim.getProperties().getMoleculeToMol();
 				
 		// Note the current time step duration
-		double timeStep = SimulationProperties.getInstance().getTimeStepLength();
+//		double timeStep = SimulationProperties.getInstance().getTimeStepLength();
+		double dt = SimulationProperties.getInstance().getDeltaT();
 		
 		// Hydrogen peroxide is a linear decay, or f(x) = C - r * t 
 		// this means we need to determine the odds that any individual 
 		// hydrogen peroxide agent will be removed each time step based upon
 		// the new population which requires us knowing the initial decay
-		m = (rate * volume * 0.001 * scaling * timeStep) / 60;
+//		m = (rate * volume * 0.001 * scaling * timeStep) / 60;
+		m = (rate * volume * 0.001 * scaling * dt) / 60;
 		m = Math.round(m * 100.0) / 100.0;
 		if (m == 0) {
 			throw new IllegalStateException("Calculated decay is zero, adjust inputs.");

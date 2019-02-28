@@ -13,18 +13,15 @@ public class SimulationProperties {
 	// Initial number of molecules in the model
 	private int initialMolecules = 0;
 	
-	// The time, in minutes, to pad the model by 
-	private int timePadding = 60;
+	// The time, in seconds, to pad the model by (15 minutes default) 
+	private int timePadding = 900;
 	
-	// Interval to report to the console and save data on
-	private int reportInterval = 100;
+	// How many time steps between reports to console
+	private int reportInterval = 60;	// 60 iterations = 1 minute at default deltaT
 	
-	// Length of one time step in minutes;
-	private double timeStepDuration = 1.0;
-	
-	// Length of one time step in seconds
-	private double timeStepLength = 60;
-	
+	// Length of a time step in seconds
+	private double deltaT = 1;
+		
 	// List of entities to terminate when zero
 	private String[] terminateOn = new String[0]; 
 	
@@ -50,11 +47,8 @@ public class SimulationProperties {
 		return instance;
 	}
 	
-	/**
-	 * Get the current time step, note that the units are flexible!
-	 */
-	public double getDuration() {
-		return timeStepDuration;
+	public double getDeltaT() {
+		return deltaT;
 	}
 		
 	public String getChemicalsFileName() {
@@ -92,11 +86,7 @@ public class SimulationProperties {
 	public String[] getTerminationOn() {
 		return terminateOn;
 	}
-	
-	public double getTimeStepLength() {
-		return timeStepLength;
-	}
-	
+
 	public void setChemicalsFileName(String value) {
 		chemicalsFileName = value;
 	}
@@ -133,8 +123,7 @@ public class SimulationProperties {
 		terminateOn = value;
 	}
 	
-	public void setTimeStepLength(double value) {
-		timeStepLength = value;
-		timeStepDuration = 60 / value;
+	public void setDeltaT(double value) {
+		deltaT = value;
 	}
 }

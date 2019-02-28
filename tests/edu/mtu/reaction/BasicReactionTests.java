@@ -18,7 +18,8 @@ public class BasicReactionTests {
 	public void interactionRadiusTests() {
 	
 		// Make sure we think the time step is correct
-		double timeStep = SimulationProperties.getInstance().getTimeStepLength();
+		//double timeStep = SimulationProperties.getInstance().getTimeStepLength();
+		double timeStep = SimulationProperties.getInstance().getDeltaT();
 		Assert.assertEquals(60.0, timeStep);
 		
 		// Check the rates

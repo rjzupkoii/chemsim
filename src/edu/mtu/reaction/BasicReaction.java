@@ -68,7 +68,7 @@ public class BasicReaction extends ChemicalEquation implements Cloneable {
 		}
 		
 		double k_chem = (k * k_diff) / (k + k_diff);
-		double delta_t = SimulationProperties.getInstance().getTimeStepLength();
+		double delta_t = SimulationProperties.getInstance().getDeltaT();
 		double r = Math.cbrt((3 * k_chem * delta_t) / (4 * Math.PI * Math.pow(10, 3) * Reactor.AvogadrosNumber));	// meters
 		int r_nm = (int)Math.round(r * 1E+9);
 		return r_nm;

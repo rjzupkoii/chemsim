@@ -93,6 +93,10 @@ public final class Launcher {
 				properties.setChemicalsFileName(args[ndx + 1]);
 				chemicals = true;
 				break;
+			case "-dt":
+				double value = Double.parseDouble(args[ndx + 1]);
+				properties.setDeltaT(value);
+				break;
 			case "-r":
 			case "--reactions":
 				properties.setReactionsFileName(args[ndx + 1]);
@@ -110,15 +114,6 @@ public final class Launcher {
 			case "--limit":
 				int limit = Double.valueOf(args[ndx + 1]).intValue();
 				properties.setInitialMolecules(limit);
-				break;
-			case "-s":
-			case "--step":
-				double value = Double.parseDouble(args[ndx + 1]);
-				if (value > 60) {
-					System.err.println("Time step cannot exceed 60 seconds.");
-					System.exit(-1);
-				}
-				properties.setTimeStepLength(value);
 				break;
 			case "-t":
 			case "--terminate":
@@ -163,11 +158,11 @@ public final class Launcher {
 		System.err.printf(format, "-c, --chemicals [file]", "CSV file with compounds present at start of experiment");
 		System.err.printf(format, "-r, --reactions [file]", "CSV file with reactions to be modeled");
 		System.err.println("\nOptional: ");
+		System.err.printf(format, "", "-dt [number]", "The delta T in seconds, default 1");
 		System.err.printf(format, "-l, --limit [number]", "The maximum number of molecules to generate at initlization.");
 		System.err.printf(format, "-n, --run [number]", "The run number to apply to results files");
-		System.err.printf(format, "-p, --padding [number]", "The number of minutes to pad the estimated time by");
-		System.err.printf(format, "-w, --write [number]", "The minute interval to print / save status on, default 100");
-		System.err.printf(format, "-s, --step [number", "The duration of the time step in seconds, default 60");
+		System.err.printf(format, "-p, --padding [number]", "The number of seconds to pad the estimated time by, default 900 seconds");
+		System.err.printf(format, "-w, --write [number]", "The report interval to print / save status on, default 60 iterations");
 		System.err.printf(format, "-t, --terminate [formula]", "Terminate the model when the given molecule has zero entities");
 		System.err.printf(format, "-v, --verify [file] [file]", "Verify the [reactions] and [chemicals] files are properly formatted and has balanced reactions.");
 		System.err.println("\nNOTE:");
