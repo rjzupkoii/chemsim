@@ -95,7 +95,7 @@ public class ChemSim implements Simulation {
 			
 			// If no decay rate is set, we have no decay model
 			fileName = SimulationProperties.getInstance().getChemicalsFileName();
-			if (Parser.parseRate(fileName) > 0) {
+			if (Parser.parseRate(fileName) != 0) {
 				DecayFactory.createDecayModel(properties);
 			} else {
 				// If no decay is set, make sure we always sample
