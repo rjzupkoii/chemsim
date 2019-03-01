@@ -214,6 +214,11 @@ public class Reaction {
 	 */
 	private boolean bimolecularReaction(Molecule molecule) {
 		
+		// Is this a b-side molecule?
+		if (molecule.isBSide()) {
+			return false;
+		}
+		
 		// Get the possible hashes
 		Integer[] hashes = molecule.getReactantHashes(); 
 		
@@ -234,6 +239,13 @@ public class Reaction {
 			}
 		}
 								
+		// Collect some information
+		Random random = ChemSim.getInstance().getRandom();
+		int step = ChemSim.getSchedule().getTimeStep();		
+		
+		// Note our hash once
+		int hash = molecule.getEntityTypeTag();
+		
 		// Get the possible interaction radii
 		int[] radii = molecule.getInteractionRadii();
 
@@ -241,11 +253,16 @@ public class Reaction {
 		Sparse3DLattice grid = Reactor.getInstance().grid;
 		int[] location = grid.getObjectLocation(molecule);
 		int x1 = location[0], y1 = location[1], z1 = location[2];
-			
-		int step = ChemSim.getSchedule().getTimeStep();
 		
-		Random random = ChemSim.getInstance().getRandom();
 		for (int ndx = 0; ndx < hashes.length; ndx++) {
+			// Since a molecule may react with others of the same species
+			// check to see if we are looking at that right now. If so do 
+			// a 50-50 flip to see if we should continue. This keeps Pogson's
+			// equation balanced.
+			if (hash == hashes[ndx] && random.nextInt(2) == 0) {
+				continue;
+			}
+			
 			// Find the first that matches
 			Molecule match = (Molecule)grid.findFirstByTag(molecule, hashes[ndx], radii[ndx]);
 			if (match == null) {

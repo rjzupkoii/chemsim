@@ -115,6 +115,10 @@ public class Molecule extends Steppable implements Entity {
 		return md.hasDissolvedReactants;
 	}
 	
+	public boolean isBSide() {
+		return md.isBSide;
+	}
+	
 	public boolean isFree(int step) {
 		return (this.step != step);
 	}

@@ -5,6 +5,7 @@ public class MoleculeDescription {
 	public boolean hasPhotolysis;
 	public boolean hasUnimolecular;
 	
+	public boolean isBSide;
 	public boolean isRadical;
 	public boolean hasReactants;
 	public boolean hasDissolvedReactants;

@@ -38,9 +38,9 @@ public class ReactionRegistry {
 	// Mapping of all of the molecules and the basics of their reactions
 	private Map<String, MoleculeDescription> moleculeDescriptions;
 
-	// Acid Dissacitation reactions are [Reactant] <=> [Product] + [Product], pKa = [Value
+	// Acid dissociation reactions are [Reactant] <=> [Product] + [Product], pKa = [Value
 	private Map<String, AcidDissociation> acid;
-	
+		
 	// Photolysis is [Reactant] + UV -> [Product] + ... + [Product] 
 	private Map<String, String[]> photolysis;
 		
@@ -49,6 +49,9 @@ public class ReactionRegistry {
 	
 	// Unimolecular reactions are [Reactant] -> [Product] + ... + [Product]
 	private Map<String, BasicReaction[]> unimolecular;
+	
+	// Track the molecules that appear on the B side of the equation
+	private HashSet<String> bSides;
 	
 	/**
 	 * Singleton constructor.
@@ -127,6 +130,7 @@ public class ReactionRegistry {
 	 */
 	public void clear() {
 		bimolecular = null;
+		bSides = null;
 		photolysis = null;
 		unimolecular = null;
 		moleculeDescriptions = null;
@@ -215,7 +219,11 @@ public class ReactionRegistry {
 		Map<String, AcidDissociation> acid = new HashMap<String, AcidDissociation>();
 		Map<String, List<BasicReaction>> bimolecular = new HashMap<String, List<BasicReaction>>();
 		Map<String, String[]> photoysis = new HashMap<String, String[]>();
-		Map<String, List<BasicReaction>> unimolecular = new HashMap<String, List<BasicReaction>>();
+		Map<String, List<BasicReaction>> unimolecular = new HashMap<String, List<BasicReaction>>();		
+		
+		
+		HashSet<String> aSides = new HashSet<String>();
+		bSides = new HashSet<String>();
 		
 		// Define a hash map so we can check for dispropration reaction, namely two of the same reactions		
 		HashMap<Integer, Integer> disproportionationCheck = new HashMap<Integer, Integer>();
@@ -231,9 +239,13 @@ public class ReactionRegistry {
 				addAcidDissociation(ad, acid);
 				continue;
 			}
-			
+						
 			// Must be a basic reaction
 			BasicReaction reaction = (BasicReaction)ce;
+			
+			// Update our a-side
+			aSides.add(reaction.getReactants()[0]);
+			
 			message.append(reaction.toString() + " (");						
 			if (reaction.getReactants().length == 1) {
 				// This is a unimolecular reaction
@@ -247,6 +259,9 @@ public class ReactionRegistry {
 				// Must be a bimolecular reaction
 				addBimolecularReaction(reaction, bimolecular);
 				message.append("bimolecular");
+				
+				// Update our b-side
+				bSides.add(reaction.getReactants()[1]);
 			}
 			if (reaction.getReactionRatio() != 1.0) {
 				message.append(", " + reaction.getReactionRatio());
@@ -258,7 +273,7 @@ public class ReactionRegistry {
 				updateCheck(disproportionationCheck, ce.reactants[0]);
 			} else {
 				updateCheck(disproportionationCheck, ce.reactants[0] + " + " + ce.reactants[1]);
-			}
+			}			
 		}
 		
 		// Everything is loaded, now lock it down
@@ -266,11 +281,20 @@ public class ReactionRegistry {
 		this.bimolecular = fixMap(bimolecular);
 		this.unimolecular = fixMap(unimolecular);
 		this.acid = Collections.unmodifiableMap(new HashMap<String, AcidDissociation>(acid));
+			
+		// Process the current HashSet of B sides and remove ones that are also
+		// A sides. Double counted ones will be noted by Reaction.bimolecularReaction which 
+		// will give the current molecule 50-50 odds of checking. 
+		for (String aSide : aSides) {
+			if (bSides.contains(aSide)) {
+				bSides.remove(aSide);
+			}
+		}
 				
 		// Build the molecule descriptions
 		buildMoleculeDescriptions();
 		buildEntityHash(disproportionationCheck);
-		
+				
 		// Return the report
 		return message.toString();
 	}
@@ -286,7 +310,7 @@ public class ReactionRegistry {
 		int value = disproportionationCheck.get(key) + 1;
 		disproportionationCheck.put(key, value);
 	}
-	
+
 	/**
 	 * Helper function to convert working hashes with lists over to unmodifiable maps with arrays.
 	 */
@@ -353,6 +377,7 @@ public class ReactionRegistry {
 			md.hasReactants = (md.hasBimolecular || md.hasPhotolysis || md.hasUnimolecular);
 			md.hasDissolvedReactants = checkDissolvedReactants(formula);
 			md.isRadical = formula.startsWith("*") || formula.endsWith("*");
+			md.isBSide = bSides.contains(formula);
 			extractReactants(formula, md);
 			moleculeDescriptions.put(formula, md);
 		}
