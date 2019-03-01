@@ -10,7 +10,6 @@ import edu.mtu.compound.DisproportionatingMolecule;
 import edu.mtu.compound.DissolvedMolecule;
 import edu.mtu.compound.Molecule;
 import edu.mtu.compound.MoleculeFactory;
-import edu.mtu.primitives.Entity;
 import edu.mtu.primitives.Sparse3DLattice;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.ChemSim;
@@ -242,14 +241,21 @@ public class Reaction {
 		Sparse3DLattice grid = Reactor.getInstance().grid;
 		int[] location = grid.getObjectLocation(molecule);
 		int x1 = location[0], y1 = location[1], z1 = location[2];
-				
+			
+		int step = ChemSim.getSchedule().getTimeStep();
+		
 		Random random = ChemSim.getInstance().getRandom();
 		for (int ndx = 0; ndx < hashes.length; ndx++) {
 			// Find the first that matches
-			Entity match = grid.findFirstByTag(molecule, hashes[ndx], radii[ndx]);
+			Molecule match = (Molecule)grid.findFirstByTag(molecule, hashes[ndx], radii[ndx]);
 			if (match == null) {
 				continue;
 			}
+			
+			// Is the molecule free?
+			if (!match.isFree(step)) {
+				continue;
+			}			
 			
 			// Calculate the distance, but return immediately of we occupy the same space
 			location = grid.getObjectLocation(match);
@@ -257,13 +263,13 @@ public class Reaction {
 			int y = y1 - location[1];
 			int z = z1 - location[2];
 			if (x == 0 && y == 0 && z == 0) {
-				return processRadius(molecule, (Molecule)match, radii[ndx]);
+				return processRadius(molecule, match, radii[ndx]);
 			}
 			double d = Math.sqrt(x*x + y*y + z*z);
 			
 			// Roll the dice
 			if (random.nextGaussian() < Erf.erfc(d / radii[ndx])) {
-				return processRadius(molecule, (Molecule)match, radii[ndx]);
+				return processRadius(molecule, match, radii[ndx]);
 			}
 		}
 		

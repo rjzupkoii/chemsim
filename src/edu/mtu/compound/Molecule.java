@@ -29,6 +29,8 @@ public class Molecule extends Steppable implements Entity {
 	private Integer formulaHash;
 	private String formula;
 	
+	private int step;
+	
 	/**
 	 * Constructor.
 	 */
@@ -53,7 +55,8 @@ public class Molecule extends Steppable implements Entity {
 	}
 			
 	@Override
-	public void doAction(int step) {				
+	public void doAction(int step) {
+		this.step = step;
 		if (react()) {
 			dispose();
 		} else {
@@ -110,6 +113,10 @@ public class Molecule extends Steppable implements Entity {
 	
 	public boolean hasDissolvedReactants() {
 		return md.hasDissolvedReactants;
+	}
+	
+	public boolean isFree(int step) {
+		return (this.step != step);
 	}
 		
 	/**
