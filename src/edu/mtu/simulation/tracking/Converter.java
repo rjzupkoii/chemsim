@@ -32,12 +32,17 @@ public class Converter {
 			// Read, convert, and write the enteries
 			String[] entries;
 			while ((entries = reader.readNext()) != null) {
-				for (String entry : entries) {
-					if (entry.isEmpty()) {
+				
+				// First entry is the time, just echo it
+				writer.write(entries[0]);
+				
+				// Convert the rest of the lines
+				for (int ndx = 1; ndx < entries.length; ndx++) {
+					if (entries[ndx].isEmpty()) {
 						continue;
 					}
-					double value = Double.parseDouble(entry) / scaling;
-					writer.write(value);					
+					double value = Double.parseDouble(entries[ndx]) / scaling;
+					writer.write(value);										
 				}
 				writer.newline();
 				writer.flush();
