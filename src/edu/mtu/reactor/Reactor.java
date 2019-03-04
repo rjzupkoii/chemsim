@@ -25,11 +25,7 @@ public class Reactor {
 	
 	public final static double AvogadrosNumber = 6.02214085774E23;
 	public final static double MemoryOverhead = 0.9;
-	
-	// Inverse of scaling used in Pogson's equations for r,
-	// required if the unit of measure is molar
-	private final static double ScalingFactor = Math.pow(10, 3);		 
-		
+			
 	private static Reactor instance;
 	
 	private int moleculeCount;
@@ -58,14 +54,9 @@ public class Reactor {
 	 * @param compounds parsed out when the experimental inputs are loaded.
 	 * @return The dimensions a long a single axis in nanometers (nm).
 	 */
-	public static int calculateSize(List<ChemicalDto> compounds, long molecules) {
-		double mols = 0;
-		for (ChemicalDto compound : compounds) {
-			mols += compound.mols;
-		}
-				
-		double result = Math.cbrt(molecules / (mols * ScalingFactor * AvogadrosNumber));	// m
-		result = Math.ceil(result * Math.pow(10, 9));										// nm
+	public static int calculateSize(List<ChemicalDto> compounds, long molecules) {			
+		double result = Math.cbrt(molecules / (8e-5 * AvogadrosNumber));	// m
+		result = Math.ceil(result * Math.pow(10, 9));						// nm
 		return (int)result;		
 	}
 		
