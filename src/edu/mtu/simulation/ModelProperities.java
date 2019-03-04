@@ -19,6 +19,9 @@ public class ModelProperities {
 	// Values needed to ensure hydrogen peroxide exhibits a linear decay based upon the UV intensity
 	private double hydrogenPeroxideDecay = 0;
 	
+	// The odds that hydroxyl will be retained in the model
+	private double hydroxylRetention = 1.0; 
+	
 	// Scalar needed to convert molecules to molar values
 	private double moleculeToMol = 0;
 	
@@ -40,6 +43,10 @@ public class ModelProperities {
 		return hydrogenPeroxideDecay;
 	}
 	
+	public double getHydroxylRetention() {
+		return hydroxylRetention;
+	}
+	
 	public int getMediumPathway() {
 		return mediumPathway;
 	}
@@ -59,7 +66,7 @@ public class ModelProperities {
 	public int getTimeSteps() {
 		return timeSteps;
 	}
-	
+		
 	public void setDecayModel(DecayModel value) {
 		decayModel = value;
 	}
@@ -67,11 +74,15 @@ public class ModelProperities {
 	public void setFastPathway(int value) {
 		fastPathway = value;
 	}
-			
+	
 	public void setHydrogenPeroxideDecay(double value) {
 		hydrogenPeroxideDecay = value;
 	}
-		
+	
+	public void setHydroxylRetention(double value) {
+		hydroxylRetention = value;
+	}
+	
 	public void setMediumPathway(int value) {
 		mediumPathway = value;
 	}

@@ -54,7 +54,7 @@ public class Parser {
 			if (reader != null) reader.close();	
 		}		
 	}
-	
+		
 	/**
 	 * Parse the reaction rate from the file indicated.
 	 * 
@@ -115,6 +115,40 @@ public class Parser {
 			if (reader != null) reader.close();
 		}
 	}
+	
+	/**
+	 * Check to see if the file contains an override for the hydroxyl retention rate.
+	 * 
+	 * @param fileName The full path to the file.
+	 * @return True if an override is present, false otherwise.
+	 */
+	public static boolean checkForHydroxylPercentage(String fileName) throws IOException {
+		CSVReader reader = null;
+		
+		try {
+			// Open the file
+			reader = new CSVReader(new FileReader(fileName));
+			
+			// Read until we find the value, or the "Name" marker for the chemicals listing
+			String[] entries;
+			while ((entries = reader.readNext()) != null) {
+				// Match found
+				if (entries[0].toUpperCase().equals("PERCENTAGE")) {
+					return true;
+				}
+				
+				// Start of chemicals found
+				if (entries[0].toUpperCase().equals("NAME")) {
+					return false;
+				}
+			}
+			return false;
+			
+		} finally {
+			if (reader != null) reader.close();
+		}
+	}
+	
 	
 	/**
 	 * Parse the percentage of hydroxyl radicals that should be retained.

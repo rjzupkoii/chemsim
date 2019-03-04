@@ -76,6 +76,10 @@ public class ChemSim implements Simulation {
 			// Load the experimental parameters for the model
 			String fileName = SimulationProperties.getInstance().getChemicalsFileName();
 			List<ChemicalDto> compounds = Parser.parseChemicals(fileName);
+			if (Parser.checkForHydroxylPercentage(fileName)) {
+				double rate = Parser.parseHydroxylPercentage(fileName);
+				properties.setHydroxylRetention(rate);
+			}			
 			
 			// Initialize the tracker(s)
 			fileName = simulation.getResultsFileName();
@@ -233,8 +237,8 @@ public class ChemSim implements Simulation {
 		// Calculate and note the scaling factor to from molecules back to mols 
 		double scaling = findIntitalCount(chemicals);
 		properties.setMoleculeToMol(scaling);
-		System.out.println("Molecule to mol scalar: " + scaling + "\n");
-						
+		System.out.println("Molecule to mol scalar: " + scaling + "\n");	
+		
 		// Start by generating all of the initial molecules
 		int size = 0;
 		for (ChemicalDto chemical : chemicals) {

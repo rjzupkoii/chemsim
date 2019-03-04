@@ -304,15 +304,18 @@ public class Reaction {
 		
 		// Check to see if the reaction occurred based upon decay rates
 		double decay = ChemSim.getProperties().getHydrogenPeroxideDecay();
-		double random = ((XoRoShiRo128PlusRandom)ChemSim.getInstance().getRandom()).nextDoubleFast();
-		if (random > decay) {
+		XoRoShiRo128PlusRandom random = (XoRoShiRo128PlusRandom)ChemSim.getInstance().getRandom();
+		if (random.nextDoubleFast() > decay) {
 			return false;
 		}
 
 		// Create the relevant products, note that hydroxyl gets special treatment
+		double retention = ChemSim.getProperties().getHydroxylRetention();
 		int[] location = Reactor.getInstance().getLocation(molecule);
 		for (String product : ReactionRegistry.getInstance().getPhotolysisReaction(molecule)) {
-			MoleculeFactory.create(product, location);
+			if (random.nextDoubleFast() < retention) {
+				MoleculeFactory.create(product, location);
+			}
 		}
 			
 		// Note that a reaction occurred, molecule will dispose of itself
