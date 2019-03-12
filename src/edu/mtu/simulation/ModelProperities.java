@@ -16,8 +16,7 @@ public class ModelProperities {
 	// The expected duration of the model in time steps
 	private int timeSteps;
 				
-	// The quantity of hydrogen peroxide we expect at the end of the time step
-	private double hydrogenPeroxideTarget;
+	private double decayProbability;
 	
 	// The odds that hydroxyl will be retained in the model
 	private double hydroxylRetention = 1.0; 
@@ -63,8 +62,8 @@ public class ModelProperities {
 		return timeSteps;
 	}
 		
-	public double getHydrogenPeroxideTarget() {
-		return hydrogenPeroxideTarget;
+	public double getDecayProbability() {
+		return decayProbability;
 	}
 
 	public void setDecayModel(DecayModel value) {
@@ -95,7 +94,7 @@ public class ModelProperities {
 		timeSteps = value;
 	}
 	
-	public void setHydrogenPeroxideTarget(double value) {
-		hydrogenPeroxideTarget = value;
+	public void setDecayProbability(double value) {
+		decayProbability = value;
 	}
 }

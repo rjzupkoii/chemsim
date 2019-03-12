@@ -307,31 +307,17 @@ public class Reaction {
 			return false;
 		}
 		
-		// Get the current count, accounting for pKa
-		double count = ChemSim.getTracker().getCount("H2O2") + ChemSim.getTracker().getCount("HO2-");
-		double target = ChemSim.getProperties().getHydrogenPeroxideTarget();
-		
-		// Return if we met the target
-		if (target == 0 || count <= target) {
-			return false;
-		}
-		
-		// Otherwise calculate the decay and check for the reaction
-		double decay = (count - target) / count;
-		
 		// Check to see if the reaction occurred based upon decay rates
+		double decay = ChemSim.getProperties().getDecayProbability();
 		XoRoShiRo128PlusRandom random = (XoRoShiRo128PlusRandom)ChemSim.getInstance().getRandom();
 		if (random.nextDoubleFast() > decay) {
 			return false;
 		}
 
 		// Create the relevant products, note that hydroxyl gets special treatment
-		double retention = ChemSim.getProperties().getHydroxylRetention();
 		int[] location = Reactor.getInstance().getLocation(molecule);
 		for (String product : ReactionRegistry.getInstance().getPhotolysisReaction(molecule)) {
-			if (random.nextDoubleFast() < retention) {
-				MoleculeFactory.create(product, location);
-			}
+			MoleculeFactory.create(product, location);
 		}
 			
 		// Note that a reaction occurred, molecule will dispose of itself

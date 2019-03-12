@@ -20,6 +20,7 @@ import edu.mtu.reaction.Reaction;
 import edu.mtu.reaction.ReactionRegistry;
 import edu.mtu.reactor.Reactor;
 import edu.mtu.simulation.decay.DecayFactory;
+import edu.mtu.simulation.decay.DecayModel;
 import edu.mtu.simulation.schedule.Schedule;
 import edu.mtu.simulation.schedule.Simulation;
 import edu.mtu.simulation.tracking.CensusTracking;
@@ -97,6 +98,10 @@ public class ChemSim implements Simulation {
 			fileName = SimulationProperties.getInstance().getChemicalsFileName();
 			if (Parser.parseRate(fileName) != 0) {
 				DecayFactory.createDecayModel(properties);
+				DecayModel model = properties.getDecayModel();
+				double decay = model.getDecayQuantity(1, "H2O2", tracker.getCount("H2O2"));
+				decay = decay / tracker.getCount("H2O2");
+				properties.setDecayProbability(decay);
 			}
 			
 		} catch (Exception ex) {
@@ -130,10 +135,7 @@ public class ChemSim implements Simulation {
 		for (String reactant : ReactionRegistry.getInstance().getAcidDissociationReactants()) {
 			Reaction.getInstance().doAcidDissociation(reactant);
 		}
-		
-		// Update the HO* decay
-		updateHydroxylDecay(count);
-							
+								
 		// Update the census if need be
 		if (census != null) {
 			census.count();
@@ -157,16 +159,7 @@ public class ChemSim implements Simulation {
 			}
 		}
 	}
-	
-	/**
-	 * Calculate the hydrogen peroxide decay rate.
-	 */
-	private void updateHydroxylDecay(int count) {
-		long hydrogenPeroxide = tracker.getCount("H2O2") + tracker.getCount("HO2-");
-		double quantity = properties.getDecayModel().getConcentration(count, "H2O2", hydrogenPeroxide);
-		properties.setHydrogenPeroxideTarget(quantity);
-	}
-			
+				
 	/**
 	 * Complete the simulation.
 	 */
