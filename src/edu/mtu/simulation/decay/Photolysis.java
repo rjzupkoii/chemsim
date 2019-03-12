@@ -25,7 +25,12 @@ public class Photolysis implements DecayModel {
 		double y = m * timeStep + b;
 		return moleclues - y;
 	}
-
+	
+	@Override
+	public double getConcentration(int timeStep, String compound, long moleclues) {
+		return  m * timeStep + b;
+	}
+	
 	/**
 	 * Prepare for photolysis on the basis of the slope provided. Note that we
 	 * are assuming that the slope is being given as mM/L/min and will need to 
@@ -42,14 +47,12 @@ public class Photolysis implements DecayModel {
 		double scaling = ChemSim.getProperties().getMoleculeToMol();
 				
 		// Note the current time step duration
-//		double timeStep = SimulationProperties.getInstance().getTimeStepLength();
 		double dt = SimulationProperties.getInstance().getDeltaT();
 		
 		// Hydrogen peroxide is a linear decay, or f(x) = C - r * t 
 		// this means we need to determine the odds that any individual 
 		// hydrogen peroxide agent will be removed each time step based upon
 		// the new population which requires us knowing the initial decay
-//		m = (rate * volume * 0.001 * scaling * timeStep) / 60;
 		m = (rate * volume * 0.001 * scaling * dt) / 60;
 		m = Math.round(m * 100.0) / 100.0;
 		if (m == 0) {

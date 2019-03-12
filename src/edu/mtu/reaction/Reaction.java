@@ -302,8 +302,24 @@ public class Reaction {
 	 */
 	private boolean photolysis(Molecule molecule) {
 		
+		// Return if this isn't hydrogen peroxide
+		if (!molecule.getFormula().equals("H2O2")) {
+			return false;
+		}
+		
+		// Get the current count, accounting for pKa
+		double count = ChemSim.getTracker().getCount("H2O2") + ChemSim.getTracker().getCount("HO2-");
+		double target = ChemSim.getProperties().getHydrogenPeroxideTarget();
+		
+		// Return if we met the target
+		if (target == 0 || count <= target) {
+			return false;
+		}
+		
+		// Otherwise calculate the decay and check for the reaction
+		double decay = (count - target) / count;
+		
 		// Check to see if the reaction occurred based upon decay rates
-		double decay = ChemSim.getProperties().getHydrogenPeroxideDecay();
 		XoRoShiRo128PlusRandom random = (XoRoShiRo128PlusRandom)ChemSim.getInstance().getRandom();
 		if (random.nextDoubleFast() > decay) {
 			return false;

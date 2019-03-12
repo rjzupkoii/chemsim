@@ -162,13 +162,9 @@ public class ChemSim implements Simulation {
 	 * Calculate the hydrogen peroxide decay rate.
 	 */
 	private void updateHydroxylDecay(int count) {
-		long hydrogenPeroxide = tracker.getCount("H2O2");
-		double decay = 0;
-		if (hydrogenPeroxide != 0) {
-			double quantity = properties.getDecayModel().getDecayQuantity(count, "H2O2", hydrogenPeroxide);	
-			decay = (double)quantity / hydrogenPeroxide;
-		}
-		properties.setHydrogenPeroxideDecay(decay);
+		long hydrogenPeroxide = tracker.getCount("H2O2") + tracker.getCount("HO2-");
+		double quantity = properties.getDecayModel().getConcentration(count, "H2O2", hydrogenPeroxide);
+		properties.setHydrogenPeroxideTarget(quantity);
 	}
 			
 	/**

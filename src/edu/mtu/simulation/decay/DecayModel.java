@@ -16,10 +16,12 @@ public interface DecayModel {
 	 * 
 	 * @param timeStep The current time step of the model.
 	 * @param compound to get the decay quantity for.
-	 * @param moleclues The current number of molecules.
+	 * @param molecules The current number of molecules.
 	 * @return The number of the molecules that should decay.
 	 */
-	public double getDecayQuantity(int timeStep, String compound, long moleclues);
+	public double getDecayQuantity(int timeStep, String compound, long molecules);
+	
+	public double getConcentration(int timeStep, String compound, long moleclues);
 	
 	/**
 	 * Prepare the decay model by loading the experimental results, 
