@@ -316,8 +316,11 @@ public class Reaction {
 
 		// Create the relevant products, note that hydroxyl gets special treatment
 		int[] location = Reactor.getInstance().getLocation(molecule);
+		double retention = ChemSim.getProperties().getHydroxylRetention();
 		for (String product : ReactionRegistry.getInstance().getPhotolysisReaction(molecule)) {
-			MoleculeFactory.create(product, location);
+			if (random.nextDoubleFast() < retention) {
+				MoleculeFactory.create(product, location);
+			}
 		}
 			
 		// Note that a reaction occurred, molecule will dispose of itself
