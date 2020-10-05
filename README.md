@@ -33,4 +33,7 @@ With linear decay of hydrogen peroxide,
 > java -javaagent:lib/SizeOf.jar -jar ChemSim.jar -c experiment/chemicals.csv -r experiment/reactions.csv -l 1000000
 
 
-# Branches
+# Publications
+
+Zupko, R., Kamath, D., Coscarelli, E., Rouleau, M., & Minakata, D. (2020). Agent-Based model to predict the fate of the degradation of organic compounds in the aqueous-phase UV/H2O2 advanced oxidation process. Process Safety and Environmental Protection, 136, 49–55. https://doi.org/10.1016/j.psep.2020.01.023
+
